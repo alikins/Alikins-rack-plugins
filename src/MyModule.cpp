@@ -1,17 +1,21 @@
 #include "Tutorial.hpp"
+#include <stdio.h>
 
 
 struct MyModule : Module {
 	enum ParamIds {
 		PITCH_PARAM,
+        BUTTON1_PARAM,
 		NUM_PARAMS
 	};
 	enum InputIds {
 		PITCH_INPUT,
+        BUTTON1_INPUT,
 		NUM_INPUTS
 	};
 	enum OutputIds {
 		SINE_OUTPUT,
+        BUTTON1_OUTPUT,
 		NUM_OUTPUTS
 	};
 	enum LightIds {
@@ -56,6 +60,11 @@ void MyModule::step() {
 	if (blinkPhase >= 1.0)
 		blinkPhase -= 1.0;
 	lights[BLINK_LIGHT].value = (blinkPhase < 0.5) ? 1.0 : 0.0;
+
+    outputs[BUTTON1_OUTPUT].value = 0.0;
+    if (params[BUTTON1_PARAM].value)
+        outputs[BUTTON1_OUTPUT].value = 1.0;
+    // fprintf(stderr, '%s', params[BUTTON1_PARAM].value);
 }
 
 
@@ -71,11 +80,12 @@ MyModuleWidget::MyModuleWidget() {
 		addChild(panel);
 	}
 
+    /*
 	addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 	addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
 	addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 	addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-
+*/
 	addParam(createParam<Davies1900hBlackKnob>(Vec(28, 87), module, MyModule::PITCH_PARAM, -3.0, 3.0, 0.0));
 
 	addInput(createInput<PJ301MPort>(Vec(33, 186), module, MyModule::PITCH_INPUT));
@@ -83,4 +93,9 @@ MyModuleWidget::MyModuleWidget() {
 	addOutput(createOutput<PJ301MPort>(Vec(33, 275), module, MyModule::SINE_OUTPUT));
 
 	addChild(createLight<MediumLight<RedLight>>(Vec(41, 59), module, MyModule::BLINK_LIGHT));
+
+    addParam(createParam<LEDButton>(Vec(10, 110), module, MyModule::BUTTON1_PARAM, 0.0, 1.0, 0.0));
+	addOutput(createOutput<PJ301MPort>(Vec(30, 110), module, MyModule::BUTTON1_OUTPUT));
+
+    addInput(createInput<PJ301MPort>(Vec(33, 186), module, MyModule::PITCH_INPUT));
 }

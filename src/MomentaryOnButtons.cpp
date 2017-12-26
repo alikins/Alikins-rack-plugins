@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 
-struct MyModule : Module {
+struct MomentaryOnButtons : Module {
 	enum ParamIds {
         BUTTON1_PARAM,
 		NUM_PARAMS
@@ -23,7 +23,7 @@ struct MyModule : Module {
 	float phase = 0.0;
 	float blinkPhase = 0.0;
 
-	MyModule() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+	MomentaryOnButtons() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 	void step() override;
 
 	// For more advanced Module features, read Rack's engine.hpp header file
@@ -33,7 +33,7 @@ struct MyModule : Module {
 };
 
 
-void MyModule::step() {
+void MomentaryOnButtons::step() {
 	// Implement a simple sine oscillator
 	float deltaTime = 1.0 / engineGetSampleRate();
 
@@ -56,8 +56,8 @@ void MyModule::step() {
 }
 
 
-MyModuleWidget::MyModuleWidget() {
-	MyModule *module = new MyModule();
+MomentaryOnButtonsWidget::MomentaryOnButtonsWidget() {
+	MomentaryOnButtons *module = new MomentaryOnButtons();
 	setModule(module);
 	box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
@@ -76,9 +76,9 @@ MyModuleWidget::MyModuleWidget() {
 */
 
 
-	addChild(createLight<MediumLight<RedLight>>(Vec(41, 59), module, MyModule::BLINK_LIGHT));
+	addChild(createLight<MediumLight<RedLight>>(Vec(41, 59), module, MomentaryOnButtons::BLINK_LIGHT));
 
-    addParam(createParam<LEDButton>(Vec(10, 110), module, MyModule::BUTTON1_PARAM, 0.0, 1.0, 0.0));
-	addOutput(createOutput<PJ301MPort>(Vec(30, 110), module, MyModule::BUTTON1_OUTPUT));
+    addParam(createParam<LEDButton>(Vec(10, 110), module, MomentaryOnButtons::BUTTON1_PARAM, 0.0, 1.0, 0.0));
+	addOutput(createOutput<PJ301MPort>(Vec(30, 110), module, MomentaryOnButtons::BUTTON1_OUTPUT));
 
 }

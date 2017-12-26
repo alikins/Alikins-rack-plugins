@@ -10,6 +10,6 @@ extern Plugin *plugin;
 // module widgets
 ////////////////////
 
-struct MyModuleWidget : ModuleWidget {
-	MyModuleWidget();
+struct MomentaryOnButtonsWidget : ModuleWidget {
+	MomentaryOnButtonsWidget();
 };

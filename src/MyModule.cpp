@@ -1,4 +1,4 @@
-#include "Tutorial.hpp"
+#include "alikins.hpp"
 #include <stdio.h>
 
 
@@ -64,7 +64,7 @@ MyModuleWidget::MyModuleWidget() {
 	{
 		SVGPanel *panel = new SVGPanel();
 		panel->box.size = box.size;
-		panel->setBackground(SVG::load(assetPlugin(plugin, "res/MyModule.svg")));
+		panel->setBackground(SVG::load(assetPlugin(plugin, "res/alikins.svg")));
 		addChild(panel);
 	}
 

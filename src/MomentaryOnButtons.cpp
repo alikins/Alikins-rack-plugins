@@ -20,8 +20,6 @@ struct MomentaryOnButtons : Module {
 		NUM_LIGHTS
 	};
 
-	float phase = 0.0;
-	float blinkPhase = 0.0;
 
 	MomentaryOnButtons() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 	void step() override;
@@ -34,25 +32,15 @@ struct MomentaryOnButtons : Module {
 
 
 void MomentaryOnButtons::step() {
-	// Implement a simple sine oscillator
-	float deltaTime = 1.0 / engineGetSampleRate();
 
-
-
-	// Compute the sine output
-	// float sine = sinf(2 * M_PI * phase);
-	// outputs[SINE_OUTPUT].value = 5.0 * sine;
-
-	// Blink light at 1Hz
-	blinkPhase += deltaTime;
-	if (blinkPhase >= 1.0)
-		blinkPhase -= 1.0;
-	lights[BLINK_LIGHT].value = (blinkPhase < 0.5) ? 1.0 : 0.0;
-
+	// lights[BLINK_LIGHT].value = 0.0;
+	lights[BLINK_LIGHT].setBrightness(0.0);
     outputs[BUTTON1_OUTPUT].value = 0.0;
+
     if (params[BUTTON1_PARAM].value)
         outputs[BUTTON1_OUTPUT].value = 1.0;
-    // fprintf(stderr, '%s', params[BUTTON1_PARAM].value);
+	    // lights[BLINK_LIGHT].value = 1.0;
+	    lights[BLINK_LIGHT].setBrightness(1.0);
 }
 
 

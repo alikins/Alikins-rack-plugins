@@ -4,17 +4,14 @@
 
 struct MyModule : Module {
 	enum ParamIds {
-		PITCH_PARAM,
         BUTTON1_PARAM,
 		NUM_PARAMS
 	};
 	enum InputIds {
-		PITCH_INPUT,
         BUTTON1_INPUT,
 		NUM_INPUTS
 	};
 	enum OutputIds {
-		SINE_OUTPUT,
         BUTTON1_OUTPUT,
 		NUM_OUTPUTS
 	};
@@ -40,20 +37,11 @@ void MyModule::step() {
 	// Implement a simple sine oscillator
 	float deltaTime = 1.0 / engineGetSampleRate();
 
-	// Compute the frequency from the pitch parameter and input
-	float pitch = params[PITCH_PARAM].value;
-	pitch += inputs[PITCH_INPUT].value;
-	pitch = clampf(pitch, -4.0, 4.0);
-	float freq = 440.0 * powf(2.0, pitch);
 
-	// Accumulate the phase
-	phase += freq * deltaTime;
-	if (phase >= 1.0)
-		phase -= 1.0;
 
 	// Compute the sine output
-	float sine = sinf(2 * M_PI * phase);
-	outputs[SINE_OUTPUT].value = 5.0 * sine;
+	// float sine = sinf(2 * M_PI * phase);
+	// outputs[SINE_OUTPUT].value = 5.0 * sine;
 
 	// Blink light at 1Hz
 	blinkPhase += deltaTime;
@@ -86,16 +74,11 @@ MyModuleWidget::MyModuleWidget() {
 	addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 	addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 */
-	addParam(createParam<Davies1900hBlackKnob>(Vec(28, 87), module, MyModule::PITCH_PARAM, -3.0, 3.0, 0.0));
 
-	addInput(createInput<PJ301MPort>(Vec(33, 186), module, MyModule::PITCH_INPUT));
-
-	addOutput(createOutput<PJ301MPort>(Vec(33, 275), module, MyModule::SINE_OUTPUT));
 
 	addChild(createLight<MediumLight<RedLight>>(Vec(41, 59), module, MyModule::BLINK_LIGHT));
 
     addParam(createParam<LEDButton>(Vec(10, 110), module, MyModule::BUTTON1_PARAM, 0.0, 1.0, 0.0));
 	addOutput(createOutput<PJ301MPort>(Vec(30, 110), module, MyModule::BUTTON1_OUTPUT));
 
-    addInput(createInput<PJ301MPort>(Vec(33, 186), module, MyModule::PITCH_INPUT));
 }

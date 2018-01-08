@@ -1,6 +1,8 @@
 #include "rack.hpp"
 
 
+const int MOMENTARY_BUTTONS = 8;
+
 using namespace rack;
 
 

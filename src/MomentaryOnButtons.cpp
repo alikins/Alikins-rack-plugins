@@ -12,6 +12,11 @@ struct MomentaryOnButtons : Module {
         BUTTON6_PARAM,
         BUTTON7_PARAM,
         BUTTON8_PARAM,
+        BUTTON9_PARAM,
+        BUTTON10_PARAM,
+        BUTTON11_PARAM,
+        BUTTON12_PARAM,
+        BUTTON13_PARAM,
 		NUM_PARAMS
 	};
 	enum InputIds {
@@ -23,6 +28,11 @@ struct MomentaryOnButtons : Module {
         BUTTON6_INPUT,
         BUTTON7_INPUT,
         BUTTON8_INPUT,
+        BUTTON9_INPUT,
+        BUTTON10_INPUT,
+        BUTTON11_INPUT,
+        BUTTON12_INPUT,
+        BUTTON13_INPUT,
 		NUM_INPUTS
 	};
 	enum OutputIds {
@@ -34,6 +44,11 @@ struct MomentaryOnButtons : Module {
         BUTTON6_OUTPUT,
         BUTTON7_OUTPUT,
         BUTTON8_OUTPUT,
+        BUTTON9_OUTPUT,
+        BUTTON10_OUTPUT,
+        BUTTON11_OUTPUT,
+        BUTTON12_OUTPUT,
+        BUTTON13_OUTPUT,
 		NUM_OUTPUTS
 	};
 	enum LightIds {
@@ -45,6 +60,11 @@ struct MomentaryOnButtons : Module {
 		BLINK6_LIGHT,
 		BLINK7_LIGHT,
 		BLINK8_LIGHT,
+		BLINK9_LIGHT,
+		BLINK10_LIGHT,
+		BLINK11_LIGHT,
+		BLINK12_LIGHT,
+		BLINK13_LIGHT,
 		NUM_LIGHTS
 	};
 
@@ -79,13 +99,13 @@ void MomentaryOnButtons::step() {
 MomentaryOnButtonsWidget::MomentaryOnButtonsWidget() {
 	MomentaryOnButtons *module = new MomentaryOnButtons();
 	setModule(module);
-	box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+	box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
     int x_offset = 0;
-    int y_offset = 30;
+    int y_offset = 26;
 
-    int x_start = 5;
-    int y_start = 20;
+    int x_start = 0;
+    int y_start = 24;
 
     int x_pos = 0;
     int y_pos = 0;
@@ -111,11 +131,10 @@ MomentaryOnButtonsWidget::MomentaryOnButtonsWidget() {
         x_pos = x_start + x_offset;
         y_pos = y_start + (i * y_offset);
 
+        addParam(createParam<LEDButton>(Vec(x_pos + light_radius, y_pos + 3), module, MomentaryOnButtons::BUTTON1_PARAM + i, 0.0, 1.0, 0.0));
+        addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + 5 + light_radius, y_pos + light_radius), module, MomentaryOnButtons::BLINK1_LIGHT + i));
 
-        addChild(createLight<MediumLight<RedLight>>(Vec(x_pos, y_pos + light_radius), module, MomentaryOnButtons::BLINK1_LIGHT + i));
-
-        addParam(createParam<LEDButton>(Vec(x_pos + 5 + light_radius, y_pos + 3), module, MomentaryOnButtons::BUTTON1_PARAM + i, 0.0, 1.0, 0.0));
-        addOutput(createOutput<PJ301MPort>(Vec(x_pos + 25 + light_radius, y_pos), module, MomentaryOnButtons::BUTTON1_OUTPUT + i));
+        addOutput(createOutput<PJ301MPort>(Vec(x_pos + 20 + light_radius, y_pos), module, MomentaryOnButtons::BUTTON1_OUTPUT + i));
     }
 
 

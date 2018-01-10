@@ -43,18 +43,22 @@ void IdleSwitch::step() {
     float interval = 100;
     float theTime = 0.0;
 
-    outputs[IDLE_GATE_OUTPUT].value = 0.0;
+    outputs[IDLE_GATE_OUTPUT].value = 5.0;
     lights[IDLE_GATE_LIGHT].setBrightness(0.0);
 
+    // TIME_PARAM is time between idle loop checks (the timeout) in seconds
     theTime = params[TIME_PARAM].value;
     outputs[TIME_OUTPUT].value = params[TIME_PARAM].value;
 
     // Compute time
 	// float deltaTime = powf(2.0, params[TIME_PARAM].value);
 	float deltaTime = params[TIME_PARAM].value;
-	int maxFrameCount = (int)ceilf(deltaTime * engineGetSampleRate());
+	float sampleRate = engineGetSampleRate();
+    float delta = 1.0 / sampleRate;
+    int maxFrameCount = (int)ceilf(deltaTime * sampleRate);
 
-    info("theTime: %f maxFrameCount: %d frameCount: %d", theTime, maxFrameCount, frameCount);
+    // float frameTime = frameCount * delta;
+    // info("theTime: %f maxFrameCount: %d frameCounttime: %f delta: %f", theTime, maxFrameCount, frameTime, delta);
     if (inputs[INPUT_SOURCE_INPUT].active) {
         if (_trigger.process(inputs[INPUT_SOURCE_INPUT].value)) {
             // outputs[IDLE_GATE_OUTPUT].value = 10;
@@ -67,8 +71,8 @@ void IdleSwitch::step() {
 
 
     if (frameCount <= maxFrameCount) {
-            outputs[IDLE_GATE_OUTPUT].value = 5.0;
-            lights[IDLE_GATE_LIGHT].setBrightness(1.0);
+        outputs[IDLE_GATE_OUTPUT].value = 0.0;
+        lights[IDLE_GATE_LIGHT].setBrightness(1.0);
 
     }
 

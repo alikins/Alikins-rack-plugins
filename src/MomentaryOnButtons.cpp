@@ -88,7 +88,7 @@ void MomentaryOnButtons::step() {
         outputs[BUTTON1_OUTPUT + i].value = 0.0;
 
         if (params[BUTTON1_PARAM + i].value) {
-            outputs[BUTTON1_OUTPUT + i].value = 1.0;
+            outputs[BUTTON1_OUTPUT + i].value = 5.0;
 	        // lights[BLINK_LIGHT].value = 1.0;
 	        lights[BLINK1_LIGHT + i].setBrightness(1.0);
         }

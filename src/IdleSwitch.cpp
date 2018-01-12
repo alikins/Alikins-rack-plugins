@@ -150,7 +150,7 @@ IdleSwitchWidget::IdleSwitchWidget() {
 
     addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + light_radius, y_pos + light_radius), module, IdleSwitch::IDLE_GATE_LIGHT));
 
-	addInput(createInput<PJ301MPort>(Vec(x_pos + 55, y_pos), module, IdleSwitch::HEARTBEAT_INPUT));
+	addInput(createInput<PJ301MPort>(Vec(x_pos + 25, y_pos), module, IdleSwitch::HEARTBEAT_INPUT));
 
 
     // addOutput(createOutput<PJ301MPort>(Vec(x_pos, y_pos), module, IdleSwitch::TIME_OUTPUT));

@@ -3,7 +3,7 @@
 
 
 struct MomentaryOnButtons : Module {
-	enum ParamIds {
+    enum ParamIds {
         BUTTON1_PARAM,
         BUTTON2_PARAM,
         BUTTON3_PARAM,
@@ -17,9 +17,9 @@ struct MomentaryOnButtons : Module {
         BUTTON11_PARAM,
         BUTTON12_PARAM,
         BUTTON13_PARAM,
-		NUM_PARAMS
-	};
-	enum InputIds {
+        NUM_PARAMS
+    };
+    enum InputIds {
         BUTTON1_INPUT,
         BUTTON2_INPUT,
         BUTTON3_INPUT,
@@ -33,9 +33,9 @@ struct MomentaryOnButtons : Module {
         BUTTON11_INPUT,
         BUTTON12_INPUT,
         BUTTON13_INPUT,
-		NUM_INPUTS
-	};
-	enum OutputIds {
+        NUM_INPUTS
+    };
+    enum OutputIds {
         BUTTON1_OUTPUT,
         BUTTON2_OUTPUT,
         BUTTON3_OUTPUT,
@@ -49,33 +49,33 @@ struct MomentaryOnButtons : Module {
         BUTTON11_OUTPUT,
         BUTTON12_OUTPUT,
         BUTTON13_OUTPUT,
-		NUM_OUTPUTS
-	};
-	enum LightIds {
-		BLINK1_LIGHT,
-		BLINK2_LIGHT,
-		BLINK3_LIGHT,
-		BLINK4_LIGHT,
-		BLINK5_LIGHT,
-		BLINK6_LIGHT,
-		BLINK7_LIGHT,
-		BLINK8_LIGHT,
-		BLINK9_LIGHT,
-		BLINK10_LIGHT,
-		BLINK11_LIGHT,
-		BLINK12_LIGHT,
-		BLINK13_LIGHT,
-		NUM_LIGHTS
-	};
+        NUM_OUTPUTS
+    };
+    enum LightIds {
+        BLINK1_LIGHT,
+        BLINK2_LIGHT,
+        BLINK3_LIGHT,
+        BLINK4_LIGHT,
+        BLINK5_LIGHT,
+        BLINK6_LIGHT,
+        BLINK7_LIGHT,
+        BLINK8_LIGHT,
+        BLINK9_LIGHT,
+        BLINK10_LIGHT,
+        BLINK11_LIGHT,
+        BLINK12_LIGHT,
+        BLINK13_LIGHT,
+        NUM_LIGHTS
+    };
 
 
-	MomentaryOnButtons() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-	void step() override;
+    MomentaryOnButtons() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    void step() override;
 
-	// For more advanced Module features, read Rack's engine.hpp header file
-	// - toJson, fromJson: serialization of internal data
-	// - onSampleRateChange: event triggered by a change of sample rate
-	// - reset, randomize: implements special behavior when user clicks these from the context menu
+    // For more advanced Module features, read Rack's engine.hpp header file
+    // - toJson, fromJson: serialization of internal data
+    // - onSampleRateChange: event triggered by a change of sample rate
+    // - reset, randomize: implements special behavior when user clicks these from the context menu
 };
 
 
@@ -84,22 +84,22 @@ void MomentaryOnButtons::step() {
     for(int i = 0; i < MOMENTARY_BUTTONS; i++) {
 
         // lights[BLINK_LIGHT].value = 0.0;
-	    lights[BLINK1_LIGHT + i].setBrightness(0.0);
+        lights[BLINK1_LIGHT + i].setBrightness(0.0);
         outputs[BUTTON1_OUTPUT + i].value = 0.0;
 
         if (params[BUTTON1_PARAM + i].value) {
             outputs[BUTTON1_OUTPUT + i].value = 5.0;
-	        // lights[BLINK_LIGHT].value = 1.0;
-	        lights[BLINK1_LIGHT + i].setBrightness(1.0);
+            // lights[BLINK_LIGHT].value = 1.0;
+            lights[BLINK1_LIGHT + i].setBrightness(1.0);
         }
     }
 }
 
 
 MomentaryOnButtonsWidget::MomentaryOnButtonsWidget() {
-	MomentaryOnButtons *module = new MomentaryOnButtons();
-	setModule(module);
-	box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+    MomentaryOnButtons *module = new MomentaryOnButtons();
+    setModule(module);
+    box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
     int x_offset = 0;
     int y_offset = 26;
@@ -112,19 +112,19 @@ MomentaryOnButtonsWidget::MomentaryOnButtonsWidget() {
 
     int light_radius = 7;
 
-	{
-		SVGPanel *panel = new SVGPanel();
-		panel->box.size = box.size;
-		panel->setBackground(SVG::load(assetPlugin(plugin, "res/MomentaryOnButtons.svg")));
-		addChild(panel);
-	}
+    {
+        SVGPanel *panel = new SVGPanel();
+        panel->box.size = box.size;
+        panel->setBackground(SVG::load(assetPlugin(plugin, "res/MomentaryOnButtons.svg")));
+        addChild(panel);
+    }
 
     /*
-	addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-	addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-	addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-	addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-*/
+       addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+       addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+       addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+       addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+       */
 
     for(int i = 0; i < MOMENTARY_BUTTONS; i++) {
 
@@ -136,6 +136,5 @@ MomentaryOnButtonsWidget::MomentaryOnButtonsWidget() {
 
         addOutput(createOutput<PJ301MPort>(Vec(x_pos + 20 + light_radius, y_pos), module, MomentaryOnButtons::BUTTON1_OUTPUT + i));
     }
-
 
 }

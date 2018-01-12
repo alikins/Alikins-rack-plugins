@@ -5,7 +5,6 @@
 
 struct IdleSwitch : Module {
 	enum ParamIds {
-        BUTTON1_PARAM,
 		TIME_PARAM,
         NUM_PARAMS
 	};
@@ -16,7 +15,7 @@ struct IdleSwitch : Module {
 	};
 	enum OutputIds {
         IDLE_GATE_OUTPUT,
-        TIME_OUTPUT,
+        // TIME_OUTPUT,
         NUM_OUTPUTS
 	};
 	enum LightIds {
@@ -24,9 +23,11 @@ struct IdleSwitch : Module {
 		NUM_LIGHTS
 	};
 
-	SchmittTrigger _trigger;
+	SchmittTrigger inputTrigger;
+    SchmittTrigger heartbeatTrigger;
 
     int frameCount = 0;
+    int maxFrameCount = 0;
 
 	IdleSwitch() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 	void step() override;
@@ -39,36 +40,51 @@ struct IdleSwitch : Module {
 
 
 void IdleSwitch::step() {
-    float last = 0;
-    float interval = 100;
-    float theTime = 0.0;
-
-    outputs[IDLE_GATE_OUTPUT].value = 5.0;
+    outputs[IDLE_GATE_OUTPUT].value = 10.0;
     lights[IDLE_GATE_LIGHT].setBrightness(0.0);
 
     // TIME_PARAM is time between idle loop checks (the timeout) in seconds
-    theTime = params[TIME_PARAM].value;
-    outputs[TIME_OUTPUT].value = params[TIME_PARAM].value;
+    // theTime = params[TIME_PARAM].value;
+    // mostly for debugging atm
+    // outputs[TIME_OUTPUT].value = params[TIME_PARAM].value;
 
-    // Compute time
-	// float deltaTime = powf(2.0, params[TIME_PARAM].value);
-	float deltaTime = params[TIME_PARAM].value;
-	float sampleRate = engineGetSampleRate();
-    float delta = 1.0 / sampleRate;
-    int maxFrameCount = (int)ceilf(deltaTime * sampleRate);
+    float sampleRate = engineGetSampleRate();
 
+    if (inputs[HEARTBEAT_INPUT].active) {
+        if (heartbeatTrigger.process(inputs[HEARTBEAT_INPUT].value)) {
+            // reset the timeout on heartbeat
+            maxFrameCount = 0;
+         }
+        else {
+            maxFrameCount++;
+        }
+    }
+    else {
+        // Compute time
+        float deltaTime = params[TIME_PARAM].value;
+
+        maxFrameCount = (int)ceilf(deltaTime * sampleRate);
+    }
+
+    // float delta = 1.0 / sampleRate;
     // float frameTime = frameCount * delta;
-    // info("theTime: %f maxFrameCount: %d frameCounttime: %f delta: %f", theTime, maxFrameCount, frameTime, delta);
+    // float maxFrameTime = maxFrameCount * delta;
+
+    // info("theTime: %f maxFrameCount: %d frameCounttime: %f delta: %f", theTime, maxFrameTime, frameTime, delta);
+    // info("maxFrameCount: %d frameCount: %d delta: %f", maxFrameCount, frameCount, delta);
     if (inputs[INPUT_SOURCE_INPUT].active) {
-        if (_trigger.process(inputs[INPUT_SOURCE_INPUT].value)) {
+        if (inputTrigger.process(inputs[INPUT_SOURCE_INPUT].value)) {
             // outputs[IDLE_GATE_OUTPUT].value = 10;
             // lights[IDLE_GATE_LIGHT].setBrightness(1.0);
             frameCount = 0;
+
         // info("maxFrameCount: %d frameCount: %d", maxFrameCount, frameCount);
         // info("theTime: %f maxFrameCount: %d frameCount: %d", theTime, maxFrameCount, frameCount);
         }
+        else {
+            frameCount++;
+        }
     }
-
 
     if (frameCount <= maxFrameCount) {
         outputs[IDLE_GATE_OUTPUT].value = 0.0;
@@ -76,20 +92,20 @@ void IdleSwitch::step() {
 
     }
 
-    frameCount++;
+    // frameCount++;
 }
 
 
 IdleSwitchWidget::IdleSwitchWidget() {
 	IdleSwitch *module = new IdleSwitch();
 	setModule(module);
-	box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+	box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
-    int x_offset = 0;
-    int y_offset = 26;
+    int x_offset = 5;
+    int y_offset = 25;
 
-    int x_start = 0;
-    int y_start = 24;
+    int x_start = 0 + x_offset;
+    int y_start = 40;
 
     int x_pos = 0;
     int y_pos = 0;
@@ -110,26 +126,32 @@ IdleSwitchWidget::IdleSwitchWidget() {
 	addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 */
 
-    y_pos = y_start + y_offset;
+    y_pos = y_start;
+    x_pos = x_start;
 
-	addInput(createInput<PJ301MPort>(Vec(11, y_pos), module, IdleSwitch::INPUT_SOURCE_INPUT));
+	addInput(createInput<PJ301MPort>(Vec(x_pos, y_pos), module, IdleSwitch::INPUT_SOURCE_INPUT));
 
-    x_pos = x_start + x_offset;
+    x_pos = x_pos + 25;
+    // y_pos = y_pos + y_offset + 5;
+
+    addParam(createParam<RoundSmallBlackKnob>(Vec(x_pos, y_pos), module, IdleSwitch::TIME_PARAM, 0.0, 8.0, 1.0));
+
+    // y_pos = y_pos + y_offset + 25;
+    // x_pos = x_pos + 30;
+
+    addOutput(createOutput<PJ301MPort>(Vec(x_pos + 30, y_pos), module, IdleSwitch::IDLE_GATE_OUTPUT));
+
+
     y_pos = y_pos + y_offset + 5;
+    // x_pos = x_pos + 25;
+    x_pos = x_start;
 
-    addParam(createParam<RoundSmallBlackKnob>(Vec(20, y_pos), module, IdleSwitch::TIME_PARAM, 0.0, 8.0, 1.0));
+    // addParam(createParam<LEDButton>(Vec(x_pos, y_pos), module, IdleSwitch::BUTTON1_PARAM, 0.0, 1.0, 0.0));
 
-    y_pos = y_pos + y_offset + 5;
+    addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + light_radius, y_pos + light_radius), module, IdleSwitch::IDLE_GATE_LIGHT));
 
-    addOutput(createOutput<PJ301MPort>(Vec(x_pos + 20, y_pos), module, IdleSwitch::TIME_OUTPUT));
-
-    y_pos = y_pos + y_offset + 5;
-
-    addParam(createParam<LEDButton>(Vec(x_pos + light_radius, y_pos + 3), module, IdleSwitch::BUTTON1_PARAM, 0.0, 1.0, 0.0));
-
-    addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + 5 + light_radius, y_pos + light_radius), module, IdleSwitch::IDLE_GATE_LIGHT));
-
-    addOutput(createOutput<PJ301MPort>(Vec(x_pos + 20 + light_radius, y_pos), module, IdleSwitch::IDLE_GATE_OUTPUT));
+	addInput(createInput<PJ301MPort>(Vec(x_pos + 55, y_pos), module, IdleSwitch::HEARTBEAT_INPUT));
 
 
+    // addOutput(createOutput<PJ301MPort>(Vec(x_pos, y_pos), module, IdleSwitch::TIME_OUTPUT));
 }

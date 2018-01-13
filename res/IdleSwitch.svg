@@ -1885,7 +1885,7 @@
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:window-width="1440"
      inkscape:window-height="851"
-     inkscape:window-x="4"
+     inkscape:window-x="39"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:measure-start="0,0"
@@ -1894,7 +1894,7 @@
      inkscape:snap-nodes="false"
      inkscape:snap-others="false"
      inkscape:snap-grids="false"
-     showguides="false"
+     showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-to-guides="true"
      inkscape:object-nodes="false">
@@ -1904,7 +1904,7 @@
        units="px"
        empspacing="5" />
     <sodipodi:guide
-       position="9.2604171,87.312503"
+       position="42.884015,405.25395"
        orientation="1,0"
        id="guide6572"
        inkscape:locked="false" />
@@ -1922,11 +1922,6 @@
        position="20.264701,22.70397"
        orientation="1,0"
        id="guide10677"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="9.19417,58.91774"
-       orientation="1,0"
-       id="guide15148"
        inkscape:locked="false" />
     <sodipodi:guide
        position="22.516335,59.011559"
@@ -2026,7 +2021,7 @@ Source"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.21955347px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.1664665"
        id="text18807"
        inkscape:label="input source"
-       transform="matrix(3.7625816,0,0,3.8,3.3675411,0.79848734)">
+       transform="matrix(3.7625816,0,0,3.8,3.3675411,-5.634115)">
       <path
          d="M 0.80527019,12.348639 H 1.024191 v 1.618063 H 0.80527019 Z"
          style="stroke-width:0.1664665"
@@ -2089,7 +2084,7 @@ beat"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.13961577px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.16047043"
        id="text18836"
        inkscape:label="heartbeat"
-       transform="matrix(3.7625816,0,0,3.8,3.3675411,0.79848734)">
+       transform="matrix(3.7625816,0,0,3.8,3.3675411,-9.2077829)">
       <path
          d="m 1.3511489,27.414804 h 0.2110363 v 0.639377 h 0.7668349 v -0.639377 h 0.2110363 v 1.559788 H 2.3290201 V 28.231786 H 1.5621852 v 0.742806 H 1.3511489 Z"
          style="stroke-width:0.16047043"
@@ -2141,7 +2136,8 @@ beat"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.04802823px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15360212"
        id="text18844"
        inkscape:label="timeout"
-       transform="matrix(3.7625816,0,0,3.8,3.3675411,0.79848734)">
+       transform="matrix(3.7625816,0,0,5.1527893,2.6528075,-63.362037)"
+       inkscape:transform-center-y="20.352712">
       <path
          d="M 0.32379635,42.207915 H 1.5868138 v 0.170002 H 1.0568065 v 1.323018 H 0.85380366 V 42.377917 H 0.32379635 Z"
          style="stroke-width:0.15360212"
@@ -2184,7 +2180,8 @@ Output"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.10112381px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.15758429"
        id="text18882"
        inkscape:label="switch output"
-       transform="matrix(3.7625816,0,0,3.8,3.3675411,0.79848734)">
+       transform="matrix(3.7625816,0,0,3.8,2.6528075,-12.066717)"
+       inkscape:transform-center-y="15.009405">
       <path
          d="m 2.0398688,54.622692 v 0.20211 q -0.117983,-0.05643 -0.2226288,-0.08413 -0.1046458,-0.0277 -0.20211,-0.0277 -0.16928,0 -0.2616146,0.06566 -0.091309,0.06566 -0.091309,0.186721 0,0.101568 0.06053,0.153891 0.061556,0.0513 0.2318623,0.0831 l 0.1251646,0.02565 q 0.2318623,0.04411 0.3416378,0.155942 0.1108015,0.110802 0.1108015,0.297523 0,0.222629 -0.1497872,0.337534 -0.1487612,0.114905 -0.4370501,0.114905 -0.1087496,0 -0.2318623,-0.02462 -0.1220868,-0.02462 -0.253407,-0.07284 v -0.213396 q 0.1261905,0.07079 0.2472513,0.106698 0.1210609,0.03591 0.238018,0.03591 0.1774875,0 0.2739258,-0.06976 0.096438,-0.06976 0.096438,-0.199032 0,-0.112853 -0.069764,-0.176462 -0.068738,-0.06361 -0.2267326,-0.09541 L 1.4930432,55.400354 Q 1.2611809,55.354187 1.157561,55.255697 1.0539411,55.157207 1.0539411,54.981771 q 0,-0.203136 0.1426056,-0.320093 0.1436315,-0.116957 0.3949866,-0.116957 0.1077237,0 0.2195511,0.01949 0.1118274,0.01949 0.2287844,0.05848 z"
          style="stroke-width:0.15758429"
@@ -2251,13 +2248,13 @@ Output"
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="widgets"
-     style="display:inline;opacity:0.28000004">
+     style="display:none;opacity:0.28000004">
     <rect
        style="fill:#00ff00;fill-opacity:1;stroke:#000000;stroke-width:1.56722248;stroke-miterlimit:4;stroke-dasharray:0, 17.2394457;stroke-dashoffset:0;stroke-opacity:0.00485439"
        id="rect1261"
        width="38.261162"
        height="38.641674"
-       x="38.804279"
+       x="42.377949"
        y="37.241837"
        rx="4.6346892e-07"
        ry="38.641674"
@@ -2267,7 +2264,7 @@ Output"
        id="rect1263"
        width="38.418255"
        height="38.800316"
-       x="39.015553"
+       x="43.303955"
        y="91.440582"
        rx="4.5244485e-07"
        ry="32.01022"
@@ -2277,8 +2274,8 @@ Output"
        id="rect1267"
        width="34.559166"
        height="34.902855"
-       x="38.144997"
-       y="147.20035"
+       x="38.85973"
+       y="141.48248"
        rx="3.6629737e-07"
        ry="32.90836"
        inkscape:label="TIME" />
@@ -2287,38 +2284,18 @@ Output"
        id="rect1273"
        width="38.282135"
        height="38.662849"
-       x="38.676121"
-       y="196.70938"
+       x="42.24979"
+       y="190.27678"
        rx="4.5084172e-07"
        ry="38.662777"
        inkscape:label="IDLE_GATE" />
     <rect
        style="fill:#ff00ff;fill-opacity:1;stroke:#000000;stroke-width:0.81900102;stroke-miterlimit:4;stroke-dasharray:0, 9.00901123;stroke-dashoffset:0;stroke-opacity:0.00485439"
-       id="rect1279"
-       width="8.8249521"
-       height="10.101076"
-       x="88.557747"
-       y="52.254562"
-       rx="2.4943165e-07"
-       ry="10.101076"
-       inkscape:label="INPUT_SOURCE" />
-    <rect
-       inkscape:label="HEARTBEAT"
-       ry="10.101076"
-       rx="2.4943165e-07"
-       y="107.15687"
-       x="88.204727"
-       height="10.101076"
-       width="8.8249521"
-       id="rect14571"
-       style="fill:#ff00ff;fill-opacity:1;stroke:#000000;stroke-width:0.81900102;stroke-miterlimit:4;stroke-dasharray:0, 9.00901123;stroke-dashoffset:0;stroke-opacity:0.00485439" />
-    <rect
-       style="fill:#ff00ff;fill-opacity:1;stroke:#000000;stroke-width:0.81900102;stroke-miterlimit:4;stroke-dasharray:0, 9.00901123;stroke-dashoffset:0;stroke-opacity:0.00485439"
        id="rect15150"
        width="8.8249521"
        height="10.101076"
-       x="88.204727"
-       y="211.25737"
+       x="46.035446"
+       y="242.70564"
        rx="2.4943165e-07"
        ry="10.101076"
        inkscape:label="IDLE_GATE" />

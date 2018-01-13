@@ -95,7 +95,6 @@ void IdleSwitch::step() {
     // frameCount++;
 }
 
-
 IdleSwitchWidget::IdleSwitchWidget() {
 	IdleSwitch *module = new IdleSwitch();
 	setModule(module);
@@ -106,18 +105,15 @@ IdleSwitchWidget::IdleSwitchWidget() {
 	addChild(createScrew<ScrewSilver>(Vec(15, 365)));
 	addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 365)));
 
-    // addParam(createParam<RoundSmallBlackKnob>(Vec(x_pos, y_pos), module, IdleSwitch::TIME_PARAM, 0.0, 8.0, 1.0));
-	addParam(createParam<Davies1900hBlackKnob>(Vec(38.145, 147.2), module, IdleSwitch::TIME_PARAM, 0.0, 8.0, 1.0));
+	addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 141.482), module, IdleSwitch::TIME_PARAM, 0.0, 4.0, 0.25));
 
-	addInput(createInput<PJ301MPort>(Vec(38.804, 37.242), module, IdleSwitch::INPUT_SOURCE_INPUT));
-	addInput(createInput<PJ301MPort>(Vec(39.016, 91.441), module, IdleSwitch::HEARTBEAT_INPUT));
+	addInput(createInput<PJ301MPort>(Vec(42.378, 37.242), module, IdleSwitch::INPUT_SOURCE_INPUT));
+	addInput(createInput<PJ301MPort>(Vec(43.304, 91.441), module, IdleSwitch::HEARTBEAT_INPUT));
 
-	addOutput(createOutput<PJ301MPort>(Vec(38.676, 196.709), module, IdleSwitch::IDLE_GATE_OUTPUT));
+	addOutput(createOutput<PJ301MPort>(Vec(42.25, 190.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
 
-    // addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + light_radius, y_pos + light_radius), module, IdleSwitch::IDLE_GATE_LIGHT));
-	addChild(createLight<LargeLight<RedLight>>(Vec(88.205, 211.257), module, IdleSwitch::IDLE_GATE_LIGHT));
+	addChild(createLight<LargeLight<RedLight>>(Vec(48, 220.0), module, IdleSwitch::IDLE_GATE_LIGHT));
 }
-
 
 
 /*

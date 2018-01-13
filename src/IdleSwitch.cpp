@@ -19,9 +19,7 @@ struct IdleSwitch : Module {
         NUM_OUTPUTS
     };
     enum LightIds {
-        INPUT_SOURCE_LIGHT,
         IDLE_GATE_LIGHT,
-        HEARTBEAT_LIGHT,
         NUM_LIGHTS
     };
 
@@ -43,9 +41,7 @@ struct IdleSwitch : Module {
 
 void IdleSwitch::step() {
     outputs[IDLE_GATE_OUTPUT].value = 10.0;
-    lights[INPUT_SOURCE_LIGHT].setBrightness(0.0);
     lights[IDLE_GATE_LIGHT].setBrightness(0.0);
-    lights[HEARTBEAT_LIGHT].setBrightness(0.0);
 
     // TIME_PARAM is time between idle loop checks (the timeout) in seconds
     // theTime = params[TIME_PARAM].value;
@@ -58,7 +54,6 @@ void IdleSwitch::step() {
         if (heartbeatTrigger.process(inputs[HEARTBEAT_INPUT].value)) {
             // reset the timeout on heartbeat
             maxFrameCount = 0;
-            lights[HEARTBEAT_LIGHT].setBrightness(1.0);
         }
         else {
             maxFrameCount++;
@@ -82,7 +77,6 @@ void IdleSwitch::step() {
             // outputs[IDLE_GATE_OUTPUT].value = 10;
             // lights[IDLE_GATE_LIGHT].setBrightness(1.0);
             frameCount = 0;
-            lights[INPUT_SOURCE_LIGHT].setBrightness(1.0);
 
             // info("maxFrameCount: %d frameCount: %d", maxFrameCount, frameCount);
             // info("theTime: %f maxFrameCount: %d frameCount: %d", theTime, maxFrameCount, frameCount);
@@ -112,16 +106,16 @@ IdleSwitchWidget::IdleSwitchWidget() {
 	addChild(createScrew<ScrewSilver>(Vec(15, 365)));
 	addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 365)));
 
-	addParam(createParam<Davies1900hBlackKnob>(Vec(38.145, 147.2), module, IdleSwitch::TIME_PARAM, 0.0, 1.0, 0.0));
+    // addParam(createParam<RoundSmallBlackKnob>(Vec(x_pos, y_pos), module, IdleSwitch::TIME_PARAM, 0.0, 8.0, 1.0));
+	addParam(createParam<Davies1900hBlackKnob>(Vec(38.145, 147.2), module, IdleSwitch::TIME_PARAM, 0.0, 8.0, 1.0));
 
 	addInput(createInput<PJ301MPort>(Vec(38.804, 37.242), module, IdleSwitch::INPUT_SOURCE_INPUT));
 	addInput(createInput<PJ301MPort>(Vec(39.016, 91.441), module, IdleSwitch::HEARTBEAT_INPUT));
 
 	addOutput(createOutput<PJ301MPort>(Vec(38.676, 196.709), module, IdleSwitch::IDLE_GATE_OUTPUT));
 
-	addChild(createLight<RedLight>(Vec(88.558, 52.255), module, IdleSwitch::INPUT_SOURCE_LIGHT));
-	addChild(createLight<RedLight>(Vec(88.205, 107.157), module, IdleSwitch::HEARTBEAT_LIGHT));
-	addChild(createLight<RedLight>(Vec(88.205, 211.257), module, IdleSwitch::IDLE_GATE_LIGHT));
+    // addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + light_radius, y_pos + light_radius), module, IdleSwitch::IDLE_GATE_LIGHT));
+	addChild(createLight<LargeLight<RedLight>>(Vec(88.205, 211.257), module, IdleSwitch::IDLE_GATE_LIGHT));
 }
 
 

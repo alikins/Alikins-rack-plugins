@@ -16,6 +16,7 @@ void init(rack::Plugin *p) {
 
     // For each module, specify the ModuleWidget subclass, manufacturer slug (for saving in patches), manufacturer human-readable name, module slug, and module name
     p->addModel(createModel<MomentaryOnButtonsWidget>("Alikins", "MomentaryOnButtons", "MomentaryOnButtons", OSCILLATOR_TAG));
+
     p->addModel(createModel<IdleSwitchWidget>("Alikins", "IdleSwitch", "IdleSwitch", OSCILLATOR_TAG));
 
     // Any other plugin initialization may go here.

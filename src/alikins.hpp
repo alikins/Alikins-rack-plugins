@@ -18,3 +18,4 @@ struct MomentaryOnButtonsWidget : ModuleWidget {
 struct IdleSwitchWidget : ModuleWidget {
     IdleSwitchWidget();
 };
+

@@ -1,6 +1,7 @@
 SLUG = Alikins
 VERSION = 0.5.0
 
+PLUGIN_SDK ?= ../..
 # FLAGS will be passed to both the C and C++ compiler
 FLAGS +=
 CFLAGS +=
@@ -15,7 +16,7 @@ SOURCES = $(wildcard src/*.cpp)
 
 
 # Must include the VCV plugin Makefile framework
-include ../../plugin.mk
+include $(PLUGIN_SDK)/plugin.mk
 
 
 # Convenience target for packaging files into a ZIP file

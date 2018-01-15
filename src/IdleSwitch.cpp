@@ -54,7 +54,13 @@
  * - Fine/Course params fors for timeout
  * - idle timeout countdown display for remaining time before timeout
  *   - gui 'progress' widget?
- */
+*/
+
+/* FIXME
+ * Heartbeat -> reset idle timeout? countdown?
+ * timeout -> time before idle?
+ * switch output -> idling? idle mode on ? sleeping? waiting?
+*/
 
 struct IdleSwitch : Module {
     enum ParamIds {
@@ -64,11 +70,15 @@ struct IdleSwitch : Module {
     enum InputIds {
         INPUT_SOURCE_INPUT,
         HEARTBEAT_INPUT,
+        TIME_INPUT,
         NUM_INPUTS
     };
     enum OutputIds {
         IDLE_GATE_OUTPUT,
-        // TIME_OUTPUT,
+        TIME_OUTPUT,
+        IDLE_START_OUTPUT,
+        IDLE_END_OUTPUT,
+        FRAME_COUNT_OUTPUT,
         NUM_OUTPUTS
     };
     enum LightIds {
@@ -82,6 +92,11 @@ struct IdleSwitch : Module {
     int frameCount = 0;
     int maxFrameCount = 0;
 
+    float idleGateOutput;
+    float idleGateLightBrightness;
+    float deltaTime;
+    float previousHeartbeatTime;;
+
     IdleSwitch() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
     void step() override;
 
@@ -93,31 +108,11 @@ struct IdleSwitch : Module {
 
 
 void IdleSwitch::step() {
-    outputs[IDLE_GATE_OUTPUT].value = 10.0;
-    lights[IDLE_GATE_LIGHT].setBrightness(0.0);
 
     // TIME_PARAM is time between idle loop checks (the timeout) in seconds
     // theTime = params[TIME_PARAM].value;
     // mostly for debugging atm
     // outputs[TIME_OUTPUT].value = params[TIME_PARAM].value;
-
-    float sampleRate = engineGetSampleRate();
-
-    if (inputs[HEARTBEAT_INPUT].active) {
-        if (heartbeatTrigger.process(inputs[HEARTBEAT_INPUT].value)) {
-            // reset the timeout on heartbeat
-            maxFrameCount = 0;
-        }
-        else {
-            maxFrameCount++;
-        }
-    }
-    else {
-        // Compute time
-        float deltaTime = params[TIME_PARAM].value;
-
-        maxFrameCount = (int)ceilf(deltaTime * sampleRate);
-    }
 
     // float delta = 1.0 / sampleRate;
     // float frameTime = frameCount * delta;
@@ -139,94 +134,66 @@ void IdleSwitch::step() {
         }
     }
 
-    if (frameCount <= maxFrameCount) {
-        outputs[IDLE_GATE_OUTPUT].value = 0.0;
-        lights[IDLE_GATE_LIGHT].setBrightness(1.0);
+    float sampleRate = engineGetSampleRate();
 
+    if (inputs[HEARTBEAT_INPUT].active) {
+        if (heartbeatTrigger.process(inputs[HEARTBEAT_INPUT].value)) {
+            // reset the timeout on heartbeat
+            maxFrameCount = 0;
+        }
+        else {
+            maxFrameCount++;
+        }
+    }
+    else {
+        // Compute time
+        if (inputs[TIME_INPUT].active) {
+            // deltaTime = inputs[TIME_INPUT].value;
+	        //deltaTime = 1e-3 * powf(10.0 / 1e-3, clampf(inputs[TIME_INPUT].value / 10.0, 0.0, 1.0));
+	        // deltaTime = 1e-3 * powf(1.0 / 1e-3, clampf(inputs[TIME_INPUT].value, 0.0, 10.0));
+            // Not sure what should happen in the min delay time > 0 but less than the
+	        deltaTime = clampf(inputs[TIME_INPUT].value, 0.001, 10.0);
+        }
+        else {
+            deltaTime = params[TIME_PARAM].value;
+        }
+        maxFrameCount = (int)ceilf(deltaTime * sampleRate);
     }
 
+    if (frameCount <= maxFrameCount) {
+        idleGateOutput  = 0.0;
+        idleGateLightBrightness = 0.0;
+    }
+    else {
+        idleGateOutput = 10.0;
+        idleGateLightBrightness = 1.0;
+    }
+
+    outputs[IDLE_GATE_OUTPUT].value = idleGateOutput;
+    lights[IDLE_GATE_LIGHT].setBrightness(idleGateLightBrightness);
+
+    outputs[TIME_OUTPUT].value = deltaTime;
     // frameCount++;
 }
 
 IdleSwitchWidget::IdleSwitchWidget() {
-	IdleSwitch *module = new IdleSwitch();
-	setModule(module);
-	setPanel(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
-
-	addChild(createScrew<ScrewSilver>(Vec(15, 0)));
-	addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 0)));
-	addChild(createScrew<ScrewSilver>(Vec(15, 365)));
-	addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 365)));
-
-	addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 141.482), module, IdleSwitch::TIME_PARAM, 0.0, 4.0, 0.25));
-
-	addInput(createInput<PJ301MPort>(Vec(42.378, 37.242), module, IdleSwitch::INPUT_SOURCE_INPUT));
-	addInput(createInput<PJ301MPort>(Vec(43.304, 91.441), module, IdleSwitch::HEARTBEAT_INPUT));
-
-	addOutput(createOutput<PJ301MPort>(Vec(42.25, 190.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
-
-	addChild(createLight<LargeLight<RedLight>>(Vec(48, 220.0), module, IdleSwitch::IDLE_GATE_LIGHT));
-}
-
-
-/*
-IdleSwitchWidget::IdleSwitchWidget() {
     IdleSwitch *module = new IdleSwitch();
     setModule(module);
-    box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+    setPanel(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
 
-    int x_offset = 5;
-    int y_offset = 25;
+    addChild(createScrew<ScrewSilver>(Vec(15, 0)));
+    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 0)));
+    addChild(createScrew<ScrewSilver>(Vec(15, 365)));
+    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 365)));
 
-    int x_start = 0 + x_offset;
-    int y_start = 40;
+    addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 141.482), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
+    addInput(createInput<PJ301MPort>(Vec(10, 141.482), module, IdleSwitch::TIME_INPUT));
+    addOutput(createOutput<PJ301MPort>(Vec(75, 141.482), module, IdleSwitch::TIME_OUTPUT));
 
-    int x_pos = 0;
-    int y_pos = 0;
+    addInput(createInput<PJ301MPort>(Vec(42.378, 37.242), module, IdleSwitch::INPUT_SOURCE_INPUT));
+    addInput(createInput<PJ301MPort>(Vec(43.304, 91.441), module, IdleSwitch::HEARTBEAT_INPUT));
 
-    int light_radius = 7;
+    addOutput(createOutput<PJ301MPort>(Vec(42.25, 190.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
 
-    {
-        SVGPanel *panel = new SVGPanel();
-        panel->box.size = box.size;
-        panel->setBackground(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
-        addChild(panel);
-    }
-
-
-    //   addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-    //   addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-    //   addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-    //   addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-
-
-    y_pos = y_start;
-    x_pos = x_start;
-
-    addInput(createInput<PJ301MPort>(Vec(x_pos, y_pos), module, IdleSwitch::INPUT_SOURCE_INPUT));
-
-    x_pos = x_pos + 25;
-    // y_pos = y_pos + y_offset + 5;
-
-    addParam(createParam<RoundSmallBlackKnob>(Vec(x_pos, y_pos), module, IdleSwitch::TIME_PARAM, 0.0, 8.0, 1.0));
-
-    // y_pos = y_pos + y_offset + 25;
-    // x_pos = x_pos + 30;
-
-    addOutput(createOutput<PJ301MPort>(Vec(x_pos + 30, y_pos), module, IdleSwitch::IDLE_GATE_OUTPUT));
-
-
-    y_pos = y_pos + y_offset + 5;
-    // x_pos = x_pos + 25;
-    x_pos = x_start;
-
-    // addParam(createParam<LEDButton>(Vec(x_pos, y_pos), module, IdleSwitch::BUTTON1_PARAM, 0.0, 1.0, 0.0));
-
-    addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + light_radius, y_pos + light_radius), module, IdleSwitch::IDLE_GATE_LIGHT));
-
-    addInput(createInput<PJ301MPort>(Vec(x_pos + 25, y_pos), module, IdleSwitch::HEARTBEAT_INPUT));
-
-
-    // addOutput(createOutput<PJ301MPort>(Vec(x_pos, y_pos), module, IdleSwitch::TIME_OUTPUT));
+    addChild(createLight<LargeLight<RedLight>>(Vec(48, 220.0), module, IdleSwitch::IDLE_GATE_LIGHT));
 }
-*/

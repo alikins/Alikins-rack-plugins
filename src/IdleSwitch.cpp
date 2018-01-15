@@ -44,8 +44,6 @@
 
 
 /* TODO
- * - ext time in
- * - ext time out
  *   - is there a 'standard' for communicating lengths of time (like delay time)?
  * - idle start trigger
  * - idle end trigger
@@ -186,14 +184,14 @@ IdleSwitchWidget::IdleSwitchWidget() {
     addChild(createScrew<ScrewSilver>(Vec(15, 365)));
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 365)));
 
-    addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 141.482), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
-    addInput(createInput<PJ301MPort>(Vec(10, 141.482), module, IdleSwitch::TIME_INPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(75, 141.482), module, IdleSwitch::TIME_OUTPUT));
+    addInput(createInput<PJ301MPort>(Vec(42.378, 32.0), module, IdleSwitch::INPUT_SOURCE_INPUT));
+    addInput(createInput<PJ301MPort>(Vec(43.304, 85.0), module, IdleSwitch::HEARTBEAT_INPUT));
 
-    addInput(createInput<PJ301MPort>(Vec(42.378, 37.242), module, IdleSwitch::INPUT_SOURCE_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(43.304, 91.441), module, IdleSwitch::HEARTBEAT_INPUT));
+    addInput(createInput<PJ301MPort>(Vec(10, 155.0), module, IdleSwitch::TIME_INPUT));
+    addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
+    addOutput(createOutput<PJ301MPort>(Vec(80, 155.0), module, IdleSwitch::TIME_OUTPUT));
 
-    addOutput(createOutput<PJ301MPort>(Vec(42.25, 190.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
+    addOutput(createOutput<PJ301MPort>(Vec(42.25, 210.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
 
-    addChild(createLight<LargeLight<RedLight>>(Vec(48, 220.0), module, IdleSwitch::IDLE_GATE_LIGHT));
+    addChild(createLight<LargeLight<RedLight>>(Vec(48, 240.0), module, IdleSwitch::IDLE_GATE_LIGHT));
 }

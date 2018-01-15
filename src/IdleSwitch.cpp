@@ -14,15 +14,16 @@
  * Sort of metaphoricaly like an idle handler or timeout in event based
  * programming like GUI main loops.
  *
- * If no Heartbeat source is active, the timeout period is set by the value
- * of the Timeout param.
+ * The timeout period is set by the value
+ * of the 'Time before idle' param.
  *
- * If there is a Heartbeat source, when it gets an event, the timeout period
- * is reset. After a heart beat event, the Idle Gate Output will remain on until
+ * If there is a 'Reset idle' source, when it gets an event, the timeout period
+ * is reset. After a reset event, the Idle Gate Output will remain on until
  * an input event is seen at Input Source. When there is an input event, the Idle
- * Gate Output is turned off until the next Heartbeat.
+ * Gate Output is turned off until the expiration of the 'Time before idle' or
+ * the next 'Reset idle'.
  *
- * To use the eventloop/gui main loop analogy, a Heartbeat event is equilivent to
+ * To use the eventloop/gui main loop analogy, a 'Reset idle' event is equilivent to
  * running an idle handler directly (or running a mainloop iteration with no non-idle
  * events pending).
  *
@@ -35,8 +36,8 @@
  * and then turn it back on when it stopped. Or maybe it could be used to start an
  * drum fill...
  *
- * The Heartbeat input allows this be synced to clock, beat, or sequence. In the drone
- * example above, the drone would then only come back in on a beat.
+ * The 'Reset idle' input allows this be kind of synced to a clock, beat, or sequence.
+ * In the dronevexample above, the drone would then only come back in on a beat.
  *
  * And perhaps most importantly, it can be used to do almost random output and
  * make weird noises.

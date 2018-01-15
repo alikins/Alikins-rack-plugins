@@ -54,12 +54,6 @@
  *   - gui 'progress' widget?
 */
 
-/* FIXME
- * Heartbeat -> reset idle timeout? countdown?
- * timeout -> time before idle?
- * switch output -> idling? idle mode on ? sleeping? waiting?
-*/
-
 struct IdleSwitch : Module {
     enum ParamIds {
         TIME_PARAM,
@@ -98,34 +92,15 @@ struct IdleSwitch : Module {
     IdleSwitch() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
     void step() override;
 
-    // For more advanced Module features, read Rack's engine.hpp header file
-    // - toJson, fromJson: serialization of internal data
-    // - onSampleRateChange: event triggered by a change of sample rate
-    // - reset, randomize: implements special behavior when user clicks these from the context menu
 };
 
 
 void IdleSwitch::step() {
 
-    // TIME_PARAM is time between idle loop checks (the timeout) in seconds
-    // theTime = params[TIME_PARAM].value;
-    // mostly for debugging atm
-    // outputs[TIME_OUTPUT].value = params[TIME_PARAM].value;
-
-    // float delta = 1.0 / sampleRate;
-    // float frameTime = frameCount * delta;
-    // float maxFrameTime = maxFrameCount * delta;
-
-    // info("theTime: %f maxFrameCount: %d frameCounttime: %f delta: %f", theTime, maxFrameTime, frameTime, delta);
-    // info("maxFrameCount: %d frameCount: %d delta: %f", maxFrameCount, frameCount, delta);
     if (inputs[INPUT_SOURCE_INPUT].active) {
         if (inputTrigger.process(inputs[INPUT_SOURCE_INPUT].value)) {
-            // outputs[IDLE_GATE_OUTPUT].value = 10;
-            // lights[IDLE_GATE_LIGHT].setBrightness(1.0);
             frameCount = 0;
 
-            // info("maxFrameCount: %d frameCount: %d", maxFrameCount, frameCount);
-            // info("theTime: %f maxFrameCount: %d frameCount: %d", theTime, maxFrameCount, frameCount);
         }
         else {
             frameCount++;
@@ -146,10 +121,6 @@ void IdleSwitch::step() {
     else {
         // Compute time
         if (inputs[TIME_INPUT].active) {
-            // deltaTime = inputs[TIME_INPUT].value;
-	        //deltaTime = 1e-3 * powf(10.0 / 1e-3, clampf(inputs[TIME_INPUT].value / 10.0, 0.0, 1.0));
-	        // deltaTime = 1e-3 * powf(1.0 / 1e-3, clampf(inputs[TIME_INPUT].value, 0.0, 10.0));
-            // Not sure what should happen in the min delay time > 0 but less than the
 	        deltaTime = clampf(inputs[TIME_INPUT].value, 0.001, 10.0);
         }
         else {
@@ -171,7 +142,6 @@ void IdleSwitch::step() {
     lights[IDLE_GATE_LIGHT].setBrightness(idleGateLightBrightness);
 
     outputs[TIME_OUTPUT].value = deltaTime;
-    // frameCount++;
 }
 
 IdleSwitchWidget::IdleSwitchWidget() {

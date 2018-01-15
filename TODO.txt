@@ -1,0 +1,22 @@
+plugin ideas:
+- Mult with labels
+  - so I can route a distance output to mult and label
+    it as 'main seq gate output' to avoid tracing cables
+- seq with start/stop/reset triggers (ie, one shot sequencer)
+  (or 'play', 'pause', 'go to begin')
+  - solve 'how do I run a sequence once?' FAQ
+- event log
+  - visualization of past triggers/gates
+  - time series or sparkline-ish
+  - more or less a scope but without y values and
+    a very long time
+  - could do diff colors for gates/triggers
+    - or gates up and triggers down
+  - wide module
+  - multiple time view zooms
+    - 1x, 2x, 5x, 10, 20x, 50x, etc
+  - mostly for appearance or troubleshooting/debugging event stuff
+  - could evolve to supporting playing the the history back
+    - 1x speed or faster/slower
+    - scrubbing?
+  - multiple channels of events

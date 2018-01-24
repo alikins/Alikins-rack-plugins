@@ -152,10 +152,6 @@ void IdleSwitch::step() {
         idleGateLightBrightness = 1.0;
     }
 
-    // float frames_left = fmax(maxFrameCount - frameCount, 0);
-    // float time_left_s = frames_left / sampleRate;
-
-    //idleTimeLeftMS = std::round(time_left_s*1000);
     outputs[IDLE_GATE_OUTPUT].value = idleGateOutput;
     lights[IDLE_GATE_LIGHT].setBrightness(idleGateLightBrightness);
 
@@ -167,12 +163,16 @@ void IdleSwitch::step() {
 struct MsDisplayWidget : TransparentWidget {
 
   int *value;
+  int last_value;
   std::shared_ptr<Font> font;
 
   MsDisplayWidget() {
     font = Font::load(assetPlugin(plugin, "res/Segment7Standard.ttf"));
   };
 
+  // this seems like a lot to do every ms or more, but presumably
+  // draw is only called at framerate or lower. Not sure where/how
+  // this gets buffered (FrameBufferWidget.step()?)
   void draw(NVGcontext *vg) override
   {
     // Background
@@ -208,7 +208,6 @@ struct MsDisplayWidget : TransparentWidget {
     nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
   }
 };
-////////////////////////////////////
 
 
 IdleSwitchWidget::IdleSwitchWidget() {
@@ -216,35 +215,32 @@ IdleSwitchWidget::IdleSwitchWidget() {
     setModule(module);
     setPanel(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
 
-
     addChild(createScrew<ScrewSilver>(Vec(15, 0)));
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 0)));
     addChild(createScrew<ScrewSilver>(Vec(15, 365)));
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 365)));
 
-    addInput(createInput<PJ301MPort>(Vec(42.378, 32.0), module, IdleSwitch::INPUT_SOURCE_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(43.304, 85.0), module, IdleSwitch::HEARTBEAT_INPUT));
+    addInput(createInput<PJ301MPort>(Vec(43, 32.0), module, IdleSwitch::INPUT_SOURCE_INPUT));
+    addInput(createInput<PJ301MPort>(Vec(43, 75.0), module, IdleSwitch::HEARTBEAT_INPUT));
 
-    addInput(createInput<PJ301MPort>(Vec(10, 155.0), module, IdleSwitch::TIME_INPUT));
-    addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
-    addOutput(createOutput<PJ301MPort>(Vec(80, 155.0), module, IdleSwitch::TIME_OUTPUT));
+    //  DISPLAY
+    MsDisplayWidget *idle_time_display = new MsDisplayWidget();
+    idle_time_display->box.pos = Vec(20,135);
+    idle_time_display->box.size = Vec(70, 20);
+    idle_time_display->value = &module->idleTimeoutMS;
+	addChild(idle_time_display);
 
-    // MS DISPLAY
-    MsDisplayWidget *display = new MsDisplayWidget();
-    display->box.pos = Vec(14,190);
-    display->box.size = Vec(70, 20);
-    display->value = &module->idleTimeoutMS;
-	addChild(display);
+    addInput(createInput<PJ301MPort>(Vec(10, 165.0), module, IdleSwitch::TIME_INPUT));
+    addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 160.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
+    addOutput(createOutput<PJ301MPort>(Vec(80, 165.0), module, IdleSwitch::TIME_OUTPUT));
 
     MsDisplayWidget *time_left_display = new MsDisplayWidget();
-    time_left_display->box.pos = Vec(14,290);
+    time_left_display->box.pos = Vec(20,220);
     time_left_display->box.size = Vec(70, 20);
     time_left_display->value = &module->idleTimeLeftMS;
-
 	addChild(time_left_display);
 
+    addOutput(createOutput<PJ301MPort>(Vec(42.25, 250.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
 
-    addOutput(createOutput<PJ301MPort>(Vec(42.25, 240.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
-
-    addChild(createLight<LargeLight<RedLight>>(Vec(48, 270.0), module, IdleSwitch::IDLE_GATE_LIGHT));
+    addChild(createLight<LargeLight<RedLight>>(Vec(48, 280.0), module, IdleSwitch::IDLE_GATE_LIGHT));
 }

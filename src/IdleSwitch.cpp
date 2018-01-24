@@ -123,6 +123,7 @@ void IdleSwitch::step() {
         else {
             maxFrameCount++;
         }
+        idleTimeLeftMS = 0;;
     }
     else {
         // Compute time
@@ -136,6 +137,10 @@ void IdleSwitch::step() {
         // float delay = 1.0 * powf(10.0 / 1e-3, deltaTime);
 	    float delay = deltaTime;
         idleTimeoutMS = std::round(delay*1000);
+
+        float frames_left = fmax(maxFrameCount - frameCount, 0);
+        float time_left_s = frames_left / sampleRate;
+        idleTimeLeftMS = time_left_s*1000;
     }
 
     if (frameCount <= maxFrameCount) {
@@ -147,14 +152,10 @@ void IdleSwitch::step() {
         idleGateLightBrightness = 1.0;
     }
 
-    float frames_left = fmax(maxFrameCount - frameCount, 0);
-    // if (frames_left < 0) {
-    //    frames_left = 0;
-    // }
-    float time_left_s = frames_left / sampleRate;
+    // float frames_left = fmax(maxFrameCount - frameCount, 0);
+    // float time_left_s = frames_left / sampleRate;
 
     //idleTimeLeftMS = std::round(time_left_s*1000);
-    idleTimeLeftMS = time_left_s*1000;
     outputs[IDLE_GATE_OUTPUT].value = idleGateOutput;
     lights[IDLE_GATE_LIGHT].setBrightness(idleGateLightBrightness);
 

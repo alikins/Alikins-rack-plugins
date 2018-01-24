@@ -221,7 +221,7 @@ IdleSwitchWidget::IdleSwitchWidget() {
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 20, 365)));
 
     addInput(createInput<PJ301MPort>(Vec(43, 32.0), module, IdleSwitch::INPUT_SOURCE_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(43, 75.0), module, IdleSwitch::HEARTBEAT_INPUT));
+    addInput(createInput<PJ301MPort>(Vec(43, 70.0), module, IdleSwitch::HEARTBEAT_INPUT));
 
     //  DISPLAY
     MsDisplayWidget *idle_time_display = new MsDisplayWidget();
@@ -235,12 +235,12 @@ IdleSwitchWidget::IdleSwitchWidget() {
     addOutput(createOutput<PJ301MPort>(Vec(80, 165.0), module, IdleSwitch::TIME_OUTPUT));
 
     MsDisplayWidget *time_left_display = new MsDisplayWidget();
-    time_left_display->box.pos = Vec(20,220);
+    time_left_display->box.pos = Vec(20,240);
     time_left_display->box.size = Vec(70, 20);
     time_left_display->value = &module->idleTimeLeftMS;
 	addChild(time_left_display);
 
-    addOutput(createOutput<PJ301MPort>(Vec(42.25, 250.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
+    addOutput(createOutput<PJ301MPort>(Vec(42.25, 280.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
 
-    addChild(createLight<LargeLight<RedLight>>(Vec(48, 280.0), module, IdleSwitch::IDLE_GATE_LIGHT));
+    addChild(createLight<LargeLight<RedLight>>(Vec(48, 310.0), module, IdleSwitch::IDLE_GATE_LIGHT));
 }

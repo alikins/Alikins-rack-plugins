@@ -1,7 +1,10 @@
 #include "alikins.hpp"
-#include <stdio.h>
 #include "dsp/digital.hpp"
 #include "util.hpp"
+
+#include <stdio.h>
+#include <sstream>
+#include <iomanip>
 
 /* IdleSwitch
  *
@@ -79,6 +82,8 @@ struct IdleSwitch : Module {
         NUM_LIGHTS
     };
 
+    int idleTimeoutMS = 140;
+    int idleTimeLeftMS = 0;
     SchmittTrigger inputTrigger;
     SchmittTrigger heartbeatTrigger;
 
@@ -128,6 +133,9 @@ void IdleSwitch::step() {
             deltaTime = params[TIME_PARAM].value;
         }
         maxFrameCount = (int)ceilf(deltaTime * sampleRate);
+        // float delay = 1.0 * powf(10.0 / 1e-3, deltaTime);
+	    float delay = deltaTime;
+        idleTimeoutMS = std::round(delay*1000);
     }
 
     if (frameCount <= maxFrameCount) {
@@ -139,16 +147,74 @@ void IdleSwitch::step() {
         idleGateLightBrightness = 1.0;
     }
 
+    float frames_left = fmax(maxFrameCount - frameCount, 0);
+    // if (frames_left < 0) {
+    //    frames_left = 0;
+    // }
+    float time_left_s = frames_left / sampleRate;
+
+    //idleTimeLeftMS = std::round(time_left_s*1000);
+    idleTimeLeftMS = time_left_s*1000;
     outputs[IDLE_GATE_OUTPUT].value = idleGateOutput;
     lights[IDLE_GATE_LIGHT].setBrightness(idleGateLightBrightness);
 
     outputs[TIME_OUTPUT].value = deltaTime;
 }
 
+
+//  From AS DelayPlus.cpp https://github.com/AScustomWorks/AS
+struct MsDisplayWidget : TransparentWidget {
+
+  int *value;
+  std::shared_ptr<Font> font;
+
+  MsDisplayWidget() {
+    font = Font::load(assetPlugin(plugin, "res/Segment7Standard.ttf"));
+  };
+
+  void draw(NVGcontext *vg) override
+  {
+    // Background
+    NVGcolor backgroundColor = nvgRGB(0x20, 0x20, 0x20);
+    NVGcolor borderColor = nvgRGB(0x10, 0x10, 0x10);
+    nvgBeginPath(vg);
+    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
+    nvgFillColor(vg, backgroundColor);
+    nvgFill(vg);
+    nvgStrokeWidth(vg, 1.0);
+    nvgStrokeColor(vg, borderColor);
+    nvgStroke(vg);
+    // text
+    nvgFontSize(vg, 18);
+    nvgFontFaceId(vg, font->handle);
+    nvgTextLetterSpacing(vg, 2.5);
+
+    std::stringstream to_display;
+    to_display << std::right  << std::setw(5) << *value;
+
+    Vec textPos = Vec(4.0f, 17.0f);
+
+    NVGcolor textColor = nvgRGB(0xdf, 0xd2, 0x2c);
+    nvgFillColor(vg, nvgTransRGBA(textColor, 16));
+    nvgText(vg, textPos.x, textPos.y, "~~~~~", NULL);
+
+    textColor = nvgRGB(0xda, 0xe9, 0x29);
+    nvgFillColor(vg, nvgTransRGBA(textColor, 16));
+    nvgText(vg, textPos.x, textPos.y, "\\\\\\\\\\", NULL);
+
+    textColor = nvgRGB(0xf0, 0x00, 0x00);
+    nvgFillColor(vg, textColor);
+    nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
+  }
+};
+////////////////////////////////////
+
+
 IdleSwitchWidget::IdleSwitchWidget() {
     IdleSwitch *module = new IdleSwitch();
     setModule(module);
     setPanel(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
+
 
     addChild(createScrew<ScrewSilver>(Vec(15, 0)));
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 0)));
@@ -162,7 +228,22 @@ IdleSwitchWidget::IdleSwitchWidget() {
     addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
     addOutput(createOutput<PJ301MPort>(Vec(80, 155.0), module, IdleSwitch::TIME_OUTPUT));
 
-    addOutput(createOutput<PJ301MPort>(Vec(42.25, 210.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
+    // MS DISPLAY
+    MsDisplayWidget *display = new MsDisplayWidget();
+    display->box.pos = Vec(14,190);
+    display->box.size = Vec(70, 20);
+    display->value = &module->idleTimeoutMS;
+	addChild(display);
 
-    addChild(createLight<LargeLight<RedLight>>(Vec(48, 240.0), module, IdleSwitch::IDLE_GATE_LIGHT));
+    MsDisplayWidget *time_left_display = new MsDisplayWidget();
+    time_left_display->box.pos = Vec(14,290);
+    time_left_display->box.size = Vec(70, 20);
+    time_left_display->value = &module->idleTimeLeftMS;
+
+	addChild(time_left_display);
+
+
+    addOutput(createOutput<PJ301MPort>(Vec(42.25, 240.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
+
+    addChild(createLight<LargeLight<RedLight>>(Vec(48, 270.0), module, IdleSwitch::IDLE_GATE_LIGHT));
 }

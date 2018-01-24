@@ -215,10 +215,10 @@ IdleSwitchWidget::IdleSwitchWidget() {
     setModule(module);
     setPanel(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
 
-    addChild(createScrew<ScrewSilver>(Vec(15, 0)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 0)));
-    addChild(createScrew<ScrewSilver>(Vec(15, 365)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 365)));
+    addChild(createScrew<ScrewSilver>(Vec(5, 0)));
+    // addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 0)));
+    // addChild(createScrew<ScrewSilver>(Vec(15, 365)));
+    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 20, 365)));
 
     addInput(createInput<PJ301MPort>(Vec(43, 32.0), module, IdleSwitch::INPUT_SOURCE_INPUT));
     addInput(createInput<PJ301MPort>(Vec(43, 75.0), module, IdleSwitch::HEARTBEAT_INPUT));

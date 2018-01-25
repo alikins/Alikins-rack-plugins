@@ -383,13 +383,7 @@
     <filter
        inkscape:collect="always"
        style="color-interpolation-filters:sRGB"
-       id="filter1256">
-      <feBlend
-         inkscape:collect="always"
-         mode="luminosity"
-         in2="BackgroundImage"
-         id="feBlend1258" />
-    </filter>
+       id="filter1256" />
     <clipPath
        id="clip89-7">
       <rect
@@ -1888,7 +1882,7 @@
      inkscape:cx="-52.479512"
      inkscape:cy="168.49214"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer1"
      showgrid="false"
      units="px"
      inkscape:snap-bbox="false"
@@ -1897,7 +1891,7 @@
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:window-width="1440"
      inkscape:window-height="851"
-     inkscape:window-x="4"
+     inkscape:window-x="-24"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:measure-start="0,0"
@@ -1988,9 +1982,9 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-196.45832)"
-     style="display:inline;opacity:0.81999966;filter:url(#filter1256)">
+     style="display:inline;opacity:1">
     <path
-       style="opacity:1;vector-effect:none;fill:#f0f0f0;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.12132049;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       style="opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.12132049;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
        d="M -0.71473359,197.88778 H 119.28526 v 380 H -0.71473359 Z"
        id="rect817"
        inkscape:connector-curvature="0" />
@@ -2057,7 +2051,7 @@
     <g
        aria-label="IdleSwitch"
        transform="matrix(3.7632132,0,0,6.1282854,2.0841126,-598.37159)"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.66420269px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;opacity:0.72222224;fill:#e08934;fill-opacity:0.97536944;stroke:none;stroke-width:0.11660507;filter:url(#filter1256);enable-background:new"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.66420269px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;display:inline;opacity:0.722;fill:#e08934;fill-opacity:0.97536944;stroke:none;stroke-width:0.11660507;filter:url(#filter1256);enable-background:new"
        id="text2060"
        inkscape:label="IdleSwitch">
       <path

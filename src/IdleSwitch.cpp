@@ -95,6 +95,8 @@ struct IdleSwitch : Module {
     float deltaTime;
     float previousHeartbeatTime;;
 
+    bool is_idle = false;
+
     IdleSwitch() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
     void step() override;
 
@@ -103,59 +105,54 @@ struct IdleSwitch : Module {
 
 void IdleSwitch::step() {
 
-    if (inputs[INPUT_SOURCE_INPUT].active) {
-        if (inputTrigger.process(inputs[INPUT_SOURCE_INPUT].value)) {
-            frameCount = 0;
-
-        }
-        else {
-            frameCount++;
-        }
+    // Compute the length of our idle time based on the knob + time cv
+    deltaTime = params[TIME_PARAM].value;
+    if (inputs[TIME_INPUT].active) {
+        deltaTime += clampf(inputs[TIME_INPUT].value, 0.0, 10.0);
     }
 
+    // the idle time depends on time cv and knob, so always needs to be updated
+    // event without an active
     float sampleRate = engineGetSampleRate();
+    maxFrameCount = (int)ceilf(deltaTime * sampleRate);
+    //info("is_idle: %d frameCount: %d maxFrameCount: %d ",is_idle, frameCount, maxFrameCount);
+    float delay = deltaTime;
+    idleTimeoutMS = std::round(delay*1000);
 
-    if (inputs[HEARTBEAT_INPUT].active) {
-        if (heartbeatTrigger.process(inputs[HEARTBEAT_INPUT].value)) {
-            // reset the timeout on heartbeat
-            maxFrameCount = 0;
-        }
-        else {
-            maxFrameCount++;
-        }
-        idleTimeLeftMS = 0;;
-    }
-    else {
-        // Compute time
-        if (inputs[TIME_INPUT].active) {
-	        deltaTime = clampf(inputs[TIME_INPUT].value, 0.001, 10.0);
-        }
-        else {
-            deltaTime = params[TIME_PARAM].value;
-        }
-        maxFrameCount = (int)ceilf(deltaTime * sampleRate);
-        // float delay = 1.0 * powf(10.0 / 1e-3, deltaTime);
-	    float delay = deltaTime;
-        idleTimeoutMS = std::round(delay*1000);
-
-        float frames_left = fmax(maxFrameCount - frameCount, 0);
-        float time_left_s = frames_left / sampleRate;
-        idleTimeLeftMS = time_left_s*1000;
+    if (inputs[HEARTBEAT_INPUT].active &&
+          heartbeatTrigger.process(inputs[HEARTBEAT_INPUT].value)) {
+            frameCount = 0;
     }
 
-    if (frameCount <= maxFrameCount) {
-        idleGateOutput  = 0.0;
-        idleGateLightBrightness = 0.0;
-    }
-    else {
+    float frames_left = fmax(maxFrameCount - frameCount, 0);
+    float time_left_s = frames_left / sampleRate;
+
+    if (frameCount > maxFrameCount || is_idle) {
         idleGateOutput = 10.0;
         idleGateLightBrightness = 1.0;
+        is_idle = true;
+    } else {
+        idleGateOutput = 0.0;
+        idleGateLightBrightness = 0.0;
+
+        is_idle = false;
+        // if we arent idle yet, the idleTimeLeft is changing and we need to update time remaining display
+        // update idletimeLeftMS which drives the digit display widget
+        idleTimeLeftMS = time_left_s*1000;
+
     }
 
-    outputs[IDLE_GATE_OUTPUT].value = idleGateOutput;
-    lights[IDLE_GATE_LIGHT].setBrightness(idleGateLightBrightness);
+    frameCount++;
+
+    if (inputs[INPUT_SOURCE_INPUT].active &&
+         inputTrigger.process(inputs[INPUT_SOURCE_INPUT].value)) {
+            is_idle = false;
+            frameCount = 0;
+    }
 
     outputs[TIME_OUTPUT].value = deltaTime;
+    outputs[IDLE_GATE_OUTPUT].value = idleGateOutput;
+    lights[IDLE_GATE_LIGHT].setBrightness(idleGateLightBrightness);
 }
 
 

@@ -176,15 +176,15 @@ struct MsDisplayWidget : TransparentWidget {
     // these go to...
     NVGcolor backgroundColor = nvgRGB(0x11, 0x11, 0x11);
 
-    //NVGcolor borderColor = nvgRGB(0x10, 0x10, 0x10);
     NVGcolor borderColor = nvgRGB(0xff, 0xff, 0xff);
 
     nvgBeginPath(vg);
-    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 7.0);
+
+    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 5.0);
     nvgFillColor(vg, backgroundColor);
     nvgFill(vg);
 
-    nvgStrokeWidth(vg, 2.0);
+    nvgStrokeWidth(vg, 3.0);
     nvgStrokeColor(vg, borderColor);
 
     nvgStroke(vg);
@@ -197,17 +197,8 @@ struct MsDisplayWidget : TransparentWidget {
     std::stringstream to_display;
     to_display << std::right  << std::setw(5) << *value;
 
-    Vec textPos = Vec(0.0f, 17.0f);
+    Vec textPos = Vec(0.5f, 19.0f);
 
-    //NVGcolor textColor = nvgRGB(0xdf, 0xd2, 0x2c);
-    //nvgFillColor(vg, nvgTransRGBA(textColor, 16));
-    //nvgText(vg, textPos.x, textPos.y, "~~~~~", NULL);
-
-    //NVGcolor textColor = nvgRGB(0xda, 0xe9, 0x29);
-    //nvgFillColor(vg, nvgTransRGBA(textColor, 16));
-    //nvgText(vg, textPos.x, textPos.y, "\\\\\\\\\\", NULL);
-
-    // NVGcolor textColor = nvgRGB(0x66, 0xff, 0xff);
     NVGcolor textColor = nvgRGB(0x65, 0xf6, 0x78);
     nvgFillColor(vg, textColor);
     nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
@@ -231,7 +222,7 @@ IdleSwitchWidget::IdleSwitchWidget() {
     //  DISPLAY
     MsDisplayWidget *idle_time_display = new MsDisplayWidget();
     idle_time_display->box.pos = Vec(20,135);
-    idle_time_display->box.size = Vec(70, 20);
+    idle_time_display->box.size = Vec(70, 24);
     idle_time_display->value = &module->idleTimeoutMS;
 	addChild(idle_time_display);
 
@@ -241,7 +232,7 @@ IdleSwitchWidget::IdleSwitchWidget() {
 
     MsDisplayWidget *time_left_display = new MsDisplayWidget();
     time_left_display->box.pos = Vec(20,240);
-    time_left_display->box.size = Vec(70, 20);
+    time_left_display->box.size = Vec(70, 24);
     time_left_display->value = &module->idleTimeLeftMS;
 	addChild(time_left_display);
 

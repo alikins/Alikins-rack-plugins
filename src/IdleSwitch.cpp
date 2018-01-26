@@ -173,15 +173,22 @@ struct MsDisplayWidget : TransparentWidget {
   void draw(NVGcontext *vg) override
   {
     // Background
-    NVGcolor backgroundColor = nvgRGB(0x20, 0x20, 0x20);
-    NVGcolor borderColor = nvgRGB(0x10, 0x10, 0x10);
+    // these go to...
+    NVGcolor backgroundColor = nvgRGB(0x11, 0x11, 0x11);
+
+    //NVGcolor borderColor = nvgRGB(0x10, 0x10, 0x10);
+    NVGcolor borderColor = nvgRGB(0xff, 0xff, 0xff);
+
     nvgBeginPath(vg);
-    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
+    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 7.0);
     nvgFillColor(vg, backgroundColor);
     nvgFill(vg);
-    nvgStrokeWidth(vg, 1.0);
+
+    nvgStrokeWidth(vg, 2.0);
     nvgStrokeColor(vg, borderColor);
+
     nvgStroke(vg);
+
     // text
     nvgFontSize(vg, 18);
     nvgFontFaceId(vg, font->handle);
@@ -190,17 +197,18 @@ struct MsDisplayWidget : TransparentWidget {
     std::stringstream to_display;
     to_display << std::right  << std::setw(5) << *value;
 
-    Vec textPos = Vec(4.0f, 17.0f);
+    Vec textPos = Vec(0.0f, 17.0f);
 
-    NVGcolor textColor = nvgRGB(0xdf, 0xd2, 0x2c);
-    nvgFillColor(vg, nvgTransRGBA(textColor, 16));
-    nvgText(vg, textPos.x, textPos.y, "~~~~~", NULL);
+    //NVGcolor textColor = nvgRGB(0xdf, 0xd2, 0x2c);
+    //nvgFillColor(vg, nvgTransRGBA(textColor, 16));
+    //nvgText(vg, textPos.x, textPos.y, "~~~~~", NULL);
 
-    textColor = nvgRGB(0xda, 0xe9, 0x29);
-    nvgFillColor(vg, nvgTransRGBA(textColor, 16));
-    nvgText(vg, textPos.x, textPos.y, "\\\\\\\\\\", NULL);
+    //NVGcolor textColor = nvgRGB(0xda, 0xe9, 0x29);
+    //nvgFillColor(vg, nvgTransRGBA(textColor, 16));
+    //nvgText(vg, textPos.x, textPos.y, "\\\\\\\\\\", NULL);
 
-    textColor = nvgRGB(0xf0, 0x00, 0x00);
+    // NVGcolor textColor = nvgRGB(0x66, 0xff, 0xff);
+    NVGcolor textColor = nvgRGB(0x65, 0xf6, 0x78);
     nvgFillColor(vg, textColor);
     nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
   }

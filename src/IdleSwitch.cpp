@@ -68,6 +68,7 @@ struct IdleSwitch : Module {
         INPUT_SOURCE_INPUT,
         HEARTBEAT_INPUT,
         TIME_INPUT,
+        PULSE_INPUT,
         NUM_INPUTS
     };
     enum OutputIds {
@@ -87,8 +88,17 @@ struct IdleSwitch : Module {
     int idleTimeLeftMS = 0;
 
     SchmittTrigger inputTrigger;
+
+    // FIXME: these names are confusing
     SchmittTrigger heartbeatTrigger;
 
+    // clock mode stuff
+    SchmittTrigger pulseTrigger;
+    int pulseFrame = 0;
+    bool waiting_for_pulse = false;
+    bool pulse_mode = false;
+
+    // FIXME: not really counts
     int frameCount = 0;
     int maxFrameCount = 0;
 
@@ -105,39 +115,67 @@ struct IdleSwitch : Module {
 
 
 void IdleSwitch::step() {
+    bool pulse_seen = false;
+    pulse_mode = inputs[PULSE_INPUT].active;
+
+    float sampleRate = engineGetSampleRate();
 
     // Compute the length of our idle time based on the knob + time cv
-    deltaTime = params[TIME_PARAM].value;
-    if (inputs[TIME_INPUT].active) {
-        deltaTime += clampf(inputs[TIME_INPUT].value, 0.0, 10.0);
+    // -or-
+    // base it one the time since the last clock pulse
+    if (pulse_mode) {
+        if (inputTrigger.process(inputs[PULSE_INPUT].value)) {
+            // keep track of which frame we got a pulse
+            // FIXME: without a max time, frameCount can wrap?
+            // update pulseFrame to point to current frame count
+            pulseFrame = frameCount;
+
+            waiting_for_pulse = true;
+            pulse_seen = true;
+
+        }
+
+        deltaTime = fmax(frameCount - pulseFrame, 0) / sampleRate;
+       // if we are waiting, maxframeCount is the time since last pulse and increasing
+        maxFrameCount = frameCount;
+
+    } else {
+        deltaTime = params[TIME_PARAM].value;
+        if (inputs[TIME_INPUT].active) {
+            deltaTime += clampf(inputs[TIME_INPUT].value, 0.0, 10.0);
+        }
+
+        // TODO: refactor into submethods if not subclass
+        maxFrameCount = (int)ceilf(deltaTime * sampleRate);
     }
 
-    // the idle time depends on time cv and knob, so always needs to be updated
-    // event without an active
-    float sampleRate = engineGetSampleRate();
-    maxFrameCount = (int)ceilf(deltaTime * sampleRate);
+    idleTimeoutMS = std::round(deltaTime*1000);
 
-    // info("is_idle: %d frameCount: %d maxFrameCount: %d ",is_idle, frameCount, maxFrameCount);
-    float delay = deltaTime;
-    idleTimeoutMS = std::round(delay*1000);
+    // debug("is_idle: %d pulse_mode: %d pulse_frame: %d frameCount: %d maxFrameCount: %d ", is_idle, pulse_mode, pulseFrame, frameCount, maxFrameCount);
+    // debug("is_idle: %d pulse_mode: %d w_f_pulse: %d pulse_seen: %d pulseFrame: %d frameCount: %d deltaTime: %f",
+    //        is_idle, pulse_mode, waiting_for_pulse, pulse_seen, pulseFrame, frameCount, deltaTime);
 
     if (inputs[HEARTBEAT_INPUT].active &&
           heartbeatTrigger.process(inputs[HEARTBEAT_INPUT].value)) {
             frameCount = 0;
     }
 
+    // time_left_s is always 0 for pulse mode until we predict the future
     float frames_left = fmax(maxFrameCount - frameCount, 0);
     float time_left_s = frames_left / sampleRate;
 
-    if (frameCount > maxFrameCount || is_idle) {
+    is_idle = (is_idle || (frameCount > maxFrameCount) || (waiting_for_pulse && pulse_seen));
+
+    if (is_idle) {
         idleGateOutput = 10.0;
         idleGateLightBrightness = 1.0;
-        is_idle = true;
+
     } else {
         idleGateOutput = 0.0;
         idleGateLightBrightness = 0.0;
 
         is_idle = false;
+
         // if we arent idle yet, the idleTimeLeft is changing and we need to update time remaining display
         // update idletimeLeftMS which drives the digit display widget
         idleTimeLeftMS = time_left_s*1000;
@@ -146,11 +184,15 @@ void IdleSwitch::step() {
     frameCount++;
 
     if (inputs[INPUT_SOURCE_INPUT].active &&
-         inputTrigger.process(inputs[INPUT_SOURCE_INPUT].value)) {
-            is_idle = false;
-            frameCount = 0;
+            inputTrigger.process(inputs[INPUT_SOURCE_INPUT].value)) {
+        is_idle = false;
+
+        waiting_for_pulse = false;
+        frameCount = 0;
+        pulseFrame = 0;
     }
 
+    // once clock input works, could add an output to indicate how long between clock
     outputs[TIME_OUTPUT].value = deltaTime;
     outputs[IDLE_GATE_OUTPUT].value = idleGateOutput;
     lights[IDLE_GATE_LIGHT].setBrightness(idleGateLightBrightness);
@@ -165,11 +207,8 @@ struct MsDisplayWidget : TransparentWidget {
 
   MsDisplayWidget() {
     font = Font::load(assetPlugin(plugin, "res/Segment7Standard.ttf"));
-  };
+  }
 
-  // this seems like a lot to do every ms or more, but presumably
-  // draw is only called at framerate or lower. Not sure where/how
-  // this gets buffered (FrameBufferWidget.step()?)
   void draw(NVGcontext *vg) override {
     // Background
     // these go to...
@@ -211,16 +250,15 @@ IdleSwitchWidget::IdleSwitchWidget() {
     setPanel(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
 
     addChild(createScrew<ScrewSilver>(Vec(5, 0)));
-    // addChild(createScrew<ScrewSilver>(Vec(box.size.x - 30, 0)));
-    // addChild(createScrew<ScrewSilver>(Vec(15, 365)));
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 20, 365)));
 
-    addInput(createInput<PJ301MPort>(Vec(43, 32.0), module, IdleSwitch::INPUT_SOURCE_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(43, 70.0), module, IdleSwitch::HEARTBEAT_INPUT));
+    addInput(createInput<PJ301MPort>(Vec(37, 30.0), module, IdleSwitch::INPUT_SOURCE_INPUT));
+    addInput(createInput<PJ301MPort>(Vec(37, 70.0), module, IdleSwitch::HEARTBEAT_INPUT));
+    addInput(createInput<PJ301MPort>(Vec(70, 70.0), module, IdleSwitch::PULSE_INPUT));
 
-    //  DISPLAY
+    // idle time display
     MsDisplayWidget *idle_time_display = new MsDisplayWidget();
-    idle_time_display->box.pos = Vec(20, 135);
+    idle_time_display->box.pos = Vec(20, 130);
     idle_time_display->box.size = Vec(70, 24);
     idle_time_display->value = &module->idleTimeoutMS;
     addChild(idle_time_display);
@@ -229,13 +267,13 @@ IdleSwitchWidget::IdleSwitchWidget() {
     addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 160.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
     addOutput(createOutput<PJ301MPort>(Vec(80, 165.0), module, IdleSwitch::TIME_OUTPUT));
 
-    MsDisplayWidget *time_left_display = new MsDisplayWidget();
-    time_left_display->box.pos = Vec(20, 240);
-    time_left_display->box.size = Vec(70, 24);
-    time_left_display->value = &module->idleTimeLeftMS;
-    addChild(time_left_display);
+    MsDisplayWidget *time_remaining_display = new MsDisplayWidget();
+    time_remaining_display->box.pos = Vec(20, 235);
+    time_remaining_display->box.size = Vec(70, 24);
+    time_remaining_display->value = &module->idleTimeLeftMS;
+    addChild(time_remaining_display);
 
-    addOutput(createOutput<PJ301MPort>(Vec(42.25, 280.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
+    addOutput(createOutput<PJ301MPort>(Vec(37, 280.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
 
-    addChild(createLight<LargeLight<RedLight>>(Vec(48, 310.0), module, IdleSwitch::IDLE_GATE_LIGHT));
+    addChild(createLight<LargeLight<RedLight>>(Vec(41, 310.0), module, IdleSwitch::IDLE_GATE_LIGHT));
 }

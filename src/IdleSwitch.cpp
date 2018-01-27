@@ -1,10 +1,11 @@
+#include <stdio.h>
+#include <sstream>
+#include <iomanip>
+
 #include "alikins.hpp"
 #include "dsp/digital.hpp"
 #include "util.hpp"
 
-#include <stdio.h>
-#include <sstream>
-#include <iomanip>
 
 /* IdleSwitch
  *
@@ -84,6 +85,7 @@ struct IdleSwitch : Module {
 
     int idleTimeoutMS = 140;
     int idleTimeLeftMS = 0;
+
     SchmittTrigger inputTrigger;
     SchmittTrigger heartbeatTrigger;
 
@@ -92,14 +94,13 @@ struct IdleSwitch : Module {
 
     float idleGateOutput;
     float idleGateLightBrightness;
+
     float deltaTime;
-    float previousHeartbeatTime;;
 
     bool is_idle = false;
 
     IdleSwitch() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
     void step() override;
-
 };
 
 
@@ -115,7 +116,8 @@ void IdleSwitch::step() {
     // event without an active
     float sampleRate = engineGetSampleRate();
     maxFrameCount = (int)ceilf(deltaTime * sampleRate);
-    //info("is_idle: %d frameCount: %d maxFrameCount: %d ",is_idle, frameCount, maxFrameCount);
+
+    // info("is_idle: %d frameCount: %d maxFrameCount: %d ",is_idle, frameCount, maxFrameCount);
     float delay = deltaTime;
     idleTimeoutMS = std::round(delay*1000);
 
@@ -139,7 +141,6 @@ void IdleSwitch::step() {
         // if we arent idle yet, the idleTimeLeft is changing and we need to update time remaining display
         // update idletimeLeftMS which drives the digit display widget
         idleTimeLeftMS = time_left_s*1000;
-
     }
 
     frameCount++;
@@ -160,7 +161,6 @@ void IdleSwitch::step() {
 struct MsDisplayWidget : TransparentWidget {
 
   int *value;
-  int last_value;
   std::shared_ptr<Font> font;
 
   MsDisplayWidget() {
@@ -170,8 +170,7 @@ struct MsDisplayWidget : TransparentWidget {
   // this seems like a lot to do every ms or more, but presumably
   // draw is only called at framerate or lower. Not sure where/how
   // this gets buffered (FrameBufferWidget.step()?)
-  void draw(NVGcontext *vg) override
-  {
+  void draw(NVGcontext *vg) override {
     // Background
     // these go to...
     NVGcolor backgroundColor = nvgRGB(0x11, 0x11, 0x11);
@@ -221,20 +220,20 @@ IdleSwitchWidget::IdleSwitchWidget() {
 
     //  DISPLAY
     MsDisplayWidget *idle_time_display = new MsDisplayWidget();
-    idle_time_display->box.pos = Vec(20,135);
+    idle_time_display->box.pos = Vec(20, 135);
     idle_time_display->box.size = Vec(70, 24);
     idle_time_display->value = &module->idleTimeoutMS;
-	addChild(idle_time_display);
+    addChild(idle_time_display);
 
     addInput(createInput<PJ301MPort>(Vec(10, 165.0), module, IdleSwitch::TIME_INPUT));
     addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 160.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
     addOutput(createOutput<PJ301MPort>(Vec(80, 165.0), module, IdleSwitch::TIME_OUTPUT));
 
     MsDisplayWidget *time_left_display = new MsDisplayWidget();
-    time_left_display->box.pos = Vec(20,240);
+    time_left_display->box.pos = Vec(20, 240);
     time_left_display->box.size = Vec(70, 24);
     time_left_display->value = &module->idleTimeLeftMS;
-	addChild(time_left_display);
+    addChild(time_left_display);
 
     addOutput(createOutput<PJ301MPort>(Vec(42.25, 280.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
 

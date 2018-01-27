@@ -1,5 +1,5 @@
-#include "alikins.hpp"
 #include <stdio.h>
+#include "alikins.hpp"
 
 
 struct MomentaryOnButtons : Module {
@@ -81,15 +81,13 @@ struct MomentaryOnButtons : Module {
 
 void MomentaryOnButtons::step() {
 
-    for(int i = 0; i < MOMENTARY_BUTTONS; i++) {
+    for (int i = 0; i < MOMENTARY_BUTTONS; i++) {
 
-        // lights[BLINK_LIGHT].value = 0.0;
         lights[BLINK1_LIGHT + i].setBrightness(0.0);
         outputs[BUTTON1_OUTPUT + i].value = 0.0;
 
         if (params[BUTTON1_PARAM + i].value) {
             outputs[BUTTON1_OUTPUT + i].value = 5.0;
-            // lights[BLINK_LIGHT].value = 1.0;
             lights[BLINK1_LIGHT + i].setBrightness(1.0);
         }
     }
@@ -126,7 +124,7 @@ MomentaryOnButtonsWidget::MomentaryOnButtonsWidget() {
        addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
        */
 
-    for(int i = 0; i < MOMENTARY_BUTTONS; i++) {
+    for (int i = 0; i < MOMENTARY_BUTTONS; i++) {
 
         x_pos = x_start + x_offset;
         y_pos = y_start + (i * y_offset);
@@ -136,5 +134,4 @@ MomentaryOnButtonsWidget::MomentaryOnButtonsWidget() {
 
         addOutput(createOutput<PJ301MPort>(Vec(x_pos + 20 + light_radius, y_pos), module, MomentaryOnButtons::BUTTON1_OUTPUT + i));
     }
-
 }

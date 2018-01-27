@@ -92,10 +92,10 @@ struct IdleSwitch : Module {
     int frameCount = 0;
     int maxFrameCount = 0;
 
-    float idleGateOutput;
-    float idleGateLightBrightness;
+    float idleGateOutput = 0.0;
+    float idleGateLightBrightness = 0.0;
 
-    float deltaTime;
+    float deltaTime = 0;
 
     bool is_idle = false;
 

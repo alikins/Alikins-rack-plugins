@@ -193,7 +193,9 @@ void IdleSwitch::step() {
     }
 
     // once clock input works, could add an output to indicate how long between clock
-    outputs[TIME_OUTPUT].value = deltaTime;
+    // If in pulse mode, deltaTime can be larger than 10s internal, but the max output
+    // to "Time output" is 10V. ie, after 10s the "Time Output" stops increasing.
+    outputs[TIME_OUTPUT].value = clampf(deltaTime, 0.0, 10.0);
     outputs[IDLE_GATE_OUTPUT].value = idleGateOutput;
     lights[IDLE_GATE_LIGHT].setBrightness(idleGateLightBrightness);
 }
@@ -257,6 +259,7 @@ IdleSwitchWidget::IdleSwitchWidget() {
     addInput(createInput<PJ301MPort>(Vec(70, 70.0), module, IdleSwitch::PULSE_INPUT));
 
     // idle time display
+    // FIXME: handle large IdleTimeoutMs (> 99999ms) better
     MsDisplayWidget *idle_time_display = new MsDisplayWidget();
     idle_time_display->box.pos = Vec(20, 130);
     idle_time_display->box.size = Vec(70, 24);

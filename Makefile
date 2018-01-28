@@ -26,12 +26,7 @@ cppcheck:
 cpplint:
 	cpplint --headers=hpp --filter=-whitespace/line_length,-legal/copyright,whitespace/blank_line src/*.cpp src/*.hpp
 
-# Convenience target for packaging files into a ZIP file
-dist: all
-	mkdir -p dist/$(SLUG)
-	cp LICENSE* dist/$(SLUG)/
-	cp $(TARGET) dist/$(SLUG)/
-	cp -R res dist/$(SLUG)/
-	cd dist && zip -5 -r $(SLUG)-$(VERSION)-$(ARCH).zip $(SLUG)
 
-.PHONY: cppcheck cpplint dist
+DISTRIBUTABLES += $(wildcard LICENSE*) res
+
+.PHONY: cppcheck cpplint

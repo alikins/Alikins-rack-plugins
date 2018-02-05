@@ -81,7 +81,6 @@ struct IdleSwitch : Module {
         NUM_OUTPUTS
     };
     enum LightIds {
-        IDLE_GATE_LIGHT,
         NUM_LIGHTS
     };
 
@@ -107,7 +106,6 @@ struct IdleSwitch : Module {
     int maxFrameCount = 0;
 
     float idleGateOutput = 0.0;
-    float idleGateLightBrightness = 0.0;
 
     float deltaTime = 0;
 
@@ -169,6 +167,9 @@ void IdleSwitch::step() {
     float frames_left = fmax(maxFrameCount - frameCount, 0);
     float time_left_s = frames_left / sampleRate;
 
+    // TODO: simplify the start/end/gate on logic... really only a few states to check
+
+    // the start of idle  (not idle -> idle trans)
     if ((frameCount > maxFrameCount) || (waiting_for_pulse && pulse_seen)) {
         time_exceeded = true;
         if (!is_idle) {
@@ -176,16 +177,15 @@ void IdleSwitch::step() {
         }
 
     }
+
+    // stay idle once we start until there is an input event
     is_idle = (is_idle || time_exceeded);
 
     if (is_idle) {
         idleGateOutput = 10.0;
-        idleGateLightBrightness = 1.0;
-
 
     } else {
         idleGateOutput = 0.0;
-        idleGateLightBrightness = 0.0;
 
         is_idle = false;
 
@@ -199,12 +199,12 @@ void IdleSwitch::step() {
     if (inputs[INPUT_SOURCE_INPUT].active &&
             inputTrigger.process(inputs[INPUT_SOURCE_INPUT].value)) {
 
+        // only end idle if we are already idle (idle->not idle transition)
         if (is_idle) {
             idleEndPulse.trigger(0.01);
         }
 
         is_idle = false;
-
 
         waiting_for_pulse = false;
         frameCount = 0;
@@ -220,7 +220,6 @@ void IdleSwitch::step() {
     outputs[IDLE_START_OUTPUT].value = idleStartPulse.process(1.0/engineGetSampleRate()) ? 10.0 : 0.0;
     outputs[IDLE_END_OUTPUT].value = idleEndPulse.process(1.0/engineGetSampleRate()) ? 10.0 : 0.0;
 
-    lights[IDLE_GATE_LIGHT].setBrightness(idleGateLightBrightness);
 }
 
 
@@ -299,10 +298,8 @@ IdleSwitchWidget::IdleSwitchWidget() {
     time_remaining_display->value = &module->idleTimeLeftMS;
     addChild(time_remaining_display);
 
-    addOutput(createOutput<PJ301MPort>(Vec(37, 280.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
+    addOutput(createOutput<PJ301MPort>(Vec(10, 295.0), module, IdleSwitch::IDLE_START_OUTPUT));
+    addOutput(createOutput<PJ301MPort>(Vec(47.5, 295.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
+    addOutput(createOutput<PJ301MPort>(Vec(85, 295.0), module, IdleSwitch::IDLE_END_OUTPUT));
 
-    addOutput(createOutput<PJ301MPort>(Vec(65, 280.0), module, IdleSwitch::IDLE_START_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(95, 280.0), module, IdleSwitch::IDLE_END_OUTPUT));
-
-    addChild(createLight<LargeLight<RedLight>>(Vec(41, 310.0), module, IdleSwitch::IDLE_GATE_LIGHT));
 }

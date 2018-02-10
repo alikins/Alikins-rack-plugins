@@ -3,8 +3,6 @@
 #include <iomanip>
 #include <string>
 
-// #include "jansson.h"
-
 #include "alikins.hpp"
 #include "dsp/digital.hpp"
 #include "util.hpp"
@@ -13,6 +11,12 @@
  * Store and display author info and metadata
  */
 
+/* TODO:
+    show the credits info
+     (optional? could make it a tiny 1hp data only)
+    methods to detect changes
+    methods to detect new authors
+ */
 
 struct Credits : Module {
     enum ParamIds {
@@ -36,8 +40,13 @@ struct Credits : Module {
         load_author();
     }
 
-    // TODO: do we need a step?
-    // void step() override;
+    // credits_path = "credits.json"
+    //
+    // toJson
+    //    serialize list of authors to 'authors' key
+    //
+    // fromJson
+    //    deserialize list of authors
 };
 
 
@@ -59,8 +68,6 @@ void Credits::load_author() {
 
 }
 
-// TODO: dont really need
-// void Credits::step() {}
 
 // TODO: custom text/display widgets?
 

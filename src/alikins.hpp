@@ -19,3 +19,7 @@ struct IdleSwitchWidget : ModuleWidget {
     IdleSwitchWidget();
 };
 
+struct CreditsWidget : ModuleWidget {
+    CreditsWidget();
+};
+

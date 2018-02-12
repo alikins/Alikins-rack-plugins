@@ -43,6 +43,11 @@
  *
  */
 
+struct CreditData {
+    std::string author_name;
+    std::string author_date;
+    std::string author_url;
+};
 
 struct Credits : Module {
     enum ParamIds {
@@ -60,6 +65,9 @@ struct Credits : Module {
 
     void load_author();
     // json_t *author_data;
+    json_t* toJson() override;
+
+    void fromJson(json_t *rootJ) override;
 
     // TODO: whatever the best c++ way to init this is
     Credits() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
@@ -70,6 +78,10 @@ struct Credits : Module {
     std::string author_name;
     std::string author_date;
     std::string author_url;
+
+    CreditData *credits;
+    // TODO: from/to json
+    //       reuse author model and encode
     // credits_path = "credits.json"
     //
     // toJson
@@ -78,6 +90,25 @@ struct Credits : Module {
     // fromJson
     //    deserialize list of authors
 };
+
+
+json_t* Credits::toJson() {
+    debug("to_json");
+    json_t *rootJ = json_object();
+    json_object_set_new(rootJ, "namee", json_string(author_name.c_str()));
+        return rootJ;
+    }
+
+
+void Credits::fromJson(json_t *rootJ) {
+    debug("fromJson");
+    json_t *nameJ = json_object_get(rootJ, "namee");
+    if (nameJ) {
+        author_name = json_string_value(nameJ);
+        // setModel(json_string_value(nameJ));
+    }
+}
+
 
 
 void Credits::load_author() {

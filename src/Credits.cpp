@@ -67,6 +67,9 @@ struct Credits : Module {
 
     }
 
+    std::string author_name;
+    std::string author_date;
+    std::string author_url;
     // credits_path = "credits.json"
     //
     // toJson
@@ -78,18 +81,44 @@ struct Credits : Module {
 
 
 void Credits::load_author() {
-    json_error_t error;
+    json_error_t json_error;
     char *blob;
 
-    json_t *a_data = json_load_file("/Users/adrian/src/Rack-v0.5/blippy.json", 0, &error);
+    json_t *a_data = json_load_file("/Users/adrian/src/Rack-v0.5/blippy.json", 0, &json_error);
 
-    json_t *modules_data = json_object_get(a_data, "authors");
-    blob = json_dumps(modules_data, 0);
+    json_t *authors_list = json_object_get(a_data, "authors");
+
+    // FIXME: just grabbing first element
+    json_t *authors_data = json_array_get(authors_list, 0);
+    json_t *author_name_data = json_object_get(authors_data, "name");
+    json_t *author_date_data = json_object_get(authors_data, "date");
+
+    if (!json_is_string(author_name_data))
+    {
+        warn("JSON parsing error author_name is not a string");
+        //fprintf(stderr, "error: commit %d: message is not a string\n", i + 1);
+        json_decref(a_data);
+    }
+
+    if (!json_is_string(author_date_data))
+    {
+        warn("JSON parsing error author_date is not a string");
+        //fprintf(stderr, "error: commit %d: message is not a string\n", i + 1);
+        json_decref(a_data);
+    }
+
+    // FIXME: handle error
+    author_name = json_string_value(author_name_data);
+    author_date = json_string_value(author_date_data);
+
+    info("author_name: %s", author_name.c_str());
+    info("author_date: %s", author_date.c_str());
+    blob = json_dumps(authors_data, 0);
 
     info("blob: %s", blob);
 
     if (!a_data) {
-        warn("JSON parsing error loading file=%s line=%d column=%d error=%s", error.source, error.line, error.column, error.text);
+        warn("JSON parsing error loading file=%s line=%d column=%d error=%s", json_error.source, json_error.line, json_error.column, json_error.text);
         // todo: error handling
     }
 

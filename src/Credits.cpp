@@ -47,6 +47,7 @@ struct CreditData {
     std::string author_name;
     std::string author_date;
     std::string author_url;
+
 };
 
 struct Credits : Module {
@@ -79,7 +80,8 @@ struct Credits : Module {
     std::string author_date;
     std::string author_url;
 
-    CreditData *credits;
+    CreditData credits[1];
+    int num_credits = 0;
     // TODO: from/to json
     //       reuse author model and encode
     // credits_path = "credits.json"
@@ -95,6 +97,27 @@ struct Credits : Module {
 json_t* Credits::toJson() {
     debug("to_json");
     json_t *rootJ = json_object();
+
+    json_t *creditsJ = json_array();
+
+    size_t index;
+    json_t *value;
+
+	for (int i = 0; i < num_credits; i++) {
+        debug("credits value.author_name: %s", credits[i].author_name.c_str());
+        json_t *credit_data = json_object();
+        json_object_set_new(credit_data, "name", json_string(credits[i].author_name.c_str()));
+        json_object_set_new(credit_data, "date", json_string(credits[i].author_date.c_str()));
+        json_object_set_new(credit_data, "url", json_string(credits[i].author_url.c_str()));
+        json_array_append_new(creditsJ, credit_data);
+        // json *t  = json_object(credits[i]);
+    /* block of code that uses index and value */
+    }
+    // json_t *credit1 = json_string(author_name.c_str());
+    // json_array_append_new(creditsJ, credit1);
+
+    json_object_set_new(rootJ, "credits", creditsJ);
+
     json_object_set_new(rootJ, "namee", json_string(author_name.c_str()));
         return rootJ;
     }
@@ -145,6 +168,14 @@ void Credits::load_author() {
     info("author_name: %s", author_name.c_str());
     info("author_date: %s", author_date.c_str());
     blob = json_dumps(authors_data, 0);
+
+    CreditData *cd = new CreditData();
+    cd->author_name = author_name;
+    cd->author_date = author_date;
+    cd->author_url = author_name;
+
+    credits[0] = *cd;
+    num_credits++;
 
     info("blob: %s", blob);
 

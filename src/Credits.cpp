@@ -44,12 +44,6 @@
  *
  */
 
-struct CreditData {
-    std::string author_name;
-    std::string author_date;
-    std::string author_url;
-
-};
 
 struct Credits : Module {
     enum ParamIds {
@@ -104,7 +98,7 @@ json_t* Credits::toJson() {
     json_t *vcreditsJ = json_array();
 
     for (CreditData *vcredit : vcredits) {
-        debug("vcredits vcredit.author_name: %s", vcredit->author_name.c_str());
+        debug("toJson vcredits vcredit.author_name: %s", vcredit->author_name.c_str());
         json_t *vcredit_dataJ = json_object();
 
         json_object_set_new(vcredit_dataJ, "name", json_string(vcredit->author_name.c_str()));
@@ -137,7 +131,7 @@ void Credits::fromJson(json_t *rootJ) {
 
     json_t *vcreditsJ = json_object_get(rootJ, "vcredits");
     if (!json_is_array(vcreditsJ)) {
-        warn("JSON parsing error 'vcredits' is not an array");
+        warn("fromJson JSON parsing error 'vcredits' is not an array");
         //fprintf(stderr, "error: commit %d: message is not a string\n", i + 1);
         json_decref(rootJ);
     }
@@ -150,19 +144,19 @@ void Credits::fromJson(json_t *rootJ) {
         CreditData *credit_data = new CreditData();
 
         if (json_is_string(cname)) {
-            debug("cname: %s", json_string_value(cname));
+            debug("fromJson cname: %s", json_string_value(cname));
             credit_data->author_name = json_string_value(cname);
         }
 
         json_t *cdate = json_object_get(valueJ, "date");
         if (json_is_string(cdate)) {
-            debug("cdate: %s", json_string_value(cdate));
+            debug("fromJson cdate: %s", json_string_value(cdate));
             credit_data->author_date = json_string_value(cdate);
         }
 
         json_t *curl = json_object_get(valueJ, "url");
         if (json_is_string(curl)) {
-            debug("curl: %s", json_string_value(curl));
+            debug("fromJson curl: %s", json_string_value(curl));
             credit_data->author_url = json_string_value(curl);
         }
         vcredits.push_back(credit_data);
@@ -228,13 +222,7 @@ void Credits::load_author() {
     default_credit->author_date = author_date;
     default_credit->author_url = author_url;
 
-    //credits[0] = *cd;
-    //vcredits.push_back(cd);
-    //num_credits++;
-
     info("blob: %s", blob);
-
-
 }
 
 
@@ -249,46 +237,49 @@ CreditsWidget::CreditsWidget() {
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 20, 365)));
 
     float x_start = 5.0;
-    float x_offset = 0.0;
     float y_start = 10.0;
-    float y_offset = 32.0;
     float x_pos = x_start;
     float y_pos = y_start;
-
-    int widget_index = 0;
 
     debug("CreditsWidget");
     for (CreditData *vcredit : module->vcredits) {
         debug("setting up widgets for credits: %s", vcredit->author_name.c_str());
-        TextField *author_name;
-        TextField *author_date;
-        TextField *author_url;
-
-        author_name = new TextField();
-        //author_name->text = "Default Author Name";
-        author_name->text = vcredit->author_name;;
-        author_name->box.pos = Vec(x_pos, y_pos);
-        author_name->box.size = Vec(200, 28);
-        addChild(author_name);
-
-        widget_index++;
-        x_pos = x_start + x_offset;
-        y_pos = y_start + (widget_index * y_offset);
-
-        author_date = new TextField();
-        author_date->text = vcredit->author_date;;
-        author_date->box.pos = Vec(x_pos, y_pos);
-        author_date->box.size = Vec(200, 28);
-        addChild(author_date);
-
-        widget_index++;
-        x_pos = x_start + x_offset;
-        y_pos = y_start + (widget_index * y_offset);
-
-        author_url = new TextField();
-        author_url->text = "http://default.author.example.com";
-        author_url->box.pos = Vec(x_pos, y_pos);
-        author_url->box.size = Vec(200, 28);
-        addChild(author_url);
+        addCreditTextEntry(vcredit, x_pos, y_pos);
+        y_pos = y_pos + 30;
     }
+
+    addCreditTextEntry(module->default_credit, x_pos, y_pos + 20);
+}
+
+
+void CreditsWidget::addCreditTextEntry(CreditData *credit_data, float x_pos, float y_pos) {
+    debug("setting up widgets for credits: %s", credit_data->author_name.c_str());
+    TextField *author_name;
+    TextField *author_date;
+    TextField *author_url;
+
+    author_name = new TextField();
+    //author_name->text = "Default Author Name";
+    author_name->text = credit_data->author_name;;
+    author_name->box.pos = Vec(x_pos, y_pos);
+    author_name->box.size = Vec(200, 28);
+    addChild(author_name);
+
+    float y_offset = 30.0;
+
+    y_pos = y_pos + y_offset;
+
+    author_date = new TextField();
+    author_date->text = credit_data->author_date;;
+    author_date->box.pos = Vec(x_pos, y_pos);
+    author_date->box.size = Vec(200, 28);
+    addChild(author_date);
+
+    y_pos = y_pos + y_offset;
+
+    author_url = new TextField();
+    author_url->text = credit_data->author_url;
+    author_url->box.pos = Vec(x_pos, y_pos);
+    author_url->box.size = Vec(200, 28);
+    addChild(author_url);
 }

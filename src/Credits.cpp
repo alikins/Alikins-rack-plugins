@@ -145,13 +145,25 @@ CreditsWidget::CreditsWidget() {
     int widget_index = 0;
 
     TextField *author_name;
+    TextField *author_date;
     TextField *author_url;
 
     author_name = new TextField();
-    author_name->text = "Default Author Name";
+    //author_name->text = "Default Author Name";
+    author_name->text = module->author_name;;
     author_name->box.pos = Vec(x_pos, y_pos);
     author_name->box.size = Vec(200, 28);
     addChild(author_name);
+
+    widget_index++;
+    x_pos = x_start + x_offset;
+    y_pos = y_start + (widget_index * y_offset);
+
+    author_date = new TextField();
+    author_date->text = module->author_date;;
+    author_date->box.pos = Vec(x_pos, y_pos);
+    author_date->box.size = Vec(200, 28);
+    addChild(author_date);
 
     widget_index++;
     x_pos = x_start + x_offset;

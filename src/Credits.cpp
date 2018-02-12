@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <sstream>
 #include <iomanip>
+#include <vector>
 #include <string>
 
 #include "alikins.hpp"
@@ -80,7 +81,9 @@ struct Credits : Module {
     std::string author_date;
     std::string author_url;
 
-    CreditData credits[1];
+    // CreditData credits[1];
+    std::vector<CreditData*> vcredits;
+
     int num_credits = 0;
     // TODO: from/to json
     //       reuse author model and encode
@@ -98,25 +101,25 @@ json_t* Credits::toJson() {
     debug("to_json");
     json_t *rootJ = json_object();
 
-    json_t *creditsJ = json_array();
+    json_t *vcreditsJ = json_array();
 
-    size_t index;
-    json_t *value;
+    for (CreditData *vcredit : vcredits) {
+        debug("vcredits vcredit.author_name: %s", vcredit->author_name.c_str());
+        json_t *vcredit_dataJ = json_object();
 
-	for (int i = 0; i < num_credits; i++) {
-        debug("credits value.author_name: %s", credits[i].author_name.c_str());
-        json_t *credit_data = json_object();
-        json_object_set_new(credit_data, "name", json_string(credits[i].author_name.c_str()));
-        json_object_set_new(credit_data, "date", json_string(credits[i].author_date.c_str()));
-        json_object_set_new(credit_data, "url", json_string(credits[i].author_url.c_str()));
-        json_array_append_new(creditsJ, credit_data);
-        // json *t  = json_object(credits[i]);
-    /* block of code that uses index and value */
+        json_object_set_new(vcredit_dataJ, "name", json_string(vcredit->author_name.c_str()));
+        json_object_set_new(vcredit_dataJ, "date", json_string(vcredit->author_date.c_str()));
+        json_object_set_new(vcredit_dataJ, "url", json_string(vcredit->author_url.c_str()));
+
+        json_array_append_new(vcreditsJ, vcredit_dataJ);
     }
+
+
     // json_t *credit1 = json_string(author_name.c_str());
     // json_array_append_new(creditsJ, credit1);
 
-    json_object_set_new(rootJ, "credits", creditsJ);
+    // json_object_set_new(rootJ, "credits", creditsJ);
+    json_object_set_new(rootJ, "vcredits", vcreditsJ);
 
     json_object_set_new(rootJ, "namee", json_string(author_name.c_str()));
         return rootJ;
@@ -130,6 +133,40 @@ void Credits::fromJson(json_t *rootJ) {
         author_name = json_string_value(nameJ);
         // setModel(json_string_value(nameJ));
     }
+
+    json_t *vcreditsJ = json_object_get(rootJ, "vcredits");
+    if (!json_is_array(vcreditsJ)) {
+        warn("JSON parsing error 'vcredits' is not an array");
+        //fprintf(stderr, "error: commit %d: message is not a string\n", i + 1);
+        json_decref(rootJ);
+    }
+    size_t index;
+    json_t *valueJ;
+
+    json_array_foreach(vcreditsJ, index, valueJ) {
+        json_t *creditJ = json_object();
+        json_t *cname = json_object_get(valueJ, "name");
+        CreditData *credit_data = new CreditData();
+
+        if (json_is_string(cname)) {
+            debug("cname: %s", json_string_value(cname));
+            credit_data->author_name = json_string_value(cname);
+        }
+
+        json_t *cdate = json_object_get(valueJ, "date");
+        if (json_is_string(cdate)) {
+            debug("cdate: %s", json_string_value(cdate));
+            credit_data->author_date = json_string_value(cdate);
+        }
+
+        json_t *curl = json_object_get(valueJ, "url");
+        if (json_is_string(curl)) {
+            debug("curl: %s", json_string_value(curl));
+            credit_data->author_url = json_string_value(curl);
+        }
+        vcredits.push_back(credit_data);
+    }
+
 }
 
 
@@ -174,7 +211,8 @@ void Credits::load_author() {
     cd->author_date = author_date;
     cd->author_url = author_name;
 
-    credits[0] = *cd;
+    //credits[0] = *cd;
+    vcredits.push_back(cd);
     num_credits++;
 
     info("blob: %s", blob);
@@ -206,35 +244,36 @@ CreditsWidget::CreditsWidget() {
 
     int widget_index = 0;
 
-    TextField *author_name;
-    TextField *author_date;
-    TextField *author_url;
+    for (CreditData *vcredit : module->vcredits) {
+        TextField *author_name;
+        TextField *author_date;
+        TextField *author_url;
 
-    author_name = new TextField();
-    //author_name->text = "Default Author Name";
-    author_name->text = module->author_name;;
-    author_name->box.pos = Vec(x_pos, y_pos);
-    author_name->box.size = Vec(200, 28);
-    addChild(author_name);
+        author_name = new TextField();
+        //author_name->text = "Default Author Name";
+        author_name->text = vcredit->author_name;;
+        author_name->box.pos = Vec(x_pos, y_pos);
+        author_name->box.size = Vec(200, 28);
+        addChild(author_name);
 
-    widget_index++;
-    x_pos = x_start + x_offset;
-    y_pos = y_start + (widget_index * y_offset);
+        widget_index++;
+        x_pos = x_start + x_offset;
+        y_pos = y_start + (widget_index * y_offset);
 
-    author_date = new TextField();
-    author_date->text = module->author_date;;
-    author_date->box.pos = Vec(x_pos, y_pos);
-    author_date->box.size = Vec(200, 28);
-    addChild(author_date);
+        author_date = new TextField();
+        author_date->text = vcredit->author_date;;
+        author_date->box.pos = Vec(x_pos, y_pos);
+        author_date->box.size = Vec(200, 28);
+        addChild(author_date);
 
-    widget_index++;
-    x_pos = x_start + x_offset;
-    y_pos = y_start + (widget_index * y_offset);
+        widget_index++;
+        x_pos = x_start + x_offset;
+        y_pos = y_start + (widget_index * y_offset);
 
-    author_url = new TextField();
-    author_url->text = "http://default.author.example.com";
-    author_url->box.pos = Vec(x_pos, y_pos);
-    author_url->box.size = Vec(200, 28);
-    addChild(author_url);
-
+        author_url = new TextField();
+        author_url->text = "http://default.author.example.com";
+        author_url->box.pos = Vec(x_pos, y_pos);
+        author_url->box.size = Vec(200, 28);
+        addChild(author_url);
+    }
 }

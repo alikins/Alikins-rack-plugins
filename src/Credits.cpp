@@ -179,7 +179,7 @@ void Credits::load_author() {
     json_t *a_data = json_load_file("/Users/adrian/src/Rack-v0.5/blippy.json", 0, &json_error);
 
     if (!a_data) {
-        warn("JSON parsing error loading file=%s line=%d column=%d error=%s", json_error.source, json_error.line, json_error.column, json_error.text);
+        warn("load_author JSON parsing error loading file=%s line=%d column=%d error=%s", json_error.source, json_error.line, json_error.column, json_error.text);
         return;
         // todo: error handling
     }
@@ -190,6 +190,7 @@ void Credits::load_author() {
     json_t *authors_data = json_array_get(authors_list, 0);
     json_t *author_name_data = json_object_get(authors_data, "name");
     json_t *author_date_data = json_object_get(authors_data, "date");
+    json_t *author_url_data = json_object_get(authors_data, "url");
 
     if (!json_is_string(author_name_data))
     {
@@ -205,18 +206,27 @@ void Credits::load_author() {
         json_decref(a_data);
     }
 
+    if (!json_is_string(author_url_data))
+    {
+        warn("load_author JSON parsing error author_url is not a string");
+        //fprintf(stderr, "error: commit %d: message is not a string\n", i + 1);
+        json_decref(a_data);
+    }
+
     // FIXME: handle error
     author_name = json_string_value(author_name_data);
     author_date = json_string_value(author_date_data);
+    author_url = json_string_value(author_url_data);
 
-    info("author_name: %s", author_name.c_str());
-    info("author_date: %s", author_date.c_str());
+    info("load_author author_name: %s", author_name.c_str());
+    info("load_author author_date: %s", author_date.c_str());
+    info("load_author author_url: %s", author_url.c_str());
     blob = json_dumps(authors_data, 0);
 
     default_credit = new CreditData();
     default_credit->author_name = author_name;
     default_credit->author_date = author_date;
-    default_credit->author_url = author_name;
+    default_credit->author_url = author_url;
 
     //credits[0] = *cd;
     //vcredits.push_back(cd);
@@ -247,7 +257,9 @@ CreditsWidget::CreditsWidget() {
 
     int widget_index = 0;
 
+    debug("CreditsWidget");
     for (CreditData *vcredit : module->vcredits) {
+        debug("setting up widgets for credits: %s", vcredit->author_name.c_str());
         TextField *author_name;
         TextField *author_date;
         TextField *author_url;

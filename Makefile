@@ -24,7 +24,7 @@ cppcheck:
 
 # https://github.com/google/styleguide
 cpplint:
-	cpplint --headers=hpp --filter=-whitespace/line_length,-legal/copyright,whitespace/blank_line src/*.cpp src/*.hpp
+	cpplint --headers=hpp --filter=-whitespace/line_length,-legal/copyright,-whitespace/blank_line src/*.cpp src/*.hpp
 
 
 DISTRIBUTABLES += $(wildcard LICENSE*) res

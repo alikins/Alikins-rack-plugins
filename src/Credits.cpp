@@ -83,8 +83,8 @@ struct Credits : Module {
 
     // CreditData credits[1];
     std::vector<CreditData*> vcredits;
+    CreditData *default_credit;
 
-    int num_credits = 0;
     // TODO: from/to json
     //       reuse author model and encode
     // credits_path = "credits.json"
@@ -114,6 +114,7 @@ json_t* Credits::toJson() {
         json_array_append_new(vcreditsJ, vcredit_dataJ);
     }
 
+    // TODO: add default_credit if not already in vcredits
 
     // json_t *credit1 = json_string(author_name.c_str());
     // json_array_append_new(creditsJ, credit1);
@@ -144,7 +145,7 @@ void Credits::fromJson(json_t *rootJ) {
     json_t *valueJ;
 
     json_array_foreach(vcreditsJ, index, valueJ) {
-        json_t *creditJ = json_object();
+        // json_t *creditJ = json_object();
         json_t *cname = json_object_get(valueJ, "name");
         CreditData *credit_data = new CreditData();
 
@@ -177,6 +178,12 @@ void Credits::load_author() {
 
     json_t *a_data = json_load_file("/Users/adrian/src/Rack-v0.5/blippy.json", 0, &json_error);
 
+    if (!a_data) {
+        warn("JSON parsing error loading file=%s line=%d column=%d error=%s", json_error.source, json_error.line, json_error.column, json_error.text);
+        return;
+        // todo: error handling
+    }
+
     json_t *authors_list = json_object_get(a_data, "authors");
 
     // FIXME: just grabbing first element
@@ -206,21 +213,17 @@ void Credits::load_author() {
     info("author_date: %s", author_date.c_str());
     blob = json_dumps(authors_data, 0);
 
-    CreditData *cd = new CreditData();
-    cd->author_name = author_name;
-    cd->author_date = author_date;
-    cd->author_url = author_name;
+    default_credit = new CreditData();
+    default_credit->author_name = author_name;
+    default_credit->author_date = author_date;
+    default_credit->author_url = author_name;
 
     //credits[0] = *cd;
-    vcredits.push_back(cd);
-    num_credits++;
+    //vcredits.push_back(cd);
+    //num_credits++;
 
     info("blob: %s", blob);
 
-    if (!a_data) {
-        warn("JSON parsing error loading file=%s line=%d column=%d error=%s", json_error.source, json_error.line, json_error.column, json_error.text);
-        // todo: error handling
-    }
 
 }
 

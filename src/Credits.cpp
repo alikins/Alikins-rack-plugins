@@ -18,6 +18,32 @@
     methods to detect new authors
  */
 
+/*
+ * credits model
+ *
+ * 'credits' key in json data
+ *
+ * CreditList - list of Credit()
+ *
+ * Credit
+ *  .authorList
+ *      Author()
+ *          string/unicode name
+ *          string/unicode url
+ *          # author_id is only uniq and meaningful within a particular doc
+ *          # ie, not globally uniq though could be uuid
+ *          string/unicode author_id
+ *   string/unicode credit_id
+ *
+ * EditionList   - list of Edition()
+ *   Edition  - data for a 'save' (ie, version, revision, update, release, etc...)
+ *      # credit_id can point to a Credit() which can repr multiple authors
+ *      string/unicode credit_id
+ *      string  date   (iso8601 date format)
+ *
+ */
+
+
 struct Credits : Module {
     enum ParamIds {
         NUM_PARAMS
@@ -38,6 +64,7 @@ struct Credits : Module {
     // TODO: whatever the best c++ way to init this is
     Credits() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
         load_author();
+
     }
 
     // credits_path = "credits.json"
@@ -78,5 +105,33 @@ CreditsWidget::CreditsWidget() {
 
     addChild(createScrew<ScrewSilver>(Vec(5, 0)));
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 20, 365)));
+
+    float x_start = 5.0;
+    float x_offset = 0.0;
+    float y_start = 10.0;
+    float y_offset = 32.0;
+    float x_pos = x_start;
+    float y_pos = y_start;
+
+    int widget_index = 0;
+
+    TextField *author_name;
+    TextField *author_url;
+
+    author_name = new TextField();
+    author_name->text = "Default Author Name";
+    author_name->box.pos = Vec(x_pos, y_pos);
+    author_name->box.size = Vec(200, 28);
+    addChild(author_name);
+
+    widget_index++;
+    x_pos = x_start + x_offset;
+    y_pos = y_start + (widget_index * y_offset);
+
+    author_url = new TextField();
+    author_url->text = "http://default.author.example.com";
+    author_url->box.pos = Vec(x_pos, y_pos);
+    author_url->box.size = Vec(200, 28);
+    addChild(author_url);
 
 }

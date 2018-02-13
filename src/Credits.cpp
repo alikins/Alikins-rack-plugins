@@ -75,6 +75,7 @@ struct Credits : Module {
     std::string author_date;
     std::string author_url;
 
+
     // CreditData credits[1];
     std::vector<CreditData*> vcredits;
     CreditData *default_credit;
@@ -225,6 +226,64 @@ void Credits::load_author() {
     info("blob: %s", blob);
 }
 
+// from Rack/src/app/AddModuleWindow.cpp
+struct ListMenu : OpaqueWidget {
+    void draw(NVGcontext *vg) override {
+        Widget::draw(vg);
+    }
+
+    void step() override {
+        Widget::step();
+
+        box.size.y = 0;
+        for (Widget *child : children) {
+            if (!child->visible)
+                continue;
+            // Increase height, set position of child
+            child->box.pos = Vec(0, box.size.y);
+            box.size.y += child->box.size.y;
+            child->box.size.x = box.size.x;
+        }
+    }
+};
+
+
+struct CreditItem : MenuItem {
+    void onAction(EventAction &e) override {
+        info("CreditItem onAction");
+        // e.consumed = false;
+    }
+};
+
+struct CreditMenu : ListMenu {
+    std::vector<CreditData*> vcredits;
+
+    void step() override {
+        info("CreditMenu.step");
+        if (vcredits.empty()) {
+            for (CreditData *vcredit_data : vcredits) {
+                debug("CreditMenu.override addChild for %s", vcredit_data->author_name.c_str());
+                addChild(construct<CreditItem>(&MenuEntry::text, vcredit_data->author_name));
+            }
+
+        }
+        ListMenu::step();
+    }
+
+    CreditMenu(std::vector<CreditData*> mcredits) {
+        debug("CreditMenu constructor");
+        addChild(construct<MenuLabel>(&MenuLabel::text, "Creditss"));
+
+        vcredits = mcredits;
+        // Collect manufacturer names
+        for (CreditData *mcredit_data : mcredits) {
+            debug("CreditMenu addChild for %s", mcredit_data->author_name.c_str());
+            addChild(construct<CreditItem>(&MenuEntry::text, mcredit_data->author_name));
+        }
+    }
+};
+
+
 
 // TODO: custom text/display widgets?
 
@@ -249,23 +308,35 @@ CreditsWidget::CreditsWidget() {
     }
 
     addCreditTextEntry(module->default_credit, x_pos, y_pos + 20);
+
+    CreditMenu *creditMenu = new CreditMenu(module->vcredits);
+    creditMenu->box.size.x = 150;
+
+    ScrollWidget *creditScroll = new ScrollWidget();
+    creditScroll->container->addChild(creditMenu);
+    y_pos = y_pos + 50;
+    creditScroll->box.pos = Vec(0, y_pos);
+    creditScroll->box.size = Vec(0, box.size.y - y_pos);
+    addChild(creditScroll);
+
+
 }
 
 
 void CreditsWidget::addCreditTextEntry(CreditData *credit_data, float x_pos, float y_pos) {
     debug("setting up widgets for credits: %s", credit_data->author_name.c_str());
+
+    float y_offset = 30.0;
+
     TextField *author_name;
     TextField *author_date;
     TextField *author_url;
 
     author_name = new TextField();
-    //author_name->text = "Default Author Name";
     author_name->text = credit_data->author_name;;
     author_name->box.pos = Vec(x_pos, y_pos);
     author_name->box.size = Vec(200, 28);
     addChild(author_name);
-
-    float y_offset = 30.0;
 
     y_pos = y_pos + y_offset;
 

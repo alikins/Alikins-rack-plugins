@@ -197,22 +197,19 @@ void Credits::load_author() {
     json_t *author_date_data = json_object_get(authors_data, "date");
     json_t *author_url_data = json_object_get(authors_data, "url");
 
-    if (!json_is_string(author_name_data))
-    {
+    if (!json_is_string(author_name_data)) {
         warn("JSON parsing error author_name is not a string");
         //fprintf(stderr, "error: commit %d: message is not a string\n", i + 1);
         json_decref(a_data);
     }
 
-    if (!json_is_string(author_date_data))
-    {
+    if (!json_is_string(author_date_data)) {
         warn("JSON parsing error author_date is not a string");
         //fprintf(stderr, "error: commit %d: message is not a string\n", i + 1);
         json_decref(a_data);
     }
 
-    if (!json_is_string(author_url_data))
-    {
+    if (!json_is_string(author_url_data)) {
         warn("load_author JSON parsing error author_url is not a string");
         //fprintf(stderr, "error: commit %d: message is not a string\n", i + 1);
         json_decref(a_data);
@@ -245,7 +242,6 @@ struct ListMenu : OpaqueWidget {
 
     void step() override {
         Widget::step();
-
         box.size.y = 0;
         for (Widget *child : children) {
             if (!child->visible)
@@ -307,17 +303,22 @@ struct MetadataMenu : ListMenu {
             clearChildren();
 
             if (creditData) {
+                addChild(construct<MenuEntry>());
+
                 // author name
-                std::string author_name = creditData->author_name;
-                addChild(construct<MenuLabel>(&MenuEntry::text, author_name));
+                std::string name_text = "author: ";
+                name_text += creditData->author_name;
+                addChild(construct<MenuItem>(&MenuEntry::text, name_text));
 
                 // author date
-                addChild(construct<MenuItem>(&MenuEntry::text, creditData->author_date,
-                            &MenuItem::rightText, creditData->author_date));
+                std::string date_text = "date: ";
+                date_text += creditData->author_date;
+                addChild(construct<MenuItem>(&MenuEntry::text, date_text));
 
                 // author url
-                addChild(construct<MenuItem>(&MenuEntry::text, creditData->author_url,
-                            &MenuItem::rightText, creditData->author_url));
+                std::string url_text = "url: ";
+                url_text += creditData->author_url;
+                addChild(construct<MenuItem>(&MenuEntry::text, url_text));
             }
         }
 

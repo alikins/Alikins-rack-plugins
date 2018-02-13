@@ -69,7 +69,8 @@ struct Credits : Module {
     void fromJson(json_t *rootJ) override;
 
     void step() override;
-    // TODO: whatever the best c++ way to init this is
+
+        // TODO: whatever the best c++ way to init this is
     Credits() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
         load_author();
 
@@ -78,7 +79,6 @@ struct Credits : Module {
     std::string author_name;
     std::string author_date;
     std::string author_url;
-
 
     // CreditData credits[1];
     bool credits_set = false;
@@ -98,11 +98,26 @@ struct Credits : Module {
 };
 
 
+
 void Credits::step() {
     // credits_set = false;
 }
 
 json_t* Credits::toJson() {
+    debug("CreditsWidget: author_name: %s", default_credit->author_name.c_str());
+    bool is_in = false;
+    for (CreditData *vcredit : vcredits) {
+        if (vcredit->author_name == default_credit->author_name) {
+            is_in = true;
+        }
+    }
+
+    debug("is_in: %d", is_in);
+    if (!(is_in)) {
+        debug("toJson: adding default_credits %s to credits", default_credit->author_name.c_str());
+        vcredits.push_back(default_credit);
+    }
+
     debug("to_json");
     json_t *rootJ = json_object();
 
@@ -306,19 +321,19 @@ struct MetadataMenu : ListMenu {
                 addChild(construct<MenuEntry>());
 
                 // author name
-                std::string name_text = "author: ";
-                name_text += creditData->author_name;
-                addChild(construct<MenuItem>(&MenuEntry::text, name_text));
+                // std::string name_text = "author:\n  ";
+                // name_text += creditData->author_name;
+                addChild(construct<MenuItem>(&MenuEntry::text, creditData->author_name));
 
                 // author date
-                std::string date_text = "date: ";
-                date_text += creditData->author_date;
-                addChild(construct<MenuItem>(&MenuEntry::text, date_text));
+                // std::string date_text = "date:\n  ";
+                // date_text += creditData->author_date;
+                addChild(construct<MenuItem>(&MenuEntry::text, creditData->author_date));
 
                 // author url
-                std::string url_text = "url: ";
-                url_text += creditData->author_url;
-                addChild(construct<MenuItem>(&MenuEntry::text, url_text));
+                // std::string url_text = "url:\n  ";
+                // url_text += creditData->author_url;
+                addChild(construct<MenuItem>(&MenuEntry::text, creditData->author_url));
             }
         }
 
@@ -343,15 +358,7 @@ CreditsWidget::CreditsWidget() {
     float y_pos = y_start;
 
     debug("CreditsWidget");
-    //module->vcredits.push_back(module->default_credit);
-    /*
-    for (CreditData *vcredit : module->vcredits) {
-        debug("setting up widgets for credits: %s", vcredit->author_name.c_str());
-        addCreditTextEntry(vcredit, x_pos, y_pos);
-        y_pos = y_pos + 30;
-    }
-    */
-    // addCreditTextEntry(module->default_credit, x_pos, y_pos + 20);
+
 
     CreditMenu *creditMenu = new CreditMenu();
     creditMenu->box.size.x = 200;
@@ -382,34 +389,3 @@ void CreditsWidget::step() {
     // debug("CreditsWidget.step");
 }
 
-void CreditsWidget::addCreditTextEntry(CreditData *credit_data, float x_pos, float y_pos) {
-    debug("setting up widgets for credits: %s", credit_data->author_name.c_str());
-
-    float y_offset = 30.0;
-
-    TextField *author_name;
-    TextField *author_date;
-    TextField *author_url;
-
-    author_name = new TextField();
-    author_name->text = credit_data->author_name;;
-    author_name->box.pos = Vec(x_pos, y_pos);
-    author_name->box.size = Vec(200, 28);
-    addChild(author_name);
-
-    y_pos = y_pos + y_offset;
-
-    author_date = new TextField();
-    author_date->text = credit_data->author_date;;
-    author_date->box.pos = Vec(x_pos, y_pos);
-    author_date->box.size = Vec(200, 28);
-    addChild(author_date);
-
-    y_pos = y_pos + y_offset;
-
-    author_url = new TextField();
-    author_url->text = credit_data->author_url;
-    author_url->box.pos = Vec(x_pos, y_pos);
-    author_url->box.size = Vec(200, 28);
-    addChild(author_url);
-}

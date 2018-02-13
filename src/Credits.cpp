@@ -8,6 +8,8 @@
 #include "dsp/digital.hpp"
 #include "util.hpp"
 
+static CreditData *sCreditData = NULL;
+
 /*
  * Store and display author info and metadata
  */
@@ -97,7 +99,7 @@ struct Credits : Module {
 
 
 void Credits::step() {
-    bool credits_set = false;
+    // credits_set = false;
 }
 
 json_t* Credits::toJson() {
@@ -258,9 +260,15 @@ struct ListMenu : OpaqueWidget {
 
 
 struct CreditItem : MenuItem {
+    CreditData *creditData;
     void onAction(EventAction &e) override {
         info("CreditItem onAction");
         // e.consumed = false;
+    }
+
+    void onMouseEnter(EventMouseEnter &e) override {
+        sCreditData = creditData;
+        MenuItem::onMouseEnter(e);
     }
 };
 
@@ -274,11 +282,10 @@ struct CreditMenu : ListMenu {
         if (!module->credits_set) {
             for (CreditData *vcredit_data : module->vcredits) {
                 debug("CreditMenu.override addChild for %s", vcredit_data->author_name.c_str());
-                addChild(construct<CreditItem>(&MenuEntry::text, vcredit_data->author_name));
+                addChild(construct<CreditItem>(&MenuEntry::text, vcredit_data->author_name, &CreditItem::creditData, vcredit_data));
                 //addChild(construct<MenuLabel>(&MenuLabel::text, vcredit_data->author_name));
             }
             module->credits_set = true;
-
         }
         ListMenu::step();
     }
@@ -290,6 +297,33 @@ struct CreditMenu : ListMenu {
     }
 };
 
+
+struct MetadataMenu : ListMenu {
+    CreditData *creditData = NULL;
+
+    void step() override {
+        if (creditData != sCreditData) {
+            creditData = sCreditData;
+            clearChildren();
+
+            if (creditData) {
+                // author name
+                std::string author_name = creditData->author_name;
+                addChild(construct<MenuLabel>(&MenuEntry::text, author_name));
+
+                // author date
+                addChild(construct<MenuItem>(&MenuEntry::text, creditData->author_date,
+                            &MenuItem::rightText, creditData->author_date));
+
+                // author url
+                addChild(construct<MenuItem>(&MenuEntry::text, creditData->author_url,
+                            &MenuItem::rightText, creditData->author_url));
+            }
+        }
+
+        ListMenu::step();
+    }
+};
 
 
 // TODO: custom text/display widgets?
@@ -319,15 +353,25 @@ CreditsWidget::CreditsWidget() {
     // addCreditTextEntry(module->default_credit, x_pos, y_pos + 20);
 
     CreditMenu *creditMenu = new CreditMenu();
-    creditMenu->box.size.x = 150;
+    creditMenu->box.size.x = 200;
     creditMenu->module = module;
 
     ScrollWidget *creditScroll = new ScrollWidget();
     creditScroll->container->addChild(creditMenu);
-    creditScroll->box.pos = Vec(5, y_pos);
+    creditScroll->box.pos = Vec(x_pos, y_pos);
     // creditScroll->box.size = Vec(100, box.size.y - y_pos);
-    creditScroll->box.size = Vec(200, 300);
+    creditScroll->box.size = Vec(200, 200);
     addChild(creditScroll);
+
+    // Metadata
+    MetadataMenu *metadataMenu = new MetadataMenu();
+    metadataMenu->box.size.x = 200;
+
+    ScrollWidget *metadataScroll = new ScrollWidget();
+    metadataScroll->container->addChild(metadataMenu);
+    metadataScroll->box.pos = Vec(0, 200);
+    metadataScroll->box.size = Vec(200, 200);
+    addChild(metadataScroll);
 
 
 }

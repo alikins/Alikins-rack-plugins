@@ -47,6 +47,7 @@
 
 struct Credits : Module {
     enum ParamIds {
+        CREDITS_SET_PARAM,
         NUM_PARAMS
     };
     enum InputIds {
@@ -65,6 +66,7 @@ struct Credits : Module {
 
     void fromJson(json_t *rootJ) override;
 
+    void step() override;
     // TODO: whatever the best c++ way to init this is
     Credits() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
         load_author();
@@ -77,6 +79,8 @@ struct Credits : Module {
 
 
     // CreditData credits[1];
+    bool credits_set = false;
+
     std::vector<CreditData*> vcredits;
     CreditData *default_credit;
 
@@ -91,6 +95,10 @@ struct Credits : Module {
     //    deserialize list of authors
 };
 
+
+void Credits::step() {
+    bool credits_set = false;
+}
 
 json_t* Credits::toJson() {
     debug("to_json");
@@ -228,6 +236,7 @@ void Credits::load_author() {
 
 // from Rack/src/app/AddModuleWindow.cpp
 struct ListMenu : OpaqueWidget {
+
     void draw(NVGcontext *vg) override {
         Widget::draw(vg);
     }
@@ -256,32 +265,28 @@ struct CreditItem : MenuItem {
 };
 
 struct CreditMenu : ListMenu {
+    Credits *module;
     std::vector<CreditData*> vcredits;
 
     void step() override {
-        info("CreditMenu.step");
-        info("vcredits.empty(): %i", vcredits.size());
-        if (vcredits.empty()) {
-            for (CreditData *vcredit_data : vcredits) {
+        // info("CreditMenu.step");
+        // info("vcredits.empty(): %i", vcredits.size());
+        if (!module->credits_set) {
+            for (CreditData *vcredit_data : module->vcredits) {
                 debug("CreditMenu.override addChild for %s", vcredit_data->author_name.c_str());
                 addChild(construct<CreditItem>(&MenuEntry::text, vcredit_data->author_name));
                 addChild(construct<MenuLabel>(&MenuLabel::text, vcredit_data->author_name));
             }
+            module->credits_set = true;
 
         }
         ListMenu::step();
     }
 
-    CreditMenu(std::vector<CreditData*> mcredits) {
+    CreditMenu() {
         debug("CreditMenu constructor");
         addChild(construct<MenuLabel>(&MenuLabel::text, "Creditss"));
 
-        vcredits = mcredits;
-        // Collect manufacturer names
-        for (CreditData *mcredit_data : mcredits) {
-            debug("CreditMenu addChild for %s", mcredit_data->author_name.c_str());
-            addChild(construct<CreditItem>(&MenuEntry::text, mcredit_data->author_name));
-        }
     }
 };
 
@@ -303,7 +308,7 @@ CreditsWidget::CreditsWidget() {
     float y_pos = y_start;
 
     debug("CreditsWidget");
-    module->vcredits.push_back(module->default_credit);
+    //module->vcredits.push_back(module->default_credit);
     /*
     for (CreditData *vcredit : module->vcredits) {
         debug("setting up widgets for credits: %s", vcredit->author_name.c_str());
@@ -313,19 +318,25 @@ CreditsWidget::CreditsWidget() {
     */
     // addCreditTextEntry(module->default_credit, x_pos, y_pos + 20);
 
-    CreditMenu *creditMenu = new CreditMenu(module->vcredits);
+    CreditMenu *creditMenu = new CreditMenu();
     creditMenu->box.size.x = 150;
+    creditMenu->module = module;
 
     ScrollWidget *creditScroll = new ScrollWidget();
     creditScroll->container->addChild(creditMenu);
     y_pos = y_pos + 50;
     creditScroll->box.pos = Vec(5, y_pos);
-    creditScroll->box.size = Vec(100, box.size.y - y_pos);
+    // creditScroll->box.size = Vec(100, box.size.y - y_pos);
+    creditScroll->box.size = Vec(200, 300);
     addChild(creditScroll);
 
 
 }
 
+void CreditsWidget::step() {
+    Widget::step();
+    // debug("CreditsWidget.step");
+}
 
 void CreditsWidget::addCreditTextEntry(CreditData *credit_data, float x_pos, float y_pos) {
     debug("setting up widgets for credits: %s", credit_data->author_name.c_str());

@@ -29,5 +29,7 @@ struct CreditData {
 struct CreditsWidget : ModuleWidget {
     CreditsWidget();
     void addCreditTextEntry(CreditData *credit_data, float x_pos, float y_pos);
+
+    void step() override;
 };
 

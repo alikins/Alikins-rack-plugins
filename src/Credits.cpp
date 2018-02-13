@@ -275,7 +275,7 @@ struct CreditMenu : ListMenu {
             for (CreditData *vcredit_data : module->vcredits) {
                 debug("CreditMenu.override addChild for %s", vcredit_data->author_name.c_str());
                 addChild(construct<CreditItem>(&MenuEntry::text, vcredit_data->author_name));
-                addChild(construct<MenuLabel>(&MenuLabel::text, vcredit_data->author_name));
+                //addChild(construct<MenuLabel>(&MenuLabel::text, vcredit_data->author_name));
             }
             module->credits_set = true;
 
@@ -285,7 +285,7 @@ struct CreditMenu : ListMenu {
 
     CreditMenu() {
         debug("CreditMenu constructor");
-        addChild(construct<MenuLabel>(&MenuLabel::text, "Creditss"));
+        addChild(construct<MenuLabel>(&MenuLabel::text, "Credits"));
 
     }
 };
@@ -299,8 +299,8 @@ CreditsWidget::CreditsWidget() {
     setModule(module);
     setPanel(SVG::load(assetPlugin(plugin, "res/Credits.svg")));
 
-    addChild(createScrew<ScrewSilver>(Vec(5, 0)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 20, 365)));
+    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 20, 0)));
+    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 50, 365)));
 
     float x_start = 5.0;
     float y_start = 10.0;
@@ -324,7 +324,6 @@ CreditsWidget::CreditsWidget() {
 
     ScrollWidget *creditScroll = new ScrollWidget();
     creditScroll->container->addChild(creditMenu);
-    y_pos = y_pos + 50;
     creditScroll->box.pos = Vec(5, y_pos);
     // creditScroll->box.size = Vec(100, box.size.y - y_pos);
     creditScroll->box.size = Vec(200, 300);

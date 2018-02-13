@@ -277,7 +277,7 @@ struct MsDisplayWidget : TransparentWidget {
 IdleSwitchWidget::IdleSwitchWidget() {
     IdleSwitch *module = new IdleSwitch();
     setModule(module);
-    setPanel(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
+    // setPanel(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
 
     addChild(createScrew<ScrewSilver>(Vec(5, 0)));
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 20, 365)));

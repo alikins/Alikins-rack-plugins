@@ -1875,9 +1875,9 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.6789474"
      inkscape:cx="60"
-     inkscape:cy="190"
+     inkscape:cy="276.1729"
      inkscape:document-units="px"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="layer7"
      showgrid="false"
      units="px"
      inkscape:snap-bbox="false"
@@ -1992,7 +1992,7 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-196.45832)"
-     style="display:inline;opacity:1">
+     style="display:none;opacity:1">
     <path
        style="opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:3.00938988;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
        d="M -0.71473359,197.88778 H 240.78996 v 380 H -0.71473359 Z"
@@ -2089,9 +2089,22 @@
   </g>
   <g
      inkscape:groupmode="layer"
+     id="layer7"
+     inkscape:label="background">
+    <rect
+       style="opacity:0.722;fill:#e6e6e6;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.05679405;stroke-miterlimit:4;stroke-dasharray:0, 11.62473388999999990;stroke-dashoffset:0;stroke-opacity:0.00485439"
+       id="rect1293"
+       width="251.7054"
+       height="385.12234"
+       x="-5.8370304"
+       y="-3.4545848"
+       ry="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
      id="layer6"
      inkscape:label="boxes"
-     style="display:inline">
+     style="display:none">
     <rect
        style="display:inline;opacity:0.37037036;fill:#d4ff2a;fill-opacity:0.97536944;fill-rule:evenodd;stroke:#000000;stroke-width:0.95056009;stroke-miterlimit:4;stroke-dasharray:0, 10.45616078;stroke-dashoffset:0;stroke-opacity:0.00485439;enable-background:new"
        id="rect2093"

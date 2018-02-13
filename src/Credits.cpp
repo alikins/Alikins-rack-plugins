@@ -260,10 +260,12 @@ struct CreditMenu : ListMenu {
 
     void step() override {
         info("CreditMenu.step");
+        info("vcredits.empty(): %i", vcredits.size());
         if (vcredits.empty()) {
             for (CreditData *vcredit_data : vcredits) {
                 debug("CreditMenu.override addChild for %s", vcredit_data->author_name.c_str());
                 addChild(construct<CreditItem>(&MenuEntry::text, vcredit_data->author_name));
+                addChild(construct<MenuLabel>(&MenuLabel::text, vcredit_data->author_name));
             }
 
         }
@@ -301,13 +303,15 @@ CreditsWidget::CreditsWidget() {
     float y_pos = y_start;
 
     debug("CreditsWidget");
+    module->vcredits.push_back(module->default_credit);
+    /*
     for (CreditData *vcredit : module->vcredits) {
         debug("setting up widgets for credits: %s", vcredit->author_name.c_str());
         addCreditTextEntry(vcredit, x_pos, y_pos);
         y_pos = y_pos + 30;
     }
-
-    addCreditTextEntry(module->default_credit, x_pos, y_pos + 20);
+    */
+    // addCreditTextEntry(module->default_credit, x_pos, y_pos + 20);
 
     CreditMenu *creditMenu = new CreditMenu(module->vcredits);
     creditMenu->box.size.x = 150;
@@ -315,8 +319,8 @@ CreditsWidget::CreditsWidget() {
     ScrollWidget *creditScroll = new ScrollWidget();
     creditScroll->container->addChild(creditMenu);
     y_pos = y_pos + 50;
-    creditScroll->box.pos = Vec(0, y_pos);
-    creditScroll->box.size = Vec(0, box.size.y - y_pos);
+    creditScroll->box.pos = Vec(5, y_pos);
+    creditScroll->box.size = Vec(100, box.size.y - y_pos);
     addChild(creditScroll);
 
 

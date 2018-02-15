@@ -4,7 +4,7 @@
 
 #include "alikins.hpp"
 #include "dsp/digital.hpp"
-#include "util.hpp"
+// #include "util.hpp"
 
 
 /* IdleSwitch
@@ -145,7 +145,7 @@ void IdleSwitch::step() {
     } else {
         deltaTime = params[TIME_PARAM].value;
         if (inputs[TIME_INPUT].active) {
-            deltaTime += clampf(inputs[TIME_INPUT].value, 0.0, 10.0);
+            deltaTime += clamp(inputs[TIME_INPUT].value, 0.0f, 10.0f);
         }
 
         // TODO: refactor into submethods if not subclass
@@ -214,7 +214,7 @@ void IdleSwitch::step() {
     // once clock input works, could add an output to indicate how long between clock
     // If in pulse mode, deltaTime can be larger than 10s internal, but the max output
     // to "Time output" is 10V. ie, after 10s the "Time Output" stops increasing.
-    outputs[TIME_OUTPUT].value = clampf(deltaTime, 0.0, 10.0);
+    outputs[TIME_OUTPUT].value = clamp(deltaTime, 0.0f, 10.0f);
     outputs[IDLE_GATE_OUTPUT].value = idleGateOutput;
 
     outputs[IDLE_START_OUTPUT].value = idleStartPulse.process(1.0/engineGetSampleRate()) ? 10.0 : 0.0;
@@ -268,17 +268,20 @@ struct MsDisplayWidget : TransparentWidget {
 };
 
 
-IdleSwitchWidget::IdleSwitchWidget() {
-    IdleSwitch *module = new IdleSwitch();
-    setModule(module);
+struct IdleSwitchWidget : ModuleWidget {
+    IdleSwitchWidget(IdleSwitch *module);
+};
+
+
+IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     setPanel(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
 
-    addChild(createScrew<ScrewSilver>(Vec(5, 0)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x - 20, 365)));
+    addChild(Widget::create<ScrewSilver>(Vec(5, 0)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 20, 365)));
 
-    addInput(createInput<PJ301MPort>(Vec(37, 30.0), module, IdleSwitch::INPUT_SOURCE_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(37, 70.0), module, IdleSwitch::HEARTBEAT_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(70, 70.0), module, IdleSwitch::PULSE_INPUT));
+    addInput(Port::create<PJ301MPort>(Vec(37, 30.0), Port::INPUT, module, IdleSwitch::INPUT_SOURCE_INPUT));
+    addInput(Port::create<PJ301MPort>(Vec(37, 70.0), Port::INPUT, module, IdleSwitch::HEARTBEAT_INPUT));
+    addInput(Port::create<PJ301MPort>(Vec(70, 70.0), Port::INPUT, module, IdleSwitch::PULSE_INPUT));
 
     // idle time display
     // FIXME: handle large IdleTimeoutMs (> 99999ms) better
@@ -288,9 +291,9 @@ IdleSwitchWidget::IdleSwitchWidget() {
     idle_time_display->value = &module->idleTimeoutMS;
     addChild(idle_time_display);
 
-    addInput(createInput<PJ301MPort>(Vec(10, 165.0), module, IdleSwitch::TIME_INPUT));
-    addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 160.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
-    addOutput(createOutput<PJ301MPort>(Vec(80, 165.0), module, IdleSwitch::TIME_OUTPUT));
+    addInput(Port::create<PJ301MPort>(Vec(10, 165.0), Port::INPUT, module, IdleSwitch::TIME_INPUT));
+    addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(38.86, 160.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
+    addOutput(Port::create<PJ301MPort>(Vec(80, 165.0), Port::OUTPUT, module, IdleSwitch::TIME_OUTPUT));
 
     MsDisplayWidget *time_remaining_display = new MsDisplayWidget();
     time_remaining_display->box.pos = Vec(20, 235);
@@ -298,8 +301,11 @@ IdleSwitchWidget::IdleSwitchWidget() {
     time_remaining_display->value = &module->idleTimeLeftMS;
     addChild(time_remaining_display);
 
-    addOutput(createOutput<PJ301MPort>(Vec(10, 295.0), module, IdleSwitch::IDLE_START_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(47.5, 295.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(85, 295.0), module, IdleSwitch::IDLE_END_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(10, 295.0), Port::OUTPUT, module, IdleSwitch::IDLE_START_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(47.5, 295.0), Port::OUTPUT, module, IdleSwitch::IDLE_GATE_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(85, 295.0), Port::OUTPUT, module, IdleSwitch::IDLE_END_OUTPUT));
 
 }
+
+Model *modelIdleSwitch = Model::create<IdleSwitch, IdleSwitchWidget>(
+        "Alikins", "IdleSwitch", "Idle Switch", SWITCH_TAG  , UTILITY_TAG);

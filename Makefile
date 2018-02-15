@@ -1,7 +1,8 @@
 SLUG = Alikins
-VERSION = 0.5.2
+VERSION = 0.6.0dev
 
-PLUGIN_SDK ?= ../..
+RACK_DIR ?= ../..
+
 # FLAGS will be passed to both the C and C++ compiler
 FLAGS +=
 CFLAGS +=
@@ -14,9 +15,8 @@ LDFLAGS +=
 # Add .cpp and .c files to the build
 SOURCES = $(wildcard src/*.cpp)
 
-
 # Must include the VCV plugin Makefile framework
-include $(PLUGIN_SDK)/plugin.mk
+include $(RACK_DIR)/plugin.mk
 
 # http://cppcheck.sourceforge.net/
 cppcheck:

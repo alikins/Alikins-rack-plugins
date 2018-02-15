@@ -14,10 +14,8 @@ void init(rack::Plugin *p) {
     p->website = "https://github.com/alikins/Alikins-rack-plugins";
     p->manual = "https://github.com/alikins/alikins-rack-plugins/blob/master/README.md";
 
-    p->addModel(createModel<MomentaryOnButtonsWidget>("Alikins", "MomentaryOnButtons", "Momentary On Buttons", UTILITY_TAG));
-
-    p->addModel(createModel<IdleSwitchWidget>("Alikins", "IdleSwitch", "Idle Switch", SWITCH_TAG, UTILITY_TAG));
-
+    p->addModel(modelIdleSwitch);
+    p->addModel(modelMomentaryOnButtons);
     // Any other plugin initialization may go here.
     // As an alternative, consider lazy-loading assets and lookup tables when your module is created to reduce startup times of Rack.
 }

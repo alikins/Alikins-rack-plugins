@@ -94,9 +94,12 @@ void MomentaryOnButtons::step() {
 }
 
 
-MomentaryOnButtonsWidget::MomentaryOnButtonsWidget() {
-    MomentaryOnButtons *module = new MomentaryOnButtons();
-    setModule(module);
+struct MomentaryOnButtonsWidget : ModuleWidget {
+    MomentaryOnButtonsWidget(MomentaryOnButtons *module);
+};
+
+
+MomentaryOnButtonsWidget::MomentaryOnButtonsWidget(MomentaryOnButtons *module) : ModuleWidget(module) {
     box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
     int x_offset = 0;
@@ -118,10 +121,10 @@ MomentaryOnButtonsWidget::MomentaryOnButtonsWidget() {
     }
 
     /*
-       addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-       addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-       addChild(createScrew<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-       addChild(createScrew<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+       addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+       addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+       addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+       addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
        */
 
     for (int i = 0; i < MOMENTARY_BUTTONS; i++) {
@@ -129,9 +132,12 @@ MomentaryOnButtonsWidget::MomentaryOnButtonsWidget() {
         x_pos = x_start + x_offset;
         y_pos = y_start + (i * y_offset);
 
-        addParam(createParam<LEDButton>(Vec(x_pos + light_radius, y_pos + 3), module, MomentaryOnButtons::BUTTON1_PARAM + i, 0.0, 1.0, 0.0));
-        addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + 5 + light_radius, y_pos + light_radius), module, MomentaryOnButtons::BLINK1_LIGHT + i));
+        addParam(ParamWidget::create<LEDButton>(Vec(x_pos + light_radius, y_pos + 3), module, MomentaryOnButtons::BUTTON1_PARAM + i, 0.0, 1.0, 0.0));
+        addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(x_pos + 5 + light_radius, y_pos + light_radius), module, MomentaryOnButtons::BLINK1_LIGHT + i));
 
-        addOutput(createOutput<PJ301MPort>(Vec(x_pos + 20 + light_radius, y_pos), module, MomentaryOnButtons::BUTTON1_OUTPUT + i));
+        addOutput(Port::create<PJ301MPort>(Vec(x_pos + 20 + light_radius, y_pos), Port::OUTPUT, module, MomentaryOnButtons::BUTTON1_OUTPUT + i));
     }
 }
+
+Model *modelMomentaryOnButtons = Model::create<MomentaryOnButtons, MomentaryOnButtonsWidget>(
+        "Alikins", "MomentaryOnButtons", "Momentary On Buttons", UTILITY_TAG);

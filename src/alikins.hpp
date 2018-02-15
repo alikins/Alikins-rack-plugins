@@ -11,11 +11,5 @@ extern Plugin *plugin;
 // module widgets
 ////////////////////
 
-struct MomentaryOnButtonsWidget : ModuleWidget {
-    MomentaryOnButtonsWidget();
-};
-
-struct IdleSwitchWidget : ModuleWidget {
-    IdleSwitchWidget();
-};
-
+extern Model *modelIdleSwitch;
+extern Model *modelMomentaryOnButtons;

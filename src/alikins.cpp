@@ -1,18 +1,16 @@
 #include "alikins.hpp"
 
-
 // The plugin-wide instance of the Plugin class
 Plugin *plugin;
 
 void init(rack::Plugin *p) {
     plugin = p;
     // This is the unique identifier for your plugin
-    p->slug = "Alikins";
-#ifdef VERSION
+    p->slug = TOSTRING(SLUG);
     p->version = TOSTRING(VERSION);
-#endif
+
     p->website = "https://github.com/alikins/Alikins-rack-plugins";
-    p->manual = "https://github.com/alikins/alikins-rack-plugins/blob/master/README.md";
+    p->manual = "https://github.com/alikins/Alikins-rack-plugins/blob/master/README.md";
 
     p->addModel(createModel<MomentaryOnButtonsWidget>("Alikins", "MomentaryOnButtons", "Momentary On Buttons", UTILITY_TAG));
 

@@ -69,6 +69,7 @@ struct IdleSwitch : Module {
         HEARTBEAT_INPUT,
         TIME_INPUT,
         PULSE_INPUT,
+        SWITCHED_INPUT,
         NUM_INPUTS
     };
     enum OutputIds {
@@ -77,7 +78,8 @@ struct IdleSwitch : Module {
         IDLE_START_OUTPUT,
         IDLE_END_OUTPUT,
         FRAME_COUNT_OUTPUT,
-
+        ON_WHEN_IDLE_OUTPUT,
+        OFF_WHEN_IDLE_OUTPUT,
         NUM_OUTPUTS
     };
     enum LightIds {
@@ -183,9 +185,13 @@ void IdleSwitch::step() {
 
     if (is_idle) {
         idleGateOutput = 10.0;
+        outputs[ON_WHEN_IDLE_OUTPUT].value = inputs[SWITCHED_INPUT].value;
+        outputs[OFF_WHEN_IDLE_OUTPUT].value = 0.0f;
 
     } else {
         idleGateOutput = 0.0;
+        outputs[ON_WHEN_IDLE_OUTPUT].value = 0.0f;
+        outputs[OFF_WHEN_IDLE_OUTPUT].value = inputs[SWITCHED_INPUT].value;
 
         is_idle = false;
 
@@ -279,32 +285,35 @@ IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     addChild(Widget::create<ScrewSilver>(Vec(5, 0)));
     addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 20, 365)));
 
-    addInput(Port::create<PJ301MPort>(Vec(37, 30.0), Port::INPUT, module, IdleSwitch::INPUT_SOURCE_INPUT));
-    addInput(Port::create<PJ301MPort>(Vec(37, 70.0), Port::INPUT, module, IdleSwitch::HEARTBEAT_INPUT));
-    addInput(Port::create<PJ301MPort>(Vec(70, 70.0), Port::INPUT, module, IdleSwitch::PULSE_INPUT));
+    addInput(Port::create<PJ301MPort>(Vec(37, 20.0), Port::INPUT, module, IdleSwitch::INPUT_SOURCE_INPUT));
+    addInput(Port::create<PJ301MPort>(Vec(37, 60.0), Port::INPUT, module, IdleSwitch::HEARTBEAT_INPUT));
+    addInput(Port::create<PJ301MPort>(Vec(70, 60.0), Port::INPUT, module, IdleSwitch::PULSE_INPUT));
 
     // idle time display
     // FIXME: handle large IdleTimeoutMs (> 99999ms) better
     MsDisplayWidget *idle_time_display = new MsDisplayWidget();
-    idle_time_display->box.pos = Vec(20, 130);
+    idle_time_display->box.pos = Vec(20, 115);
     idle_time_display->box.size = Vec(70, 24);
     idle_time_display->value = &module->idleTimeoutMS;
     addChild(idle_time_display);
 
-    addInput(Port::create<PJ301MPort>(Vec(10, 165.0), Port::INPUT, module, IdleSwitch::TIME_INPUT));
-    addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(38.86, 160.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
-    addOutput(Port::create<PJ301MPort>(Vec(80, 165.0), Port::OUTPUT, module, IdleSwitch::TIME_OUTPUT));
+    addInput(Port::create<PJ301MPort>(Vec(10, 155.0), Port::INPUT, module, IdleSwitch::TIME_INPUT));
+    addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
+    addOutput(Port::create<PJ301MPort>(Vec(80, 155.0), Port::OUTPUT, module, IdleSwitch::TIME_OUTPUT));
 
     MsDisplayWidget *time_remaining_display = new MsDisplayWidget();
-    time_remaining_display->box.pos = Vec(20, 235);
+    time_remaining_display->box.pos = Vec(20, 225);
     time_remaining_display->box.size = Vec(70, 24);
     time_remaining_display->value = &module->idleTimeLeftMS;
     addChild(time_remaining_display);
 
-    addOutput(Port::create<PJ301MPort>(Vec(10, 295.0), Port::OUTPUT, module, IdleSwitch::IDLE_START_OUTPUT));
-    addOutput(Port::create<PJ301MPort>(Vec(47.5, 295.0), Port::OUTPUT, module, IdleSwitch::IDLE_GATE_OUTPUT));
-    addOutput(Port::create<PJ301MPort>(Vec(85, 295.0), Port::OUTPUT, module, IdleSwitch::IDLE_END_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(10, 263.0), Port::OUTPUT, module, IdleSwitch::IDLE_START_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(47.5, 263.0), Port::OUTPUT, module, IdleSwitch::IDLE_GATE_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(85, 263.0), Port::OUTPUT, module, IdleSwitch::IDLE_END_OUTPUT));
 
+    addInput(Port::create<PJ301MPort>(Vec(10.0f, 315.0f), Port::INPUT, module, IdleSwitch::SWITCHED_INPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(47.5f, 315.0f), Port::OUTPUT, module, IdleSwitch::ON_WHEN_IDLE_OUTPUT));
+    addOutput(Port::create<PJ301MPort>(Vec(85.0f, 315.0f), Port::OUTPUT, module, IdleSwitch::OFF_WHEN_IDLE_OUTPUT));
 }
 
 Model *modelIdleSwitch = Model::create<IdleSwitch, IdleSwitchWidget>(

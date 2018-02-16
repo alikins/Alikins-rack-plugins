@@ -194,7 +194,6 @@ void IdleSwitch::step() {
         outputs[OFF_WHEN_IDLE_OUTPUT].value = inputs[SWITCHED_INPUT].value;
 
         is_idle = false;
-
         // if we arent idle yet, the idleTimeLeft is changing and we need to update time remaining display
         // update idletimeLeftMS which drives the digit display widget
         idleTimeLeftMS = time_left_s*1000;
@@ -277,7 +276,7 @@ struct MsDisplayWidget : TransparentWidget {
 IdleSwitchWidget::IdleSwitchWidget() {
     IdleSwitch *module = new IdleSwitch();
     setModule(module);
-    // setPanel(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
+    setPanel(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
 
     addChild(createScrew<ScrewSilver>(Vec(5, 0)));
     addChild(createScrew<ScrewSilver>(Vec(box.size.x - 20, 365)));

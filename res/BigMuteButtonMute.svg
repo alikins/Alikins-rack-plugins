@@ -3567,12 +3567,12 @@
      transform="translate(0,-276.45832)"
      style="display:inline;opacity:0.79000005">
     <rect
-       style="display:inline;opacity:1;fill:#ff0000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.95040202;stroke-miterlimit:4;stroke-dasharray:0, 10.4544212;stroke-dashoffset:0;stroke-opacity:0.00485439"
+       style="display:inline;opacity:1;fill:#ff0000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.96094292;stroke-miterlimit:4;stroke-dasharray:0, 10.57037265;stroke-dashoffset:0;stroke-opacity:0.00485439"
        id="rect1547"
-       width="89.049599"
-       height="300.61703"
-       x="0.47520101"
-       y="275.36612"
+       width="91.039055"
+       height="300.60666"
+       x="-0.51952851"
+       y="275.37161"
        inkscape:label="red" />
     <rect
        inkscape:label="green"

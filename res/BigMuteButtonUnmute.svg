@@ -10,9 +10,9 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="120"
+   width="90"
    height="300"
-   viewBox="0 0 120 300"
+   viewBox="0 0 90 300"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 5c3e80d, 2017-08-06"
@@ -1930,12 +1930,12 @@
      inkscape:groupmode="layer"
      inkscape:label="Layer 1">
     <rect
-       y="275.36609"
-       x="0.47520098"
-       height="300.617"
-       width="89.049599"
+       y="275.37158"
+       x="-0.51952851"
+       height="300.60663"
+       width="91.039055"
        id="rect1547"
-       style="opacity:1;fill:#008000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.95040196;stroke-miterlimit:4;stroke-dasharray:0, 10.45442105000000055;stroke-dashoffset:0;stroke-opacity:0.00485439" />
+       style="opacity:1;fill:#008000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.96094292;stroke-miterlimit:4;stroke-dasharray:0, 10.57037211;stroke-dashoffset:0;stroke-opacity:0.00485439" />
   </g>
   <g
      style="display:none"

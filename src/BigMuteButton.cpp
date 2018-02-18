@@ -42,34 +42,45 @@ struct BigSwitch : SVGSwitch, ToggleSwitch {
     }
 };
 
-BigMuteButtonWidget::BigMuteButtonWidget() {
-    BigMuteButton *module = new BigMuteButton();
-    setModule(module);
+
+struct BigMuteButtonWidget : ModuleWidget {
+    BigMuteButtonWidget(BigMuteButton *module);
+};
+
+
+BigMuteButtonWidget::BigMuteButtonWidget(BigMuteButton *module) : ModuleWidget(module) {
 
     box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     setPanel(SVG::load(assetPlugin(plugin, "res/BigMuteButton.svg")));
 
-    addParam(createParam<BigSwitch>(Vec(0.0f, 0.0f),
+    addParam(ParamWidget::create<BigSwitch>(Vec(0.0f, 0.0f),
                 module,
                 BigMuteButton::BIG_MUTE_BUTTON_PARAM,
                 0.0, 1.0, 0.0));
 
-    addInput(createInput<PJ301MPort>(Vec(4.0f, 302.0f),
+    addInput(Port::create<PJ301MPort>(Vec(4.0f, 302.0f),
+                Port::INPUT,
                 module,
                 BigMuteButton::LEFT_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(4.0f, 330.0f),
+    addInput(Port::create<PJ301MPort>(Vec(4.0f, 330.0f),
+                Port::INPUT,
                 module,
                 BigMuteButton::RIGHT_INPUT));
 
-    addOutput(createOutput<PJ301MPort>(Vec(60.0f, 302.0f),
+    addOutput(Port::create<PJ301MPort>(Vec(60.0f, 302.0f),
+                Port::OUTPUT,
                 module,
                 BigMuteButton::LEFT_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(60.0f, 330.0f),
+    addOutput(Port::create<PJ301MPort>(Vec(60.0f, 330.0f),
+                Port::OUTPUT,
                 module,
                 BigMuteButton::RIGHT_OUTPUT));
 
-    addChild(createScrew<ScrewSilver>(Vec(0.0, 0)));
-    addChild(createScrew<ScrewSilver>(Vec(box.size.x-15, 0)));
-    addChild(createScrew<ScrewSilver>(Vec(30, 365)));
+    addChild(Widget::create<ScrewSilver>(Vec(0.0, 0)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x-15, 0)));
+    addChild(Widget::create<ScrewSilver>(Vec(30, 365)));
 
 }
+
+Model *modelBigMuteButton = Model::create<BigMuteButton, BigMuteButtonWidget>(
+        "Alikins", "BigMuteButton", "Big Mute Button", UTILITY_TAG);

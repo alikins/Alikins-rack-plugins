@@ -1,4 +1,6 @@
 build/
 dist/
+dist-archive/
+res-src/
 .DS_Store
 plugin.dylib

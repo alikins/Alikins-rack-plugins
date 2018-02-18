@@ -4,7 +4,7 @@
 
 struct BigMuteButton : Module {
     enum ParamIds {
-        BIG_RED_BUTTON_PARAM,
+        BIG_MUTE_BUTTON_PARAM,
         NUM_PARAMS
     };
     enum InputIds {
@@ -18,7 +18,6 @@ struct BigMuteButton : Module {
         NUM_OUTPUTS
     };
     enum LightIds {
-        MUTE_LIGHT,
         NUM_LIGHTS
     };
 
@@ -34,20 +33,24 @@ struct BigMuteButton : Module {
 
 
 void BigMuteButton::step() {
-    if (params[BIG_RED_BUTTON_PARAM].value) {
-        outputs[LEFT_OUTPUT].value = inputs[LEFT_INPUT].value
-        outputs[RIGHT_OUTPUT].value = inputs[RIGHT_INPUT].value
-        lights[MUTED_LIGHT].setBrightness(1.0);
+    if (params[BIG_MUTE_BUTTON_PARAM].value) {
+        outputs[LEFT_OUTPUT].value = inputs[LEFT_INPUT].value;
+        outputs[RIGHT_OUTPUT].value = inputs[RIGHT_INPUT].value;
     }
 
 }
 
+struct BigSwitch : SVGSwitch, ToggleSwitch {
+    BigSwitch() {
+        addFrame(SVG::load(assetPlugin(plugin, "res/BigMuteButtonUnmute.svg")));
+        addFrame(SVG::load(assetPlugin(plugin, "res/BigMuteButtonMute.svg")));
+    }
+};
 
 BigMuteButtonWidget::BigMuteButtonWidget() {
     BigMuteButton *module = new BigMuteButton();
     setModule(module);
-    box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-
+    box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
     {
         SVGPanel *panel = new SVGPanel();
@@ -56,9 +59,12 @@ BigMuteButtonWidget::BigMuteButtonWidget() {
         addChild(panel);
     }
 
-    addParam(createParam<LEDButton>(Vec(0,0), module, BigMuteButton::BIG_REG_BUTTON_PARAM + i, 0.0, 1.0, 0.0));
-    addChild(createLight<MediumLight<RedLight>>(Vec(0, 0), module, BigMuteButton::MUTED_LIGHT + i));
+    addParam(createParam<BigSwitch>(Vec(0.0f, 0.0f), module, BigMuteButton::BIG_MUTE_BUTTON_PARAM, 0.0, 1.0, 0.0));
 
-    addOutput(createOutput<PJ301MPort>(Vec(x_pos + 20 + light_radius, y_pos), module, BigMuteButton::BUTTON1_OUTPUT + i));
+    addInput(createInput<PJ301MPort>(Vec(5.0f, 310.0f), module, BigMuteButton::LEFT_INPUT));
+    addInput(createInput<PJ301MPort>(Vec(5.0f, 340.0f), module, BigMuteButton::RIGHT_INPUT));
+
+    addOutput(createOutput<PJ301MPort>(Vec(50.0f, 310.0f), module, BigMuteButton::LEFT_OUTPUT));
+    addOutput(createOutput<PJ301MPort>(Vec(50.0f, 340.0f), module, BigMuteButton::RIGHT_OUTPUT));
 
 }

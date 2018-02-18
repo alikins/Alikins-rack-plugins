@@ -1,5 +1,4 @@
 #include "alikins.hpp"
-#include <stdio.h>
 
 
 struct BigMuteButton : Module {

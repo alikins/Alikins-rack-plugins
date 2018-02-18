@@ -25,10 +25,6 @@ struct BigMuteButton : Module {
     BigMuteButton() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
     void step() override;
 
-    // For more advanced Module features, read Rack's engine.hpp header file
-    // - toJson, fromJson: serialization of internal data
-    // - onSampleRateChange: event triggered by a change of sample rate
-    // - reset, randomize: implements special behavior when user clicks these from the context menu
 };
 
 

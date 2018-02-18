@@ -19,3 +19,7 @@ struct IdleSwitchWidget : ModuleWidget {
     IdleSwitchWidget();
 };
 
+struct BigMuteButtonWidget : ModuleWidget {
+    BigMuteButtonWidget();
+};
+

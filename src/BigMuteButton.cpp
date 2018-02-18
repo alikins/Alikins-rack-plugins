@@ -49,15 +49,24 @@ BigMuteButtonWidget::BigMuteButtonWidget() {
     box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     setPanel(SVG::load(assetPlugin(plugin, "res/BigMuteButton.svg")));
 
-    // addChild(createScrew<ScrewSilver>(Vec(box.size.x-30, 365)));
+    addParam(createParam<BigSwitch>(Vec(0.0f, 0.0f),
+                module,
+                BigMuteButton::BIG_MUTE_BUTTON_PARAM,
+                0.0, 1.0, 0.0));
 
-    addParam(createParam<BigSwitch>(Vec(0.0f, 0.0f), module, BigMuteButton::BIG_MUTE_BUTTON_PARAM, 0.0, 1.0, 0.0));
+    addInput(createInput<PJ301MPort>(Vec(4.0f, 302.0f),
+                module,
+                BigMuteButton::LEFT_INPUT));
+    addInput(createInput<PJ301MPort>(Vec(4.0f, 330.0f),
+                module,
+                BigMuteButton::RIGHT_INPUT));
 
-    addInput(createInput<PJ301MPort>(Vec(4.0f, 302.0f), module, BigMuteButton::LEFT_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(4.0f, 330.0f), module, BigMuteButton::RIGHT_INPUT));
-
-    addOutput(createOutput<PJ301MPort>(Vec(60.0f, 302.0f), module, BigMuteButton::LEFT_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(60.0f, 330.0f), module, BigMuteButton::RIGHT_OUTPUT));
+    addOutput(createOutput<PJ301MPort>(Vec(60.0f, 302.0f),
+                module,
+                BigMuteButton::LEFT_OUTPUT));
+    addOutput(createOutput<PJ301MPort>(Vec(60.0f, 330.0f),
+                module,
+                BigMuteButton::RIGHT_OUTPUT));
 
     addChild(createScrew<ScrewSilver>(Vec(0.0, 0)));
     addChild(createScrew<ScrewSilver>(Vec(box.size.x-15, 0)));

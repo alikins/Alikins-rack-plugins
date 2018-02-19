@@ -22,7 +22,7 @@ Sort of metaphoricaly like an idle handler or timeout in event based
 programming like GUI main loops.
 
 The timeout period is set by the value
-of the 'Time before idle' param.
+of the "Time before idle" param.
 
 ##### Input event
 
@@ -31,21 +31,21 @@ that looks sufficently like a gate or trigger).
 
 After a input event, the Idle Gate Output will remain on until
 an input event is seen at Input Source. When there is an input event, the Idle
-Gate Output is turned off until the expiration of the 'Time before idle' or
-the next 'Reset idle'.
+Gate Output is turned off until the expiration of the "Time before idle" or
+the next "Reset idle".
 
 ##### Reset timer
 
-If there is a 'Reset timer' source, when it gets an event, the timeout period
-is reset. But unlike an "Input event", a 'Reset timer' event does does not
+If there is a "Reset timer" source, when it gets an event, the timeout period
+is reset. But unlike an "Input event", a "Reset timer" event does does not
 reset the idle status.
 
 After "Reset time" event, the "Idle Gate Output" will remain on until
 an input event is seen at Input Source. When there is an input event, the Idle
-Gate Output is turned off until the expiration of the 'Time before idle' or
-the next 'Reset idle'.
+Gate Output is turned off until the expiration of the "Time before idle" or
+the next "Reset idle".
 
-To use the eventloop/gui main loop analogy, a 'Reset idle' event is equilivent to
+To use the eventloop/gui main loop analogy, a "Reset idle" event is equilivent to
 running an idle handler directly (or running a mainloop iteration with no non-idle
 events pending).
 
@@ -76,6 +76,38 @@ In "Clock input" mode, the "Time Output" will correspond with the
 "Time before idle" display until the time is over 10s, then the
 "Time output" will max out at 10V.
 
+##### Gate Output and idle start and end trigger outputs
+
+Once the idle timeout has expired, the "gate output" output
+will go high (+10V) and stay high until there are new input
+source events. ie, it turns on when there is no actively for
+the "Time before idle" length of time.
+
+The "start out" output will send a +10V trigger at the start
+of idle, at the start of the "gate out" gate.
+
+The "end out" output will send a +10V trigger at the end of
+idle, at the end of the "gate out" gate. This also corresponds
+to the same time as when a new "Input source" event is detected.
+
+"start of" trigger == "we have gone idle"
+"end of" trigger == "we got input source events (activity) and am no
+longer idle.
+
+##### Switched input and output
+
+The "Input" is switched between "When idle" and
+"Off idle" outputs based on idle state.
+
+The "Input" port on the bottom left can be any input.
+
+The "Input" will be routed to the "When idle" output if idle.
+Otherwise, the "Input" is routed to the "Off idle" output.
+
+Note the "Input" does not have to be related to the input connected
+to the "Input source". "Input source" typically needs to be triggers
+or gates, but "Input" can be any signal.
+
 #### Why
 
 Original intentional was to use in combo with a human player and midi/cv keyboard.
@@ -85,11 +117,23 @@ loud drone when idle, but would turn the drone off or down when the human played
 and then turn it back on when it stopped. Or maybe it could be used to start an
 drum fill...
 
-The 'Reset idle' input allows this be kind of synced to a clock, beat, or sequence.
+The "Reset idle" input allows this be kind of synced to a clock, beat, or sequence.
 In the dronevexample above, the drone would then only come back in on a beat.
 
 And perhaps most importantly, it can be used to do almost random output and
 make weird noises.
+
+### BigMuteButton
+
+A big mute button.
+
+Use just before output to the audio interface module.
+
+When clicked, will mute the output output. Will unmute on next
+click.
+
+Easier/quicker than adjusting mixer levels, or system volume, or finding
+the tiny mute button on mixers.
 
 ### MomentaryOnButtons
 

@@ -14,3 +14,4 @@ extern Plugin *plugin;
 extern Model *modelIdleSwitch;
 extern Model *modelMomentaryOnButtons;
 extern Model *modelBigMuteButton;
+extern Model *modelRGB;;

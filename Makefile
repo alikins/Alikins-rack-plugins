@@ -20,11 +20,11 @@ include $(RACK_DIR)/plugin.mk
 
 # http://cppcheck.sourceforge.net/
 cppcheck:
-	cppcheck -i../../dep/include -i../../include --enable=style -DVERSION=0.5.1 --quiet src/
+	cppcheck -i$(RACK_DIR)/dep/include -i$(RACK_DIR)/include --enable=style -DVERSION=0.5.1 --quiet src/
 
 # https://github.com/google/styleguide
 cpplint:
-	cpplint --headers=hpp --filter=-whitespace/line_length,-legal/copyright,whitespace/blank_line src/*.cpp src/*.hpp
+	cpplint --headers=hpp --filter=-whitespace/line_length,-legal/copyright,-whitespace/blank_line src/*.cpp src/*.hpp
 
 
 DISTRIBUTABLES += $(wildcard LICENSE*) res

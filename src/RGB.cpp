@@ -35,6 +35,13 @@ struct RGB : Module {
     const float in_min[2] = {0.0, -5.0};
     const float in_max[2] = {10.0, 5.0};
 
+    enum ColorMode {
+        RGB_MODE,
+        HSL_MODE,
+    };
+
+    ColorMode colorMode = HSL_MODE;
+
     RGB() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
     void step() override;
 
@@ -47,6 +54,7 @@ json_t* RGB::toJson() {
     json_t *rootJ = json_object();
 
     json_object_set_new(rootJ, "inputRange", json_integer(inputRange));
+    json_object_set_new(rootJ, "colorMode", json_integer(colorMode));
 
     return rootJ;
 };
@@ -55,6 +63,11 @@ void RGB::fromJson(json_t *rootJ) {
     json_t *inputRangeJ = json_object_get(rootJ, "inputRange");
     if (inputRangeJ) {
         inputRange = (InputRange) json_integer_value(inputRangeJ);
+    }
+
+    json_t *colorModeJ = json_object_get(rootJ, "colorMode");
+    if (colorModeJ) {
+        colorMode = (ColorMode) json_integer_value(colorModeJ);
     }
 };
 
@@ -76,6 +89,7 @@ void RGB::step() {
 
 struct RGBPanel : TransparentWidget {
     RGB *module;
+    RGB::ColorMode colorMode;
 
     // std::vector<CreditData*> vcredits;
     float red = 0.5f;
@@ -90,11 +104,16 @@ struct RGBPanel : TransparentWidget {
         red = module->red;
         green = module->green;
         blue = module->blue;
+        colorMode = module->colorMode;
     }
 
     void draw(NVGcontext *vg) override {
+        // FIXME: not really red, green, blue anymore
         // debug("RgbPanel.draw red=%f, green=%f, blue=%f", red, green, blue);
         NVGcolor panelColor = nvgRGBf(red, green, blue);
+        if (module->colorMode == RGB::HSL_MODE) {
+            panelColor = nvgHSL(red, green, blue);
+        }
 
         nvgBeginPath(vg);
 
@@ -145,6 +164,23 @@ RGBWidget::RGBWidget(RGB *module) : ModuleWidget(module) {
 
 }
 
+struct ColorModeItem : MenuItem {
+
+        RGB *rgb;
+        RGB::ColorMode colorMode;
+
+        void onAction(EventAction &e) override {
+            rgb->colorMode = colorMode;
+        };
+
+        void step() override {
+            rightText = (rgb->colorMode == colorMode)? "✔" : "";
+        };
+
+};
+
+
+
 struct RGBRangeItem : MenuItem {
 
         RGB *rgb;
@@ -169,6 +205,24 @@ Menu *RGBWidget::createContextMenu() {
 
         RGB *rgb = dynamic_cast<RGB*>(module);
         assert(rgb);
+
+        MenuLabel *colorModeLabel = new MenuLabel();
+        colorModeLabel->text = "ColorMode";
+        menu->addChild(colorModeLabel);
+
+        // FIXME: colorModeItem looks too much like colorModelItem
+        ColorModeItem *rgbModeItem = new ColorModeItem();
+        rgbModeItem->text = "RGB";
+        rgbModeItem->rgb = rgb;
+        rgbModeItem->colorMode = RGB::RGB_MODE;
+        menu->addChild(rgbModeItem);
+
+        ColorModeItem *hslModeItem = new ColorModeItem();
+        hslModeItem->text = "HSL";
+        hslModeItem->rgb = rgb;
+        hslModeItem->colorMode = RGB::HSL_MODE;
+        menu->addChild(hslModeItem);
+
 
         MenuLabel *modeLabel2 = new MenuLabel();
         modeLabel2->text = "Input Range";

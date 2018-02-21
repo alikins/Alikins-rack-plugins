@@ -129,6 +129,7 @@ struct ModuleResizeHandle : Widget {
 		}
 		gRackWidget->requestModuleBox(m, newBox);
 	}
+    /*
 	void draw(NVGcontext *vg) override {
 		for (float x = 5.0; x <= 10.0; x += 5.0) {
 			nvgBeginPath(vg);
@@ -140,6 +141,7 @@ struct ModuleResizeHandle : Widget {
 			nvgStroke(vg);
 		}
 	}
+    */
 };
 
 
@@ -251,6 +253,7 @@ struct BlankWidget : ModuleWidget {
 struct RGBWidget : ModuleWidget {
     RGBWidget(RGB *module);
 	Widget *rightHandle;
+    RGBPanel *panel;
 
     Menu *createContextMenu() override;
 
@@ -263,19 +266,19 @@ RGBWidget::RGBWidget(RGB *module) : ModuleWidget(module) {
 	// Widget *topRightScrew;
 	// Widget *bottomRightScrew;
     //= new RGBPanel();
-    RGBPanel *rgbPanel;
+    // RGBPanel *rgbPanel;
     // box.size = Vec(RACK_GRID_WIDTH * 10, RACK_GRID_HEIGHT);
     box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
     {
         // RGBPanel *rgbPanel;
-        rgbPanel = new RGBPanel();
-        rgbPanel->box.size = box.size;
-        rgbPanel->module = module;
-        addChild(rgbPanel);
+        panel = new RGBPanel();
+        panel->box.size = box.size;
+        panel->module = module;
+        addChild(panel);
     }
 
-    setPanel(SVG::load(assetPlugin(plugin, "res/RGB.svg")));
+    // setPanel(SVG::load(assetPlugin(plugin, "res/RGB.svg")));
     ModuleResizeHandle *leftHandle = new ModuleResizeHandle();
     ModuleResizeHandle *rightHandle = new ModuleResizeHandle();
     rightHandle->right = true;

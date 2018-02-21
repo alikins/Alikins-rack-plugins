@@ -62,15 +62,15 @@ void RGB::fromJson(json_t *rootJ) {
 void RGB::step() {
     if (inputs[RED_INPUT].active) {
         float in_value = clamp(inputs[RED_INPUT].value, in_min[inputRange], in_max[inputRange]);
-        red = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 255.0f);
+        red = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
     }
     if (inputs[GREEN_INPUT].active) {
         float in_value = clamp(inputs[GREEN_INPUT].value, in_min[inputRange], in_max[inputRange]);
-        green = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 255.0f);
+        green = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
     }
     if (inputs[BLUE_INPUT].active) {
         float in_value = clamp(inputs[BLUE_INPUT].value, in_min[inputRange], in_max[inputRange]);
-        blue = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 255.0f);
+        blue = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
     }
 }
 
@@ -78,9 +78,9 @@ struct RGBPanel : TransparentWidget {
     RGB *module;
 
     // std::vector<CreditData*> vcredits;
-    float red = 0xbb;
-    float green = 0xdd;
-    float blue = 0xff;
+    float red = 0.5f;
+    float green = 0.5f;
+    float blue = 0.5f;
 
     RGBPanel() {
     }
@@ -94,7 +94,7 @@ struct RGBPanel : TransparentWidget {
 
     void draw(NVGcontext *vg) override {
         // debug("RgbPanel.draw red=%f, green=%f, blue=%f", red, green, blue);
-        NVGcolor panelColor = nvgRGB(red, green, blue);
+        NVGcolor panelColor = nvgRGBf(red, green, blue);
 
         nvgBeginPath(vg);
 

@@ -2,7 +2,7 @@
 
 #include "util/math.hpp"
 
-struct RGB : Module {
+struct ColorPanel : Module {
     enum ParamIds {
         RED_PARAM,
         GREEN_PARAM,
@@ -42,7 +42,7 @@ struct RGB : Module {
 
     ColorMode colorMode = HSL_MODE;
 
-    RGB() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    ColorPanel() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
     void step() override;
 
     json_t *toJson() override;
@@ -50,7 +50,7 @@ struct RGB : Module {
 
 };
 
-json_t* RGB::toJson() {
+json_t* ColorPanel::toJson() {
     json_t *rootJ = json_object();
 
     json_object_set_new(rootJ, "inputRange", json_integer(inputRange));
@@ -59,7 +59,7 @@ json_t* RGB::toJson() {
     return rootJ;
 }
 
-void RGB::fromJson(json_t *rootJ) {
+void ColorPanel::fromJson(json_t *rootJ) {
     json_t *inputRangeJ = json_object_get(rootJ, "inputRange");
     if (inputRangeJ) {
         inputRange = (InputRange) json_integer_value(inputRangeJ);
@@ -73,7 +73,7 @@ void RGB::fromJson(json_t *rootJ) {
 }
 
 
-void RGB::step() {
+void ColorPanel::step() {
     if (inputs[RED_INPUT].active) {
         float in_value = clamp(inputs[RED_INPUT].value, in_min[inputRange], in_max[inputRange]);
         red = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
@@ -138,16 +138,16 @@ struct ModuleResizeHandle : Widget {
 
 
 
-struct RGBPanel : TransparentWidget {
-    RGB *module;
-    RGB::ColorMode colorMode;
+struct ColorFrame : TransparentWidget {
+    ColorPanel *module;
+    ColorPanel::ColorMode colorMode;
 
     // std::vector<CreditData*> vcredits;
     float red = 0.5f;
     float green = 0.5f;
     float blue = 0.5f;
 
-    RGBPanel() {
+    ColorFrame() {
     }
 
     void step() override {
@@ -163,7 +163,7 @@ struct RGBPanel : TransparentWidget {
         // could include alpha
         // debug("RgbPanel.draw red=%f, green=%f, blue=%f", red, green, blue);
         NVGcolor panelColor = nvgRGBf(red, green, blue);
-        if (module->colorMode == RGB::HSL_MODE) {
+        if (module->colorMode == ColorPanel::HSL_MODE) {
             panelColor = nvgHSL(red, green, blue);
         }
 
@@ -177,9 +177,9 @@ struct RGBPanel : TransparentWidget {
 
 
 struct RGBWidget : ModuleWidget {
-    RGBWidget(RGB *module);
+    RGBWidget(ColorPanel *module);
 	Widget *rightHandle;
-    RGBPanel *panel;
+    ColorFrame *panel;
 
     Menu *createContextMenu() override;
 
@@ -190,11 +190,11 @@ struct RGBWidget : ModuleWidget {
 };
 
 
-RGBWidget::RGBWidget(RGB *module) : ModuleWidget(module) {
+RGBWidget::RGBWidget(ColorPanel *module) : ModuleWidget(module) {
     box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
     {
-        panel = new RGBPanel();
+        panel = new ColorFrame();
         panel->box.size = box.size;
         panel->module = module;
         addChild(panel);
@@ -229,19 +229,19 @@ RGBWidget::RGBWidget(RGB *module) : ModuleWidget(module) {
     addInput(Port::create<PJ301MPort>(Vec(x_pos, 340.0f),
                 Port::INPUT,
                 module,
-                RGB::RED_INPUT));
+                ColorPanel::RED_INPUT));
 
     x_pos = x_pos + interstitial + port_width;;
     addInput(Port::create<PJ301MPort>(Vec(x_pos, 340.0f),
                 Port::INPUT,
                 module,
-                RGB::GREEN_INPUT));
+                ColorPanel::GREEN_INPUT));
 
     x_pos = x_pos + interstitial + port_width;;
     addInput(Port::create<PJ301MPort>(Vec(x_pos, 340.0f),
                 Port::INPUT,
                 module,
-                RGB::BLUE_INPUT));
+                ColorPanel::BLUE_INPUT));
 }
 
 void RGBWidget::step() {
@@ -268,8 +268,8 @@ void RGBWidget::fromJson(json_t *rootJ) {
 
 struct ColorModeItem : MenuItem {
 
-        RGB *rgb;
-        RGB::ColorMode colorMode;
+        ColorPanel *rgb;
+        ColorPanel::ColorMode colorMode;
 
         void onAction(EventAction &e) override {
             rgb->colorMode = colorMode;
@@ -285,8 +285,8 @@ struct ColorModeItem : MenuItem {
 
 struct RGBRangeItem : MenuItem {
 
-        RGB *rgb;
-        RGB::InputRange inputRange;
+        ColorPanel *rgb;
+        ColorPanel::InputRange inputRange;
 
         void onAction(EventAction &e) override {
             rgb->inputRange = inputRange;
@@ -305,7 +305,7 @@ Menu *RGBWidget::createContextMenu() {
         MenuLabel *spacerLabel = new MenuLabel();
         menu->addChild(spacerLabel);
 
-        RGB *rgb = dynamic_cast<RGB*>(module);
+        ColorPanel *rgb = dynamic_cast<ColorPanel*>(module);
         assert(rgb);
 
         MenuLabel *colorModeLabel = new MenuLabel();
@@ -316,13 +316,13 @@ Menu *RGBWidget::createContextMenu() {
         ColorModeItem *rgbModeItem = new ColorModeItem();
         rgbModeItem->text = "RGB";
         rgbModeItem->rgb = rgb;
-        rgbModeItem->colorMode = RGB::RGB_MODE;
+        rgbModeItem->colorMode = ColorPanel::RGB_MODE;
         menu->addChild(rgbModeItem);
 
         ColorModeItem *hslModeItem = new ColorModeItem();
         hslModeItem->text = "HSL";
         hslModeItem->rgb = rgb;
-        hslModeItem->colorMode = RGB::HSL_MODE;
+        hslModeItem->colorMode = ColorPanel::HSL_MODE;
         menu->addChild(hslModeItem);
 
 
@@ -333,18 +333,18 @@ Menu *RGBWidget::createContextMenu() {
         RGBRangeItem *zeroTenItem = new RGBRangeItem();
         zeroTenItem->text = "0 - +10V (uni)";
         zeroTenItem->rgb = rgb;
-        zeroTenItem->inputRange = RGB::ZERO_TEN;
+        zeroTenItem->inputRange = ColorPanel::ZERO_TEN;
         menu->addChild(zeroTenItem);
 
         RGBRangeItem *fiveFiveItem = new RGBRangeItem();
         fiveFiveItem->text = "-5 - +5V (bi)";
         fiveFiveItem->rgb = rgb;
-        fiveFiveItem->inputRange = RGB::MINUS_PLUS_FIVE;;
+        fiveFiveItem->inputRange = ColorPanel::MINUS_PLUS_FIVE;;
         menu->addChild(fiveFiveItem);
 
         return menu;
 }
 
 
-Model *modelRGB = Model::create<RGB, RGBWidget>(
-        "Alikins", "RGB", "RGB Panel", UTILITY_TAG);
+Model *modelRGB = Model::create<ColorPanel, RGBWidget>(
+        "Alikins", "ColorPanel", "Color Panel", UTILITY_TAG);

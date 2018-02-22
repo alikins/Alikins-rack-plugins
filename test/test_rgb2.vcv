@@ -4,15 +4,17 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         0,
         0
       ],
       "params": [],
       "data": {
-        "inputRange": 1
-      }
+        "inputRange": 1,
+        "colorMode": 1
+      },
+      "width": 90.0
     },
     {
       "plugin": "Fundamental",
@@ -134,15 +136,17 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         50,
         1
       ],
       "params": [],
       "data": {
-        "inputRange": 1
-      }
+        "inputRange": 1,
+        "colorMode": 1
+      },
+      "width": 90.0
     },
     {
       "plugin": "Fundamental",
@@ -395,28 +399,32 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         0,
         1
       ],
       "params": [],
       "data": {
-        "inputRange": 1
-      }
+        "inputRange": 1,
+        "colorMode": 0
+      },
+      "width": 90.0
     },
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         6,
         1
       ],
       "params": [],
       "data": {
-        "inputRange": 1
-      }
+        "inputRange": 1,
+        "colorMode": 0
+      },
+      "width": 90.0
     },
     {
       "plugin": "Fundamental",
@@ -460,15 +468,17 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         12,
         1
       ],
       "params": [],
       "data": {
-        "inputRange": 1
-      }
+        "inputRange": 1,
+        "colorMode": 0
+      },
+      "width": 90.0
     }
   ],
   "wires": [

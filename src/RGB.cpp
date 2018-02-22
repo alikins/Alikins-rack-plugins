@@ -176,8 +176,8 @@ struct ColorFrame : TransparentWidget {
 };
 
 
-struct RGBWidget : ModuleWidget {
-    RGBWidget(ColorPanel *module);
+struct ColorPanelWidget : ModuleWidget {
+    ColorPanelWidget(ColorPanel *module);
 	Widget *rightHandle;
     ColorFrame *panel;
 
@@ -190,7 +190,7 @@ struct RGBWidget : ModuleWidget {
 };
 
 
-RGBWidget::RGBWidget(ColorPanel *module) : ModuleWidget(module) {
+ColorPanelWidget::ColorPanelWidget(ColorPanel *module) : ModuleWidget(module) {
     box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
     {
@@ -244,7 +244,7 @@ RGBWidget::RGBWidget(ColorPanel *module) : ModuleWidget(module) {
                 ColorPanel::BLUE_INPUT));
 }
 
-void RGBWidget::step() {
+void ColorPanelWidget::step() {
     panel->box.size = box.size;
     rightHandle->box.pos.x = box.size.x - rightHandle->box.size.x;
 
@@ -252,13 +252,13 @@ void RGBWidget::step() {
     ModuleWidget::step();
 }
 
-json_t *RGBWidget::toJson() {
+json_t *ColorPanelWidget::toJson() {
 	json_t *rootJ = ModuleWidget::toJson();
 	json_object_set_new(rootJ, "width", json_real(box.size.x));
 	return rootJ;
 }
 
-void RGBWidget::fromJson(json_t *rootJ) {
+void ColorPanelWidget::fromJson(json_t *rootJ) {
 	ModuleWidget::fromJson(rootJ);
 	json_t *widthJ = json_object_get(rootJ, "width");
     if (widthJ)
@@ -298,7 +298,7 @@ struct RGBRangeItem : MenuItem {
 
 };
 
-Menu *RGBWidget::createContextMenu() {
+Menu *ColorPanelWidget::createContextMenu() {
 
         Menu *menu = ModuleWidget::createContextMenu();
 
@@ -346,5 +346,5 @@ Menu *RGBWidget::createContextMenu() {
 }
 
 
-Model *modelRGB = Model::create<ColorPanel, RGBWidget>(
+Model *modelRGB = Model::create<ColorPanel, ColorPanelWidget>(
         "Alikins", "ColorPanel", "Color Panel", UTILITY_TAG);

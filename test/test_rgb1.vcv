@@ -4,7 +4,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         21,
         0

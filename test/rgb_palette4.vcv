@@ -4,7 +4,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         0,
         1
@@ -18,7 +18,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         6,
         1
@@ -71,7 +71,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         12,
         1
@@ -178,7 +178,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         21,
         0
@@ -192,7 +192,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         47,
         0
@@ -249,7 +249,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         69,
         0
@@ -302,7 +302,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         53,
         0
@@ -316,7 +316,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         75,
         0
@@ -330,7 +330,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         81,
         0
@@ -344,7 +344,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         87,
         0
@@ -358,7 +358,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         93,
         0
@@ -411,7 +411,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         93,
         1
@@ -425,7 +425,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         87,
         1
@@ -439,7 +439,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         81,
         1
@@ -453,7 +453,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         69,
         1
@@ -467,7 +467,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         75,
         1
@@ -544,7 +544,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         33,
         0
@@ -601,7 +601,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         36,
         1
@@ -615,7 +615,7 @@
     {
       "plugin": "Alikins",
       "version": "0.6.0dev",
-      "model": "RGB",
+      "model": "ColorPanel",
       "pos": [
         42,
         1

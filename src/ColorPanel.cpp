@@ -345,5 +345,5 @@ Menu *ColorPanelWidget::createContextMenu() {
 }
 
 
-Model *modelRGB = Model::create<ColorPanel, ColorPanelWidget>(
+Model *modelColorPanel = Model::create<ColorPanel, ColorPanelWidget>(
         "Alikins", "ColorPanel", "Color Panel", VISUAL_TAG);

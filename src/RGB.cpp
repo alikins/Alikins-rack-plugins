@@ -120,8 +120,7 @@ struct ModuleResizeHandle : Widget {
 			newBox.size.x += deltaX;
 			newBox.size.x = fmaxf(newBox.size.x, minWidth);
 			newBox.size.x = roundf(newBox.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
-		}
-		else {
+		} else {
 			newBox.size.x -= deltaX;
 			newBox.size.x = fmaxf(newBox.size.x, minWidth);
 			newBox.size.x = roundf(newBox.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
@@ -183,73 +182,6 @@ struct RGBPanel : TransparentWidget {
 };
 
 
-/*
-
-struct BlankWidget : ModuleWidget {
-	Panel *panel;
-	Widget *topRightScrew;
-	Widget *bottomRightScrew;
-	Widget *rightHandle;
-
-	BlankWidget(Module *module) : ModuleWidget(module) {
-		box.size = Vec(RACK_GRID_WIDTH * 10, RACK_GRID_HEIGHT);
-
-		{
-			panel = new LightPanel();
-			panel->box.size = box.size;
-			addChild(panel);
-		}
-
-		ModuleResizeHandle *leftHandle = new ModuleResizeHandle();
-		ModuleResizeHandle *rightHandle = new ModuleResizeHandle();
-		rightHandle->right = true;
-		this->rightHandle = rightHandle;
-		addChild(leftHandle);
-		addChild(rightHandle);
-
-		addChild(Widget::create<ScrewSilver>(Vec(15, 0)));
-		addChild(Widget::create<ScrewSilver>(Vec(15, 365)));
-		topRightScrew = Widget::create<ScrewSilver>(Vec(box.size.x - 30, 0));
-		bottomRightScrew = Widget::create<ScrewSilver>(Vec(box.size.x - 30, 365));
-		addChild(topRightScrew);
-		addChild(bottomRightScrew);
-	}
-
-	void step() override {
-		panel->box.size = box.size;
-		topRightScrew->box.pos.x = box.size.x - 30;
-		bottomRightScrew->box.pos.x = box.size.x - 30;
-		if (box.size.x < RACK_GRID_WIDTH * 6) {
-			topRightScrew->visible = bottomRightScrew->visible = false;
-		}
-		else {
-			topRightScrew->visible = bottomRightScrew->visible = true;
-		}
-		rightHandle->box.pos.x = box.size.x - rightHandle->box.size.x;
-		ModuleWidget::step();
-	}
-
-	json_t *toJson() override {
-		json_t *rootJ = ModuleWidget::toJson();
-
-		// // width
-		json_object_set_new(rootJ, "width", json_real(box.size.x));
-
-		return rootJ;
-	}
-
-	void fromJson(json_t *rootJ) override {
-		ModuleWidget::fromJson(rootJ);
-
-		// width
-		json_t *widthJ = json_object_get(rootJ, "width");
-		if (widthJ)
-			box.size.x = json_number_value(widthJ);
-	}
-};
-
-*/
-
 struct RGBWidget : ModuleWidget {
     RGBWidget(RGB *module);
 	Widget *rightHandle;
@@ -262,23 +194,15 @@ struct RGBWidget : ModuleWidget {
 
 
 RGBWidget::RGBWidget(RGB *module) : ModuleWidget(module) {
-	// Panel *panel;
-	// Widget *topRightScrew;
-	// Widget *bottomRightScrew;
-    //= new RGBPanel();
-    // RGBPanel *rgbPanel;
-    // box.size = Vec(RACK_GRID_WIDTH * 10, RACK_GRID_HEIGHT);
-    box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+    box.size = Vec(9 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
     {
-        // RGBPanel *rgbPanel;
         panel = new RGBPanel();
         panel->box.size = box.size;
         panel->module = module;
         addChild(panel);
     }
 
-    // setPanel(SVG::load(assetPlugin(plugin, "res/RGB.svg")));
     ModuleResizeHandle *leftHandle = new ModuleResizeHandle();
     ModuleResizeHandle *rightHandle = new ModuleResizeHandle();
     rightHandle->right = true;
@@ -294,37 +218,33 @@ RGBWidget::RGBWidget(RGB *module) : ModuleWidget(module) {
     addChild(topRightScrew);
     addChild(bottomRightScrew);
     */
-    // setPanel(SVG::load(assetPlugin(plugin, "res/RGB.svg")));
 
-
-    // FIXME: move to init/constr?
-    /* rgbPanel->box.pos = Vec(0, 0);
-    rgbPanel->box.size = box.size;
-    rgbPanel->module = module;
-    addChild(rgbPanel);
-    */
     debug("box.size (%f, %f)", box.size.x, box.size.y);
 
-    addInput(Port::create<PJ301MPort>(Vec(5.0f, 340.0f),
+    //debug("port box.size %f %f", Port::PJ301MPort.box.size.x, PJ301MPort.box.size.y);
+    // this type of port is 24.672108 x 24.672136 by default
+    // FIXME: how do I figure that out before creating the instance?i
+    float port_width = 24.672108f;
+    float empty_space = box.size.x - (3.0f * port_width);
+    float interstitial = empty_space / 5.0f;
+
+    float x_pos = interstitial;
+    addInput(Port::create<PJ301MPort>(Vec(x_pos, 340.0f),
                 Port::INPUT,
                 module,
                 RGB::RED_INPUT));
-    addInput(Port::create<PJ301MPort>(Vec(30.0f, 340.0f),
+
+    x_pos = x_pos + interstitial + port_width;;
+    addInput(Port::create<PJ301MPort>(Vec(x_pos, 340.0f),
                 Port::INPUT,
                 module,
                 RGB::GREEN_INPUT));
-    addInput(Port::create<PJ301MPort>(Vec(55.0f, 340.0f),
+
+    x_pos = x_pos + interstitial + port_width;;
+    addInput(Port::create<PJ301MPort>(Vec(x_pos, 340.0f),
                 Port::INPUT,
                 module,
                 RGB::BLUE_INPUT));
-
-    /*
-    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x-15, 0.0f)));
-
-    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 365.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x-15, 365.0f)));
-    */
 }
 
 void RGBWidget::step() {
@@ -342,6 +262,7 @@ void RGBWidget::step() {
     }
     */
     rightHandle->box.pos.x = box.size.x - rightHandle->box.size.x;
+    // debug("box.size (%f, %f)", box.size.x, box.size.y);
     ModuleWidget::step();
 }
 

@@ -57,7 +57,7 @@ json_t* RGB::toJson() {
     json_object_set_new(rootJ, "colorMode", json_integer(colorMode));
 
     return rootJ;
-};
+}
 
 void RGB::fromJson(json_t *rootJ) {
     json_t *inputRangeJ = json_object_get(rootJ, "inputRange");
@@ -69,7 +69,8 @@ void RGB::fromJson(json_t *rootJ) {
     if (colorModeJ) {
         colorMode = (ColorMode) json_integer_value(colorModeJ);
     }
-};
+
+}
 
 
 void RGB::step() {
@@ -89,58 +90,50 @@ void RGB::step() {
 
 // From Rack/src/core/Blank.cpp
 struct ModuleResizeHandle : Widget {
-	bool right = false;
-	float dragX;
-	Rect originalBox;
+    bool right = false;
+    float dragX;
+    Rect originalBox;
 
     ModuleResizeHandle() {
-		box.size = Vec(RACK_GRID_WIDTH * 1, RACK_GRID_HEIGHT);
+        box.size = Vec(RACK_GRID_WIDTH * 1, RACK_GRID_HEIGHT);
         dragX = 0.0f;
-	}
-	void onMouseDown(EventMouseDown &e) override {
-		if (e.button == 0) {
-			e.consumed = true;
-			e.target = this;
-		}
-	}
-	void onDragStart(EventDragStart &e) override {
-		dragX = gRackWidget->lastMousePos.x;
-		ModuleWidget *m = getAncestorOfType<ModuleWidget>();
-		originalBox = m->box;
-	}
-	void onDragMove(EventDragMove &e) override {
-		ModuleWidget *m = getAncestorOfType<ModuleWidget>();
+    }
 
-		float newDragX = gRackWidget->lastMousePos.x;
-		float deltaX = newDragX - dragX;
+    void onMouseDown(EventMouseDown &e) override {
+        if (e.button == 0) {
+            e.consumed = true;
+            e.target = this;
+        }
+    }
 
-		Rect newBox = originalBox;
-		const float minWidth = 3 * RACK_GRID_WIDTH;
-		if (right) {
-			newBox.size.x += deltaX;
-			newBox.size.x = fmaxf(newBox.size.x, minWidth);
-			newBox.size.x = roundf(newBox.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
-		} else {
-			newBox.size.x -= deltaX;
-			newBox.size.x = fmaxf(newBox.size.x, minWidth);
-			newBox.size.x = roundf(newBox.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
-			newBox.pos.x = originalBox.pos.x + originalBox.size.x - newBox.size.x;
-		}
-		gRackWidget->requestModuleBox(m, newBox);
-	}
-    /*
-	void draw(NVGcontext *vg) override {
-		for (float x = 5.0; x <= 10.0; x += 5.0) {
-			nvgBeginPath(vg);
-			const float margin = 5.0;
-			nvgMoveTo(vg, x + 0.5, margin + 0.5);
-			nvgLineTo(vg, x + 0.5, box.size.y - margin + 0.5);
-			nvgStrokeWidth(vg, 1.0);
-			nvgStrokeColor(vg, nvgRGBAf(0.5, 0.5, 0.5, 0.5));
-			nvgStroke(vg);
-		}
-	}
-    */
+    void onDragStart(EventDragStart &e) override {
+        dragX = gRackWidget->lastMousePos.x;
+        ModuleWidget *m = getAncestorOfType<ModuleWidget>();
+        originalBox = m->box;
+    }
+
+    void onDragMove(EventDragMove &e) override {
+        ModuleWidget *m = getAncestorOfType<ModuleWidget>();
+
+        float newDragX = gRackWidget->lastMousePos.x;
+        float deltaX = newDragX - dragX;
+
+        Rect newBox = originalBox;
+
+        const float minWidth = 6 * RACK_GRID_WIDTH;
+
+        if (right) {
+            newBox.size.x += deltaX;
+            newBox.size.x = fmaxf(newBox.size.x, minWidth);
+            newBox.size.x = roundf(newBox.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
+        } else {
+            newBox.size.x -= deltaX;
+            newBox.size.x = fmaxf(newBox.size.x, minWidth);
+            newBox.size.x = roundf(newBox.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
+            newBox.pos.x = originalBox.pos.x + originalBox.size.x - newBox.size.x;
+        }
+        gRackWidget->requestModuleBox(m, newBox);
+    }
 };
 
 
@@ -167,6 +160,7 @@ struct RGBPanel : TransparentWidget {
 
     void draw(NVGcontext *vg) override {
         // FIXME: not really red, green, blue anymore
+        // could include alpha
         // debug("RgbPanel.draw red=%f, green=%f, blue=%f", red, green, blue);
         NVGcolor panelColor = nvgRGBf(red, green, blue);
         if (module->colorMode == RGB::HSL_MODE) {
@@ -190,11 +184,14 @@ struct RGBWidget : ModuleWidget {
     Menu *createContextMenu() override;
 
     void step() override;
+
+    json_t *toJson() override;
+    void fromJson(json_t *rootJ) override;
 };
 
 
 RGBWidget::RGBWidget(RGB *module) : ModuleWidget(module) {
-    box.size = Vec(9 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+    box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
     {
         panel = new RGBPanel();
@@ -249,21 +246,23 @@ RGBWidget::RGBWidget(RGB *module) : ModuleWidget(module) {
 
 void RGBWidget::step() {
     panel->box.size = box.size;
-    /*
-     * topRightScrew->box.pos.x = box.size.x - 30;
-    bottomRightScrew->box.pos.x = box.size.x - 30;
-
-
-    if (box.size.x < RACK_GRID_WIDTH * 6) {
-        topRightScrew->visible = bottomRightScrew->visible = false;
-    }
-    else {
-        topRightScrew->visible = bottomRightScrew->visible = true;
-    }
-    */
     rightHandle->box.pos.x = box.size.x - rightHandle->box.size.x;
+
     // debug("box.size (%f, %f)", box.size.x, box.size.y);
     ModuleWidget::step();
+}
+
+json_t *RGBWidget::toJson() {
+	json_t *rootJ = ModuleWidget::toJson();
+	json_object_set_new(rootJ, "width", json_real(box.size.x));
+	return rootJ;
+}
+
+void RGBWidget::fromJson(json_t *rootJ) {
+	ModuleWidget::fromJson(rootJ);
+	json_t *widthJ = json_object_get(rootJ, "width");
+    if (widthJ)
+        box.size.x = json_number_value(widthJ);
 }
 
 

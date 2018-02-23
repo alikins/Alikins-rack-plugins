@@ -18,6 +18,7 @@ void init(rack::Plugin *p) {
 
     p->addModel(createModel<BigMuteButtonWidget>("Alikins", "BigMuteButton", "Big Mute Button", UTILITY_TAG));
 
+    p->addModel(createModel<ColorPanelWidget>("Alikins", "ColorPanel", "Color Panel", VISUAL_TAG));
     // Any other plugin initialization may go here.
     // As an alternative, consider lazy-loading assets and lookup tables when your module is created to reduce startup times of Rack.
 }

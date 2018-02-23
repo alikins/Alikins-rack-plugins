@@ -23,3 +23,17 @@ struct BigMuteButtonWidget : ModuleWidget {
     BigMuteButtonWidget();
 };
 
+struct ColorPanelWidget : ModuleWidget {
+    Panel *panel;
+    ColorPanelWidget();
+	Widget *rightHandle;
+    TransparentWidget *color_frame;
+
+    Menu *createContextMenu() override;
+
+    void step() override;
+
+    json_t *toJson() override;
+    void fromJson(json_t *rootJ) override;
+};
+

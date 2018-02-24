@@ -31,6 +31,9 @@ void BigMuteButton::step() {
     if (params[BIG_MUTE_BUTTON_PARAM].value) {
         outputs[LEFT_OUTPUT].value = inputs[LEFT_INPUT].value;
         outputs[RIGHT_OUTPUT].value = inputs[RIGHT_INPUT].value;
+    } else {
+        outputs[LEFT_OUTPUT].value = 0.0f;
+        outputs[RIGHT_OUTPUT].value = 0.0f;
     }
 
 }

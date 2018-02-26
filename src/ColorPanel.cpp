@@ -89,12 +89,12 @@ void ColorPanel::step() {
 }
 
 // From Rack/src/core/Blank.cpp
-struct AlikinsModuleResizeHandle : Widget {
+struct ColorPanelModuleResizeHandle : Widget {
     bool right = false;
     float dragX;
     Rect originalBox;
 
-    AlikinsModuleResizeHandle() {
+    ColorPanelModuleResizeHandle() {
         box.size = Vec(RACK_GRID_WIDTH * 1, RACK_GRID_HEIGHT);
         dragX = 0.0f;
     }
@@ -201,8 +201,8 @@ ColorPanelWidget::ColorPanelWidget(ColorPanel *module) : ModuleWidget(module) {
         addChild(panel);
     }
 
-    AlikinsModuleResizeHandle *leftHandle = new AlikinsModuleResizeHandle();
-    AlikinsModuleResizeHandle *rightHandle = new AlikinsModuleResizeHandle();
+    ColorPanelModuleResizeHandle *leftHandle = new ColorPanelModuleResizeHandle();
+    ColorPanelModuleResizeHandle *rightHandle = new ColorPanelModuleResizeHandle();
     rightHandle->right = true;
     this->rightHandle = rightHandle;
     addChild(leftHandle);

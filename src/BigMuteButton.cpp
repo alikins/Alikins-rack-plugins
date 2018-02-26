@@ -43,7 +43,7 @@ struct BigMuteButton : Module {
     BigMuteButton() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
     void step() override;
 
-    void onReset() override {
+    void onReset() {
         state = UNMUTED_STEADY;
     }
 
@@ -78,26 +78,26 @@ void BigMuteButton::step() {
             gmult2 = 1.0f;
             break;
         case MUTED_FADE_DOWN:
-            if (isNear(gmult2, 0.0f)) {
+            if (nearf(gmult2, 0.0f)) {
                 state = MUTED_STEADY;
                 // debug("faded  down crossfade to 0.0");
                 gmult2 = 0.0f;
                 break;
             }
-            gmult2 = crossfade(gmult2, 0.0f, crossfade_mix);
+            gmult2 = crossf(gmult2, 0.0f, crossfade_mix);
             break;
         case UNMUTED_FADE_UP:
-            if (isNear(gmult2, 1.0f)) {
+            if (nearf(gmult2, 1.0f)) {
                 state = UNMUTED_STEADY;
                 // debug("faded up crossfade to 1.0");
                 gmult2 = 1.0f;
                 break;
             }
-            gmult2 = crossfade(gmult2, 1.0f, crossfade_mix);
+            gmult2 = crossf(gmult2, 1.0f, crossfade_mix);
             break;
     }
 
-    gmult2 = clamp(gmult2, 0.0f, 1.0f);
+    gmult2 = clampf(gmult2, 0.0f, 1.0f);
 
     outputs[LEFT_OUTPUT].value = inputs[LEFT_INPUT].value * gmult2;
     outputs[RIGHT_OUTPUT].value = inputs[RIGHT_INPUT].value * gmult2;

@@ -1,5 +1,5 @@
 SLUG = Alikins
-VERSION = 0.5.3
+VERSION = 0.5.5
 
 PLUGIN_SDK ?= ../..
 # FLAGS will be passed to both the C and C++ compiler

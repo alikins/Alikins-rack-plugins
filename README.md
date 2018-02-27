@@ -123,6 +123,15 @@ In the dronevexample above, the drone would then only come back in on a beat.
 And perhaps most importantly, it can be used to do almost random output and
 make weird noises.
 
+### ColorPanel
+
+A CV controlled RGB/HSL color "blank" panel.
+
+Supports selectable input ranges (0V to 10V or -5V to 5V) via right click context menu
+The color input mode is also selectable via the context menu.
+
+Module is resizable.
+
 ### BigMuteButton
 
 A big mute button.

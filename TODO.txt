@@ -112,4 +112,67 @@ plugin ideas:
   - fancy
     - maybe automatically also show CV v/oct freq or note equiv
   - maybe gate out and button to click to send value and gate output together
-
+- Seq with per step gate length and rest length between steps
+ - 'rest' steps basically
+- A cv 1v/oct display -> freq hz -> period secs -> bpm.
+  - ( could display v passed through and/or let you specify as text)
+  - CV out
+  - button to send gate
+  - basically a keyboard with text/entry widgets to let you specify
+    CV voltage/hz/period/note name
+  - other possible things to display/select
+    - midi note number
+    - # of steps from a root
+    - interval from a root ( third, flat fifth, etc)
+    - staff / note
+    - bpm (for a LFO or general nerdery)
+- generic voltage quantizer
+  - based on 'table' module
+  - except input CV is 'rounded' to edge of maps
+  - see 'fancy options' for table module above
+- 'Attached file' module.
+  - GUI file picker
+  - add base64 of file to data to store in plugin Json.
+  - Could be a list
+- 'Maze Table'
+  - wave table, but with a maze
+  - instead of phasor indexing an array, would "index" into
+    a path along the maze graph
+  - could have breath first and depth first paths as options
+  - use DAG style mazes (one and only one path out, no loops or cycles)
+  - though cycles in maze could be analog for loops in waveform playback
+  - maybe something hilbert curve esque?
+- scmhidtt trigger / pulse generator banks
+  - just ui to a set of SchmittTriggers
+  - each strip
+    - input
+    - attentuator for process()'ed value
+    - output trigger
+  - for generator strip
+    - trigger input
+    - knob/cv in/param for duration
+    - gate output
+- Matrix clock
+  - N x N matrix
+  - each row defaults to a clock division
+  - each column defaults to clock multiply
+  - 0,0 defaults to 1x1 quarter note for tempo
+  - rows default to 1,2,3,4,6,8,12,16, division
+  - ditto for columns multi
+  - but row/columns mult/div could be changed to anything
+- XY pad matrix mixer
+  - matrix mixer with a JL-Modules/kaosspad/reactor style XY pad
+    at each cross point
+  - 1,1 -> top output and right output
+  - 1,0 -> just top output
+  - -1,-1 -> inverted output to top and right output
+- Matrix Mixer with multiple scenes that morph/interpolate
+  - more or less like Bidoo ACNE except values morph
+    between scenes insted of
+- 2.5 dimension matrix / mixer
+  - 8x8 matrix but with an output at
+    each crossing point
+  - possibly with knob/param for output level
+    of each output
+  - maybe a per cross mute/solo
+  - Much like the movies, the first one was the best.

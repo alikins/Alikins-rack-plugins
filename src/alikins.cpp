@@ -16,6 +16,8 @@ void init(rack::Plugin *p) {
     p->addModel(modelMomentaryOnButtons);
     p->addModel(modelBigMuteButton);
     p->addModel(modelColorPanel);
+    p->addModel(modelGateLength);
+
     // Any other plugin initialization may go here.
     // As an alternative, consider lazy-loading assets and lookup tables when your module is created to reduce startup times of Rack.
 }

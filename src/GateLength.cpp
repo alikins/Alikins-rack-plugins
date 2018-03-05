@@ -40,10 +40,11 @@ struct GateLength : Module {
 void GateLength::step() {
     // FIXME: add way to support >10.0s gate length
     float sample_time = engineGetSampleTime();
-    gateGenerator.pulseTime = params[GATE_LENGTH_PARAM].value;
+    float pulse_time = params[GATE_LENGTH_PARAM].value;
     if (inputOnTrigger.process(inputs[TRIGGER_INPUT].value)) {
         debug("GL INPUT ON TRIGGER");
-        gateGenerator.trigger(sample_time);
+        // gateGenerator.trigger(sample_time);
+        gateGenerator.trigger(pulse_time);
     }
 
     //if (muteOffTrigger.process(!params[BIG_MUTE_BUTTON_PARAM].value)) {
@@ -51,13 +52,7 @@ void GateLength::step() {
     //}
 
     outputs[GATE_OUTPUT].value = gateGenerator.process(sample_time) ? 10.0f : 0.0f;
-    // process(engineGetSampleTime()) ? 5.0 : 0.0;
-    // outputs[LEFT_OUTPUT].value = inputs[LEFT_INPUT].value * gmult2;
-    // outputs[RIGHT_OUTPUT].value = inputs[RIGHT_INPUT].value * gmult2;
 
-    // debug("state: %d, gmult2: %f", state, gmult2);
-
-    // TODO: to eliminate worse case DC thump, also apply a RC filter of some sort?
 }
 
 struct GateLengthWidget : ModuleWidget {

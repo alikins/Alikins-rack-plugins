@@ -36,7 +36,7 @@ struct MsDisplayWidget : TransparentWidget {
     nvgTextLetterSpacing(vg, 2.5);
 
     std::stringstream to_display;
-    to_display << std::right  << std::setw(5) << *value;
+    to_display << std::setiosflags(std::ios::fixed) << std::right  << std::setw(5) << std::setprecision(4) << *value;
 
     Vec textPos = Vec(0.5f, 19.0f);
 

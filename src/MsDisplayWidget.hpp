@@ -31,7 +31,7 @@ struct MsDisplayWidget : TransparentWidget {
     nvgStroke(vg);
 
     // text
-    nvgFontSize(vg, 18);
+    nvgFontSize(vg, 14);
     nvgFontFaceId(vg, font->handle);
     nvgTextLetterSpacing(vg, 2.5);
 

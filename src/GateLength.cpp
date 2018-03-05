@@ -67,29 +67,39 @@ struct GateLengthWidget : ModuleWidget {
 
 GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
 
-    box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+    box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     setPanel(SVG::load(assetPlugin(plugin, "res/GateLength.svg")));
 
-    addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(38.86, 150.0),
-                module,
-                GateLength::GATE_LENGTH_PARAM,
-                0.0f, 10.0f, 0.1f));
+    float y_pos = 4.0f;
+    float x_pos = 4.0f;
 
-    addInput(Port::create<PJ301MPort>(Vec(4.0f, 302.0f),
+    addInput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
                 Port::INPUT,
                 module,
                 GateLength::TRIGGER_INPUT));
-
-    addOutput(Port::create<PJ301MPort>(Vec(60.0f, 302.0f),
+    
+    x_pos += 30.0f;
+    
+    MsDisplayWidget *gate_length_display = new MsDisplayWidget();
+    gate_length_display->box.pos = Vec(x_pos, y_pos);
+    gate_length_display->box.size = Vec(80, 24);
+    gate_length_display->value = &module->params[GateLength::GATE_LENGTH_PARAM].value;
+    addChild(gate_length_display);
+    
+    // FIXME: use new sequential box hbox/vbox thing
+    x_pos += 40.0f;
+    x_pos += 50.0f;
+    addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
                 Port::OUTPUT,
                 module,
                 GateLength::GATE_OUTPUT));
 
-    MsDisplayWidget *gate_length_display = new MsDisplayWidget();
-    gate_length_display->box.pos = Vec(20, 115);
-    gate_length_display->box.size = Vec(70, 24);
-    gate_length_display->value = &module->params[GateLength::GATE_LENGTH_PARAM].value;
-    addChild(gate_length_display);
+    x_pos = 36.0f;
+    y_pos += 36.0f;
+    addParam(ParamWidget::create<Trimpot>(Vec(x_pos, y_pos),
+                module,
+                GateLength::GATE_LENGTH_PARAM,
+                0.0f, 10.0f, 0.1f));
     // addChild(Widget::create<ScrewSilver>(Vec(0.0, 0)));
     // addChild(Widget::create<ScrewSilver>(Vec(box.size.x-15, 0)));
     // addChild(Widget::create<ScrewSilver>(Vec(30, 365)));

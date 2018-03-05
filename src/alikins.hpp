@@ -2,6 +2,7 @@
 
 const int MOMENTARY_BUTTONS = 13;
 const int INPUT_SOURCES = 1;
+const int GATE_LENGTH_INPUTS = 5;
 using namespace rack;
 
 

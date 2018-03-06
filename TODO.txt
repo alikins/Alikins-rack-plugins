@@ -176,3 +176,28 @@ plugin ideas:
     of each output
   - maybe a per cross mute/solo
   - Much like the movies, the first one was the best.
+- Notes module with CV/trigger control and multiple messages
+  - like a plain notes module, but can react to input from
+    patch
+  - use case would be describing stages of a generative patch
+  - or for adding info to screencast videos
+- Gate Divider
+  - like gate length, but instead of generating one gate, it
+    generates multiple gates that add up to gate length
+  - how to seperate?
+    - some fixed inbetween interval ("kerf")
+    - divide into on and off gates
+        - divide a 1s gate by 1 -> one .5s gate then a .5s 'rest'
+          (and vice versa / inverse  10 or 01)
+        - divide by 3 -> one .3333s gate, one .3333s rest, one .3333 gate
+          ( ie, 101 or 010)
+        - divide by 4 -> .25 gate, .25 rest, .25 gate, .25rest
+          (1010, 0101)
+        - divide by 5 -> .20 on, .20 off, .20 on, .20 off, .20 on
+          (10101, 01010)
+  - kind of similar to Walsh codes
+    " Experimental Electronic Music Devices Employing Walsh Functions",
+    "BERNARD A. HUTCHINS, JR"
+    "JOURNAL OF THE AUDIO ENGINEERING SOCIETY, October 1973"
+    (https://pdfs.semanticscholar.org/6b9c/30f94551aaf05f077aa491f31b196898cd90.pdf)
+  - "Sequency" - theres a module name if I ever heard one.

@@ -230,12 +230,12 @@ void IdleSwitch::step() {
 
 
 //  From AS DelayPlus.cpp https://github.com/AScustomWorks/AS
-struct MsDisplayWidget : TransparentWidget {
+struct IdleSwitchMsDisplayWidget : TransparentWidget {
 
   int *value;
   std::shared_ptr<Font> font;
 
-  MsDisplayWidget() {
+  IdleSwitchMsDisplayWidget() {
     font = Font::load(assetPlugin(plugin, "res/Segment7Standard.ttf"));
   }
 
@@ -291,7 +291,7 @@ IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
 
     // idle time display
     // FIXME: handle large IdleTimeoutMs (> 99999ms) better
-    MsDisplayWidget *idle_time_display = new MsDisplayWidget();
+    IdleSwitchMsDisplayWidget *idle_time_display = new IdleSwitchMsDisplayWidget();
     idle_time_display->box.pos = Vec(20, 115);
     idle_time_display->box.size = Vec(70, 24);
     idle_time_display->value = &module->idleTimeoutMS;
@@ -301,7 +301,7 @@ IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
     addOutput(Port::create<PJ301MPort>(Vec(80, 155.0), Port::OUTPUT, module, IdleSwitch::TIME_OUTPUT));
 
-    MsDisplayWidget *time_remaining_display = new MsDisplayWidget();
+    IdleSwitchMsDisplayWidget *time_remaining_display = new IdleSwitchMsDisplayWidget();
     time_remaining_display->box.pos = Vec(20, 225);
     time_remaining_display->box.size = Vec(70, 24);
     time_remaining_display->value = &module->idleTimeLeftMS;

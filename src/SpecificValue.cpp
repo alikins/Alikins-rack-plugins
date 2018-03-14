@@ -415,21 +415,31 @@ void NoteNameField::onAction(EventAction &e) {
     }
 }
 
-struct UpdateTrimpot : Trimpot {
+struct SmallPurpleTrimpot : Trimpot {
+    SmallPurpleTrimpot();
+};
+
+SmallPurpleTrimpot::SmallPurpleTrimpot() : Trimpot() {
+    setSVG(SVG::load(assetPlugin(plugin, "res/SmallPurpleTrimpot.svg")));
+}
+
+struct PurpleTrimpot : Trimpot {
 	Module *module;
     bool initialized = false;
-    UpdateTrimpot();
+    PurpleTrimpot();
     void step() override;
     void reset() override;
     void randomize() override;
 };
 
-UpdateTrimpot::UpdateTrimpot() : Trimpot() {}
+PurpleTrimpot::PurpleTrimpot() : Trimpot() {
+    setSVG(SVG::load(assetPlugin(plugin, "res/PurpleTrimpot.svg")));
+}
 
 // FIXME: if we are getting moving inputs and we are hovering
 //        over the trimpot, we kind of jitter arround. 
 // maybe run this via an onChange()?
-void UpdateTrimpot::step() {
+void PurpleTrimpot::step() {
 	//debug("paramId=%d this->initialized: %d initialized: %d this->value: %f value: %f param.value: %f", 
      // paramId,  this->initialized, initialized, this->value, value, module->params[paramId].value);
 	
@@ -448,12 +458,12 @@ void UpdateTrimpot::step() {
 	Trimpot::step();
 }
 
-void UpdateTrimpot::reset() {
+void PurpleTrimpot::reset() {
     this->initialized = false;
     Trimpot::reset();
     }
 
-void UpdateTrimpot::randomize() {
+void PurpleTrimpot::randomize() {
     reset();
     setValue(rescale(randomUniform(), 0.0f, 1.0f, minValue, maxValue));
 }
@@ -548,7 +558,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     float middle = box.size.x / 2.0f;
     float in_port_x = 15.0f;
 
-    y_baseline += 24.0f + 16.0f;
+    y_baseline += 24.0f + 12.0f;
 
     Port *value_in_port = Port::create<PJ301MPort>(
         Vec(in_port_x, y_baseline),
@@ -562,14 +572,13 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     addChild(value_in_port);
 
     // octave trimpot
-    Trimpot *octaveTrimpot = ParamWidget::create<Trimpot>(
+    SmallPurpleTrimpot *octaveTrimpot = ParamWidget::create<SmallPurpleTrimpot>(
         Vec(middle, y_baseline + 2.5f),
         module,
         SpecificValue::OCTAVE_PARAM,
         0.0f, 8.0f, 4.0f);
 
     params.push_back(octaveTrimpot);
-    octaveTrimpot->box.size = Vec(18.0f, 18.0f);
     octaveTrimpot->box.pos = Vec(middle - octaveTrimpot->box.size.x / 2, y_baseline + 2.5f);
     octaveTrimpot->snap = true;
     addChild(octaveTrimpot);
@@ -590,7 +599,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     y_baseline += value_out_port->box.size.y;
     y_baseline += 16.0f;
 
-    UpdateTrimpot *trimpot = ParamWidget::create<UpdateTrimpot>(
+    PurpleTrimpot *trimpot = ParamWidget::create<PurpleTrimpot>(
         Vec(middle - 24.0f, y_baseline + 2.5f),
         module,
         SpecificValue::VALUE1_PARAM,
@@ -599,7 +608,6 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     //debug(" trimpot: dv: %f v: %f p.value: %f", trimpot->defaultValue, trimpot->value,
     //    module->params[SpecificValue::VALUE1_PARAM].value);
     params.push_back(trimpot);
-    trimpot->box.size = Vec(48.0f, 48.0f);
     addChild(trimpot);
 }
 

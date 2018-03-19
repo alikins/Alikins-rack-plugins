@@ -42,7 +42,7 @@ struct SpecificValue : Module
     float hz_value;
     float period_value;
     float cents_value;
-  
+
 };
 
 struct NoteInfo {
@@ -80,7 +80,7 @@ std::unordered_map<std::string, float> note_name_to_volts_map = gen_note_name_ma
 
 // FIXME: can/should be inline
 // FIXME: likely should be a NoteInfo type/struct/object
-// These are assuming A440 == A4 == 4.75v 
+// These are assuming A440 == A4 == 4.75v
 float freq_to_cv(float freq, float a440_octave) {
     float volts = log2f(freq / 440.0f * powf(2.0f, A440_VOLTAGE)) - a440_octave;
     // debug("freq_to_vc freq=%f a440_octave=%f volts=%f A440_voltage=%f", freq, a440_octave, volts, A440_VOLTAGE);
@@ -115,11 +115,11 @@ int volts_to_octave(float volts, float a440_octave) {
 float volts_to_note_cents(float volts, float a440_octave) {
     float nearest_note = volts_of_nearest_note(volts);
     float cent_volt = 1.0f / 12.0f / 100.0f;
-    
+
     float offset_cents = (volts-nearest_note)/cent_volt;
     // debug("volts: %f volts_of_nearest: %f volts-volts_nearest: %f offset_cents %f",
     //     volts, nearest_note, volts-nearest_note, offset_cents);
-    
+
     return offset_cents;
 }
 
@@ -172,7 +172,7 @@ std::string FloatField::voltsToText(float param_volts){
 
 void FloatField::onChange(EventChange &e) {
     //debug("FloatField onChange  text=%s param=%f", text.c_str(), module->params[SpecificValue::VALUE1_PARAM].value);
-   
+
      if (this != gFocusedWidget) {
         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
         setText(new_text);
@@ -187,7 +187,7 @@ void FloatField::onAction(EventAction &e)
     TextField::onAction(e);
 
     float volts = textToVolts(text);
-    
+
     //debug("FloatField setting volts=%f text=%s", volts, text.c_str());
     module->params[SpecificValue::VALUE1_PARAM].value = volts;
 
@@ -285,7 +285,7 @@ std::string SecondsFloatField::voltsToText(float param_volts){
 
 void SecondsFloatField::onChange(EventChange &e) {
     //debug("SecondsFloatField onChange  text=%s param=%f", text.c_str(), module->params[SpecificValue::VALUE1_PARAM].value);
-   
+
      //TextField::onChange(e);
 
      if (this != gFocusedWidget)
@@ -311,7 +311,7 @@ void SecondsFloatField::onAction(EventAction &e) {
 struct CentsField : TextField {
     float value;
     SpecificValue *module;
-    
+
     CentsField(SpecificValue *_module);
     void onChange(EventChange &e) override;
     void onAction(EventAction &e) override;
@@ -326,8 +326,8 @@ void CentsField::onChange(EventChange &e) {
     // debug("CentsField onChange");
     float cents = volts_to_note_cents(module->params[SpecificValue::VALUE1_PARAM].value,
                                      module->params[SpecificValue::OCTAVE_PARAM].value);
-    
-    // debug("CentsField onChange cents: %f", cents);                                
+
+    // debug("CentsField onChange cents: %f", cents);
     if (this != gFocusedWidget || fabs(cents) >= 0.50f)
     {
         float cents = volts_to_note_cents(module->params[SpecificValue::VALUE1_PARAM].value,
@@ -337,7 +337,7 @@ void CentsField::onChange(EventChange &e) {
     }
 }
 
-  
+
 void CentsField::onAction(EventAction &e) {
 
     TextField::onAction(e);
@@ -348,7 +348,7 @@ void CentsField::onAction(EventAction &e) {
     float delta_volt = cents * cent_volt;
     float nearest_note_voltage = volts_of_nearest_note(module->params[SpecificValue::VALUE1_PARAM].value);
     //debug("volts: %f nearest_volts: %f", module->params[SpecificValue::VALUE1_PARAM].value, nearest_note_voltage);
-    //debug("delta_volt: %+f nearest_note_voltage+delta_volt: %f", delta_volt, nearest_note_voltage, 
+    //debug("delta_volt: %+f nearest_note_voltage+delta_volt: %f", delta_volt, nearest_note_voltage,
     //    nearest_note_voltage + delta_volt);
     module->params[SpecificValue::VALUE1_PARAM].value = nearest_note_voltage + delta_volt;
 
@@ -372,7 +372,7 @@ NoteNameField::NoteNameField(SpecificValue *_module)
 
 void NoteNameField::onChange(EventChange &e) {
     //debug("NoteNameField onChange  text=%s param=%f", text.c_str(), module->params[SpecificValue::VALUE1_PARAM].value);
-   
+
      //TextField::onChange(e);
 
      if (this != gFocusedWidget)
@@ -399,7 +399,7 @@ void NoteNameField::onAction(EventAction &e) {
     //        but lets c++ stuff
     auto search = note_name_to_volts_map.find(text);
     if(search != note_name_to_volts_map.end()) {
-        /* 
+        /*
         debug("note_name_to_volts_map[%s] = %f (%f) %f", text.c_str(),
              note_name_to_volts_map[text],
              (note_name_to_volts_map[text] - module->A440_octave),
@@ -421,6 +421,9 @@ struct SmallPurpleTrimpot : Trimpot {
 
 SmallPurpleTrimpot::SmallPurpleTrimpot() : Trimpot() {
     setSVG(SVG::load(assetPlugin(plugin, "res/SmallPurpleTrimpot.svg")));
+    shadow->blurRadius = 0.0;
+    shadow->opacity = 0.10;
+    shadow->box.pos = Vec(0.0, box.size.y * 0.1);
 }
 
 struct PurpleTrimpot : Trimpot {
@@ -434,15 +437,18 @@ struct PurpleTrimpot : Trimpot {
 
 PurpleTrimpot::PurpleTrimpot() : Trimpot() {
     setSVG(SVG::load(assetPlugin(plugin, "res/PurpleTrimpot.svg")));
+    shadow->blurRadius = 0.0;
+    shadow->opacity = 0.10;
+    shadow->box.pos = Vec(0.0, box.size.y * 0.05);
 }
 
 // FIXME: if we are getting moving inputs and we are hovering
-//        over the trimpot, we kind of jitter arround. 
+//        over the trimpot, we kind of jitter arround.
 // maybe run this via an onChange()?
 void PurpleTrimpot::step() {
-	//debug("paramId=%d this->initialized: %d initialized: %d this->value: %f value: %f param.value: %f", 
+	//debug("paramId=%d this->initialized: %d initialized: %d this->value: %f value: %f param.value: %f",
      // paramId,  this->initialized, initialized, this->value, value, module->params[paramId].value);
-	
+
     if (this->value != module->params[paramId].value) {
 		if (this != gHoveredWidget && this->initialized) {
 			// this->value = module->params[paramId].value;
@@ -489,14 +495,7 @@ struct SpecificValueWidget : ModuleWidget
 
 SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(module)
 {
-    box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-
-    {
-        SVGPanel *panel = new SVGPanel();
-        panel->box.size = box.size;
-        panel->setBackground(SVG::load(assetPlugin(plugin, "res/SpecificValue.svg")));
-        addChild(panel);
-    }
+    setPanel(SVG::load(assetPlugin(plugin, "res/SpecificValue.svg")));
 
     // TODO: widget with these children?
     float y_baseline = 45.0f;
@@ -614,7 +613,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
 
 void SpecificValueWidget::step() {
     ModuleWidget::step();
-    
+
     if (prev_volts != module->params[SpecificValue::VALUE1_PARAM].value ||
         prev_octave != module->params[SpecificValue::OCTAVE_PARAM].value ||
         prev_input != module->params[SpecificValue::VALUE1_INPUT].value) {
@@ -625,7 +624,7 @@ void SpecificValueWidget::step() {
             prev_input = module->params[SpecificValue::VALUE1_INPUT].value;
             EventChange e;
 		    onChange(e);
-    } 
+    }
 }
 
 void SpecificValueWidget::onChange(EventChange &e) {

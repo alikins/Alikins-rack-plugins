@@ -14,10 +14,11 @@ struct Reference : Module {
     enum OutputIds {
         MINUS_TEN_OUTPUT,
         MINUS_FIVE_OUTPUT,
+        MINUS_ONE_OUTPUT,
         ZERO_OUTPUT,
+        PLUS_ONE_OUTPUT,
         PLUS_FIVE_OUTPUT,
         PLUS_TEN_OUTPUT,
-        A_440_OUTPUT,
         NUM_OUTPUTS
     };
     enum LightIds {
@@ -37,13 +38,14 @@ struct Reference : Module {
 void Reference::step() {
     outputs[MINUS_TEN_OUTPUT].value = -10.0f;
     outputs[MINUS_FIVE_OUTPUT].value = -5.0f;
-    
+    outputs[MINUS_ONE_OUTPUT].value = -1.0f;
+
     outputs[ZERO_OUTPUT].value = 0.0f;
     
+    outputs[PLUS_ONE_OUTPUT].value = 1.0f;
     outputs[PLUS_FIVE_OUTPUT].value = 5.0f;
     outputs[PLUS_TEN_OUTPUT].value = 10.0f;
 
-    outputs[A_440_OUTPUT].value = 4.75f;
 }
 
 struct ReferenceWidget : ModuleWidget {
@@ -75,7 +77,19 @@ ReferenceWidget::ReferenceWidget(Reference *module) : ModuleWidget(module) {
     addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
                                        Port::OUTPUT,
                                        module,
+                                       Reference::PLUS_ONE_OUTPUT));
+
+    y_pos += y_offset;
+    addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
+                                       Port::OUTPUT,
+                                       module,
                                        Reference::ZERO_OUTPUT));
+
+    y_pos += y_offset;
+    addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
+                                       Port::OUTPUT,
+                                       module,
+                                       Reference::MINUS_ONE_OUTPUT));
 
     y_pos += y_offset;
     addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
@@ -83,22 +97,17 @@ ReferenceWidget::ReferenceWidget(Reference *module) : ModuleWidget(module) {
                                        module,
                                        Reference::MINUS_FIVE_OUTPUT));
 
-    y_pos += y_offset;                                
-    addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
-                                       Port::OUTPUT,
-                                       module,
-                                       Reference::MINUS_TEN_OUTPUT));
-                                       
     y_pos += y_offset;
     addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
                                        Port::OUTPUT,
                                        module,
-                                       Reference::A_440_OUTPUT));
+                                       Reference::MINUS_TEN_OUTPUT));
+
 
     addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));
     addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
     addChild(Widget::create<ScrewSilver>(Vec(0.0f, 365.0f)));
-    // addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
 
 }
 

@@ -18,3 +18,4 @@ extern Model *modelBigMuteButton;
 extern Model *modelColorPanel;
 extern Model *modelGateLength;
 extern Model *modelSpecificValue;
+extern Model *modelSampleDelay;

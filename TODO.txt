@@ -34,6 +34,8 @@ plugin ideas:
             - end range
         - output value
     - buttons to add delete entry
+    - a x, y graph display showing phasor in volts on X
+      and table volts out on Y
   - load table from json in context menu
   - uses:
     - feed a sawtooth osc output into it to
@@ -101,7 +103,8 @@ plugin ideas:
   - uses
     - generative patches that need a 'press play to start'
 - specific values
-  - module with just text entrie fields for entering a float value
+  X - (mostly implemented in 'Specific Value' module)
+  X - module with just text entrie fields for entering a float value
     and an output for that value
   - possibly with text widget in combo with a dial or inc/dec
     buttons (spinbox widget)
@@ -109,12 +112,15 @@ plugin ideas:
       - up/down for small value
       - left/right for multiplier (middle = 1x, left = 0..1.0x, right >1.0x multi)
       - 'up and to the left' for fine grained adjustments
-  - fancy
-    - maybe automatically also show CV v/oct freq or note equiv
+  X - fancy
+    X - maybe automatically also show CV v/oct freq or note equiv
+  - incremental mode for voltage dial, to jump between quantized values,
+    in particular between note values. Built in quantizer basically.
   - maybe gate out and button to click to send value and gate output together
 - Seq with per step gate length and rest length between steps
  - 'rest' steps basically
 - A cv 1v/oct display -> freq hz -> period secs -> bpm.
+  - (more or less a multiple version of 'Specific Value')
   - ( could display v passed through and/or let you specify as text)
   - CV out
   - button to send gate
@@ -134,11 +140,13 @@ plugin ideas:
   - GUI file picker
   - add base64 of file to data to store in plugin Json.
   - Could be a list
+  - would need to sort out how to only serialize/persist on 'real' save
+    vs autosave (to avoid constantly saving the whole thing to autosave.vcv)
 - 'Maze Table'
   - wave table, but with a maze
   - instead of phasor indexing an array, would "index" into
     a path along the maze graph
-  - could have breath first and depth first paths as options
+  - could have breadth first and depth first paths as options
   - use DAG style mazes (one and only one path out, no loops or cycles)
   - though cycles in maze could be analog for loops in waveform playback
   - maybe something hilbert curve esque?
@@ -176,7 +184,7 @@ plugin ideas:
     of each output
   - maybe a per cross mute/solo
   - Much like the movies, the first one was the best.
-- Notes module with CV/trigger control and multiple messages
+- text Notes module with CV/trigger control and multiple messages
   - like a plain notes module, but can react to input from
     patch
   - use case would be describing stages of a generative patch
@@ -201,3 +209,4 @@ plugin ideas:
     "JOURNAL OF THE AUDIO ENGINEERING SOCIETY, October 1973"
     (https://pdfs.semanticscholar.org/6b9c/30f94551aaf05f077aa491f31b196898cd90.pdf)
   - "Sequency" - theres a module name if I ever heard one.
+- Add DC blocker option to Big Mute Button ?

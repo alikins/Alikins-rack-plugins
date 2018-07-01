@@ -11,6 +11,8 @@
 #include "ui.hpp"
 #include "enharmonic.hpp"
 #include "cv_utils.hpp"
+#include "BigTrimpot.hpp"
+#include "SmallTrimpot.hpp"
 
 struct SpecificValue : Module
 {
@@ -288,7 +290,6 @@ void CentsField::onAction(EventAction &e) {
 }
 
 
-
 struct NoteNameField : TextField {
     float value;
     SpecificValue *module;
@@ -385,64 +386,6 @@ void NoteNameField::onAction(EventAction &e) {
     }
 }
 
-struct SmallPurpleTrimpot : Trimpot {
-    SmallPurpleTrimpot();
-};
-
-SmallPurpleTrimpot::SmallPurpleTrimpot() : Trimpot() {
-    setSVG(SVG::load(assetPlugin(plugin, "res/SmallPurpleTrimpot.svg")));
-    shadow->blurRadius = 0.0;
-    shadow->opacity = 0.10;
-    shadow->box.pos = Vec(0.0, box.size.y * 0.1);
-}
-
-struct PurpleTrimpot : Trimpot {
-	Module *module;
-    bool initialized = false;
-    PurpleTrimpot();
-    void step() override;
-    void reset() override;
-    void randomize() override;
-};
-
-PurpleTrimpot::PurpleTrimpot() : Trimpot() {
-    setSVG(SVG::load(assetPlugin(plugin, "res/PurpleTrimpot.svg")));
-    shadow->blurRadius = 0.0;
-    shadow->opacity = 0.10;
-    shadow->box.pos = Vec(0.0, box.size.y * 0.05);
-}
-
-// FIXME: if we are getting moving inputs and we are hovering
-//        over the trimpot, we kind of jitter arround.
-// maybe run this via an onChange()?
-void PurpleTrimpot::step() {
-	//debug("paramId=%d this->initialized: %d initialized: %d this->value: %f value: %f param.value: %f",
-     // paramId,  this->initialized, initialized, this->value, value, module->params[paramId].value);
-
-    if (this->value != module->params[paramId].value) {
-		if (this != gHoveredWidget && this->initialized) {
-			// this->value = module->params[paramId].value;
-			setValue(module->params[paramId].value);
-		} else {
-			module->params[paramId].value = this->value;
-            this->initialized |= true;
-		}
-		EventChange e;
-		onChange(e);
-	}
-
-	Trimpot::step();
-}
-
-void PurpleTrimpot::reset() {
-    this->initialized = false;
-    Trimpot::reset();
-    }
-
-void PurpleTrimpot::randomize() {
-    reset();
-    setValue(rescale(randomUniform(), 0.0f, 1.0f, minValue, maxValue));
-}
 
 struct VoltageReferenceItem : MenuItem {
     SpecificValue *specificValue;

@@ -27,7 +27,7 @@ struct Reference : Module {
 
 
     Reference() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-    
+
     void step() override;
 
     void onReset() override {
@@ -41,7 +41,7 @@ void Reference::step() {
     outputs[MINUS_ONE_OUTPUT].value = -1.0f;
 
     outputs[ZERO_OUTPUT].value = 0.0f;
-    
+
     outputs[PLUS_ONE_OUTPUT].value = 1.0f;
     outputs[PLUS_FIVE_OUTPUT].value = 5.0f;
     outputs[PLUS_TEN_OUTPUT].value = 10.0f;

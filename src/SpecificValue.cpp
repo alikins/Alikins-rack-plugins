@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <cstddef>
+#include <array>
 #include <map>
 #include <unordered_map>
 #include <math.h>
@@ -11,8 +12,8 @@
 #include "ui.hpp"
 #include "enharmonic.hpp"
 #include "cv_utils.hpp"
-#include "BigTrimpot.hpp"
-#include "SmallTrimpot.hpp"
+#include "specificValueWidgets.hpp"
+#include "prettyprint.hpp"
 
 struct SpecificValue : Module
 {
@@ -40,8 +41,12 @@ struct SpecificValue : Module
 
     SpecificValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 
-    float A440_octave = 4.0f;
+    // float vco_baseline_offset = 4.0f;
+    float vco_baseline_offset = 0.0f;
     float C0_lfo_octave = 0.0f;
+
+    // https://vcvrack.com/manual/VoltageStandards.html#pitch-and-frequencies
+    float lfo_baseline_0v_bpm = 2.0f;
 
     void step() override;
 
@@ -51,15 +56,72 @@ struct SpecificValue : Module
     float hz_value;
     float lfo_hz_value;
     float cents_value;
+    float lfo_bpm_value;
+
+    // std::array<float, 3> vco_baseline_values = {1.0, 2.0, 3.0};
+
+    std::array<float, 5> vco_baseline_values { { 0.0f, 1.0f, 2.0f, 3.0f, 4.0f } };
+
+    enum VcoBaseline {
+        C_ZERO_AT_0V,
+        C_ONE_AT_0V,
+        C_TWO_AT_0V,
+        C_THREE_AT_0V,
+        C_FOUR_AT_0V,
+    };
+
+    // std::array<float, 3> lfo_baseline_voltage_values { {0.0f, -4.0f, -5.0f} };
+    // value is hz (bpm / 60)
+    // FIXME: offset or provide the ref v and freq? (ie, (0,  2.0hz), (0, 30.5hz), (0, 16.35 hz))
+    std::array<float, 3> lfo_baseline_values { {0.0f, -0.97833f, 16.35f} };
+
+    enum LfoBaseline {
+        BPM_120_AT_0V,
+        BPM_61_3_AT_0V,
+        BPM_981_AT_0V,
+    };
+
+    VcoBaseline vcoBaseline = C_FOUR_AT_0V;
+    LfoBaseline lfoBaseline = BPM_120_AT_0V;
+
+    json_t *toJson() override;
+    void fromJson(json_t *rootJ) override;
 
 };
+
+json_t* SpecificValue::toJson() {
+    json_t *rootJ = json_object();
+
+    json_object_set_new(rootJ, "vcoBaseline", json_integer(vcoBaseline));
+    json_object_set_new(rootJ, "lfoBaseline", json_integer(lfoBaseline));
+
+    return rootJ;
+}
+
+void SpecificValue::fromJson(json_t *rootJ) {
+    json_t *vcoBaselineJ = json_object_get(rootJ, "vcoBaseline");
+    if (vcoBaselineJ) {
+        vcoBaseline = (VcoBaseline) json_integer_value(vcoBaselineJ);
+        debug("vcoBaseline: %d", vcoBaseline);
+        // debug("vco_baseline_values: %s", vco_baseline_values);
+        std::cout << "vco_baseline_values: " << vco_baseline_values << std::endl;
+        vco_baseline_offset = vco_baseline_values[vcoBaseline];
+        debug("vco_baseline_offset: %f", vco_baseline_offset);
+    }
+
+    json_t *lfoBaselineJ = json_object_get(rootJ, "lfoBaseline");
+    if (lfoBaselineJ) {
+        lfoBaseline = (LfoBaseline) json_integer_value(lfoBaselineJ);
+        C0_lfo_octave = lfo_baseline_values[lfoBaseline];
+    }
+}
 
 std::unordered_map<std::string, float> note_name_to_volts_map = gen_note_name_map();
 std::unordered_map<std::string, std::string> enharmonic_name_map = gen_enharmonic_name_map();
 
 void SpecificValue::step()
 {
-    //A440_octave = params[OCTAVE_PARAM].value;
+    //vco_baseline_offset = params[OCTAVE_PARAM].value;
 
     if (inputs[VALUE1_INPUT].active) {
         params[VALUE1_PARAM].value = inputs[VALUE1_INPUT].value;
@@ -149,11 +211,11 @@ HZFloatField::HZFloatField(SpecificValue *_module)
 
 float HZFloatField::textToVolts(std::string field_text) {
     float freq = strtof(text.c_str(), NULL);
-    return freq_to_cv(freq, module->A440_octave);
+    return freq_to_cv(freq, module->vco_baseline_offset);
 }
 
 std::string HZFloatField::voltsToText(float param_volts){
-    float freq = cv_to_freq(param_volts, module->A440_octave);
+    float freq = cv_to_freq(param_volts, module->vco_baseline_offset);
     std::string new_text = stringf("%0.*f", freq < 100 ? 4 : 3, freq);
     return new_text;
 }
@@ -209,9 +271,9 @@ float LFOHzFloatField::textToVolts(std::string field_text) {
 }
 
 std::string LFOHzFloatField::voltsToText(float param_volts){
-    float freq_hz = lfo_cv_to_freq(param_volts, module->C0_lfo_octave);
-    float lfo_bpm = freq_hz * 60.0f;
-    std::string new_text = stringf("%0.*f", lfo_bpm < 100 ? 4 : 3, freq_hz);
+    float lfo_freq_hz = lfo_cv_to_freq(param_volts, module->C0_lfo_octave);
+    // float lfo_bpm = freq_hz * 60.0f;
+    std::string new_text = stringf("%0.*f", lfo_freq_hz < 100 ? 4 : 3, lfo_freq_hz);
     return new_text;
 }
 
@@ -229,6 +291,64 @@ void LFOHzFloatField::onChange(EventChange &e) {
 }
 
 void LFOHzFloatField::onAction(EventAction &e)
+{
+    // debug("LFOHzFloatField onAction text=%s", text.c_str());
+
+    //update text first?
+    TextField::onAction(e);
+
+    float volts = textToVolts(text);
+
+    //debug("LFOhZ FloatField onAction about to set VALUE*_PARAM to volts: %f", volts);
+    module->params[SpecificValue::VALUE1_PARAM].value = volts;
+}
+
+
+struct LFOBpmFloatField : TextField {
+    float value;
+    SpecificValue *module;
+
+    LFOBpmFloatField(SpecificValue *_module);
+    void onAction(EventAction &e) override;
+    void onChange(EventChange &e) override;
+
+    float textToVolts(std::string field_text);
+    std::string voltsToText(float param_volts);
+};
+
+LFOBpmFloatField::LFOBpmFloatField(SpecificValue *_module)
+{
+    module = _module;
+}
+
+float LFOBpmFloatField::textToVolts(std::string field_text) {
+    float lfo_bpm = strtof(text.c_str(), NULL);
+    // float freq_hz = lfo_bpm
+    float lfo_hz = lfo_bpm / 60.0f;
+    return lfo_freq_to_cv(lfo_hz, module->C0_lfo_octave);
+}
+
+std::string LFOBpmFloatField::voltsToText(float param_volts){
+    float lfo_freq_hz = lfo_cv_to_freq(param_volts, module->C0_lfo_octave);
+    float lfo_bpm = lfo_freq_hz * 60.0f;
+    std::string new_text = stringf("%0.*f", lfo_bpm < 100 ? 4 : 3, lfo_bpm);
+    return new_text;
+}
+
+void LFOBpmFloatField::onChange(EventChange &e) {
+    // debug("LFOHzFloatField onChange  text=%s param=%f", text.c_str(),
+    //      module->params[SpecificValue::VALUE1_PARAM].value);
+
+     //TextField::onChange(e);
+
+     if (this != gFocusedWidget)
+     {
+         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+         setText(new_text);
+     }
+}
+
+void LFOBpmFloatField::onAction(EventAction &e)
 {
     // debug("LFOHzFloatField onAction text=%s", text.c_str());
 
@@ -289,7 +409,6 @@ void CentsField::onAction(EventAction &e) {
 
 }
 
-
 struct NoteNameField : TextField {
     float value;
     SpecificValue *module;
@@ -313,8 +432,8 @@ void NoteNameField::onChange(EventChange &e) {
      if (this != gFocusedWidget)
      {
         float cv_volts = module->params[SpecificValue::VALUE1_PARAM].value;
-        int octave = volts_to_octave(cv_volts, module->params[SpecificValue::OCTAVE_PARAM].value);
-        int note_number = volts_to_note(cv_volts, module->A440_octave);
+        int octave = volts_to_octave(cv_volts, module->vco_baseline_offset);
+        int note_number = volts_to_note(cv_volts, module->vco_baseline_offset);
         // debug("vc_volts: %f, octave=%d, note_number=%d, note=%d", cv_volts, octave, note_number, note_name_vec[note_number].c_str());
         // float semi_cents = volts_to_note_and_cents(cv_volts, module->params[SpecificValue::OCTAVE_PARAM].value);
         // note_info = volts_to_note_info(cv_volts, module->params[SpecificValue::OCTAVE_PARAM].value);
@@ -376,7 +495,7 @@ void NoteNameField::onAction(EventAction &e) {
 
     auto search = note_name_to_volts_map.find(can_note_id);
     if(search != note_name_to_volts_map.end()) {
-        module->params[SpecificValue::VALUE1_PARAM].value = note_name_to_volts_map[can_note_id] - module->A440_octave;
+        module->params[SpecificValue::VALUE1_PARAM].value = note_name_to_volts_map[can_note_id] - module->vco_baseline_offset;
         return;
     }
     else {
@@ -389,21 +508,35 @@ void NoteNameField::onAction(EventAction &e) {
 
 struct VoltageReferenceItem : MenuItem {
     SpecificValue *specificValue;
-    float a440_octave;
-    // SpecificValue::VoltageReference voltageReference;
-
-    // ColorPanel *colorPanel;
-    // ColorPanel::ColorMode colorMode;
+    // float a440_octave;
+    SpecificValue::VcoBaseline vcoBaseline;
 
     void onAction(EventAction &e) override {
-        debug("seting module->A440_octave (%f) -> %f", specificValue->A440_octave, a440_octave);
-        specificValue->A440_octave = a440_octave;
+        debug("seting module->vcoBaseline (%f) -> %f", specificValue->vcoBaseline, vcoBaseline);
+        specificValue->vcoBaseline = vcoBaseline;
+        specificValue->vco_baseline_offset = specificValue->vco_baseline_values[vcoBaseline];
     };
 
     void step() override {
-        rightText = (specificValue->A440_octave == a440_octave)? "✔" : "";
+        rightText = (specificValue->vcoBaseline == vcoBaseline)? "✔" : "";
+    };
+};
+
+struct LFOVoltageReferenceItem : MenuItem {
+    SpecificValue *specificValue;
+    // float c0_lfo_octave;
+    SpecificValue::LfoBaseline lfoBaseline;
+
+    void onAction(EventAction &e) override {
+        debug("seting module->lfoBaseline (%f) -> %f", specificValue->lfoBaseline, lfoBaseline);
+        // specificValue->C0_lfo_octave = c0_lfo_octave;
+        specificValue->lfoBaseline = lfoBaseline;
+        specificValue->C0_lfo_octave = specificValue->lfo_baseline_values[lfoBaseline];
     };
 
+    void step() override {
+        rightText = (specificValue->lfoBaseline == lfoBaseline)? "✔" : "";
+    };
 };
 
 struct SpecificValueWidget : ModuleWidget
@@ -416,7 +549,7 @@ struct SpecificValueWidget : ModuleWidget
     void onChange(EventChange &e) override;
 
     float prev_volts = 0.0f;
-    float prev_octave = 4.0f;
+    float prev_vco_octave = 4.0f;
     float prev_input = 0.0f;
 
     FloatField *volts_field;
@@ -424,6 +557,7 @@ struct SpecificValueWidget : ModuleWidget
     LFOHzFloatField *lfo_hz_field;
     NoteNameField *note_name_field;
     CentsField *cents_field;
+    LFOBpmFloatField *lfo_bpm_field;
 };
 
 
@@ -435,12 +569,11 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     float y_baseline = 45.0f;
 
     Vec volt_field_size = Vec(70.0f, 22.0f);
-    Vec hz_field_size = Vec(70.0, 22.0f);
-    Vec lfo_hz_field_size = Vec(70.0, 22.0f);
+    Vec hz_field_size = Vec(70.0f, 22.0f);
+    Vec lfo_hz_field_size = Vec(70.0f, 22.0f);
 
     float x_pos = 10.0f;
     // debug("adding field %d", i);
-
 
     y_baseline = 45.0f;
 
@@ -486,8 +619,17 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     cents_field->value = module->cents_value;
     addChild(cents_field);
 
+    y_baseline += cents_field->box.size.y;
+    y_baseline += 5.0f;
+
+    lfo_bpm_field = new LFOBpmFloatField(module);
+    lfo_bpm_field->box.pos = Vec(x_pos, y_baseline);
+    lfo_bpm_field->box.size = Vec(55.0f, 22.0f);
+    lfo_bpm_field->value = module->lfo_bpm_value;
+    addChild(lfo_bpm_field);
+
     // y_baseline += period_field->box.size.y;
-    y_baseline += 20.0f;
+    //y_baseline += 20.0f;
 
     float middle = box.size.x / 2.0f;
     float in_port_x = 15.0f;
@@ -505,6 +647,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     inputs.push_back(value_in_port);
     addChild(value_in_port);
 
+    /*
     // octave trimpot
     SmallPurpleTrimpot *octaveTrimpot = ParamWidget::create<SmallPurpleTrimpot>(
         Vec(middle, y_baseline + 2.5f),
@@ -516,6 +659,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     octaveTrimpot->box.pos = Vec(middle - octaveTrimpot->box.size.x / 2, y_baseline + 2.5f);
     octaveTrimpot->snap = true;
     addChild(octaveTrimpot);
+    */
 
     float out_port_x = middle + 24.0f;
 
@@ -550,12 +694,11 @@ void SpecificValueWidget::step() {
     ModuleWidget::step();
 
     if (prev_volts != module->params[SpecificValue::VALUE1_PARAM].value ||
-        // prev_octave != module->params[SpecificValue::OCTAVE_PARAM].value ||
+        // prev_vco_octave != module->vco_baseline_offset ||
         prev_input != module->params[SpecificValue::VALUE1_INPUT].value) {
             // debug("SpVWidget step - emitting EventChange / onChange prev_volts=%f param=%f",
             //     prev_volts, module->params[SpecificValue::VALUE1_PARAM].value);
             prev_volts = module->params[SpecificValue::VALUE1_PARAM].value;
-            // prev_octave = module->params[SpecificValue::OCTAVE_PARAM].value;
             prev_input = module->params[SpecificValue::VALUE1_INPUT].value;
             EventChange e;
 		    onChange(e);
@@ -570,7 +713,7 @@ void SpecificValueWidget::onChange(EventChange &e) {
     lfo_hz_field->onChange(e);
     note_name_field->onChange(e);
     cents_field->onChange(e);
-
+    lfo_bpm_field->onChange(e);
 }
 
 Menu *SpecificValueWidget::createContextMenu() {
@@ -583,29 +726,45 @@ Menu *SpecificValueWidget::createContextMenu() {
     assert(specificValue);
 
     MenuLabel *voltageReferenceLabel = new MenuLabel();
-    voltageReferenceLabel->text = "C4 Voltage Reference";
+    voltageReferenceLabel->text = "0V note / freq";
     menu->addChild(voltageReferenceLabel);
 
     VoltageReferenceItem *voltageReferenceItem0 = new VoltageReferenceItem();
-    voltageReferenceItem0->text = "0V";
+    voltageReferenceItem0->text = "C0 / 16.35hz";
     voltageReferenceItem0->specificValue = specificValue;
-    voltageReferenceItem0->a440_octave = 0.0f;
-    // voltageReferenceItem->colorMode = ColorPanel::RGB_MODE;
+    voltageReferenceItem0->vcoBaseline = SpecificValue::C_ZERO_AT_0V;
     menu->addChild(voltageReferenceItem0);
-
-    VoltageReferenceItem *voltageReferenceItem1 = new VoltageReferenceItem();
-    voltageReferenceItem1->specificValue = specificValue;
-    voltageReferenceItem1->text = "1V";
-    voltageReferenceItem1->a440_octave = 1.0f;
-    // voltageReferenceItem->colorMode = ColorPanel::RGB_MODE;
-    menu->addChild(voltageReferenceItem1);
 
     VoltageReferenceItem *voltageReferenceItem4 = new VoltageReferenceItem();
     voltageReferenceItem4->specificValue = specificValue;
-    voltageReferenceItem4->text = "4V";
-    voltageReferenceItem4->a440_octave = 4.0f;
-    // voltageReferenceItem->colorMode = ColorPanel::RGB_MODE;
+    voltageReferenceItem4->text = "C4 / 261.626";
+    voltageReferenceItem4->vcoBaseline = SpecificValue::C_FOUR_AT_0V ;
     menu->addChild(voltageReferenceItem4);
+
+    MenuLabel *spacerLabel2 = new MenuLabel();
+    menu->addChild(spacerLabel2);
+
+    MenuLabel *lfoVoltageReferenceLabel = new MenuLabel();
+    lfoVoltageReferenceLabel->text = "0V LFO bpm";
+    menu->addChild(lfoVoltageReferenceLabel);
+
+    LFOVoltageReferenceItem *lfoVoltageReferenceItem0 = new LFOVoltageReferenceItem();
+    lfoVoltageReferenceItem0->text = "120 bpm / 2.0hz";
+    lfoVoltageReferenceItem0->specificValue = specificValue;
+    lfoVoltageReferenceItem0->lfoBaseline = SpecificValue::BPM_120_AT_0V;
+    menu->addChild(lfoVoltageReferenceItem0);
+
+    LFOVoltageReferenceItem *lfoVoltageReferenceItem1 = new LFOVoltageReferenceItem();
+    lfoVoltageReferenceItem1->text = "981 bpm / 16.35hz";
+    lfoVoltageReferenceItem1->specificValue = specificValue;
+    lfoVoltageReferenceItem1->lfoBaseline = SpecificValue::BPM_981_AT_0V;
+    menu->addChild(lfoVoltageReferenceItem1);
+
+    LFOVoltageReferenceItem *lfoVoltageReferenceItem2 = new LFOVoltageReferenceItem();
+    lfoVoltageReferenceItem2->text = "61.3 bpm / 1.0219 Hz";
+    lfoVoltageReferenceItem2->specificValue = specificValue;
+    lfoVoltageReferenceItem2->lfoBaseline = SpecificValue::BPM_61_3_AT_0V;
+    menu->addChild(lfoVoltageReferenceItem2);
 
     return menu;
 }

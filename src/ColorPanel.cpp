@@ -339,7 +339,7 @@ Menu *ColorPanelWidget::createContextMenu() {
     InputRangeItem *fiveFiveItem = new InputRangeItem();
     fiveFiveItem->text = "-5 - +5V (bi)";
     fiveFiveItem->colorPanel = colorPanel;
-    fiveFiveItem->inputRange = ColorPanel::MINUS_PLUS_FIVE;;
+    fiveFiveItem->inputRange = ColorPanel::MINUS_PLUS_FIVE;
     menu->addChild(fiveFiveItem);
 
     return menu;

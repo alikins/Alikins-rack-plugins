@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <math.h>
+#include <float.h>
 
 #include "alikins.hpp"
 #include "ui.hpp"
@@ -99,10 +101,10 @@ float volts_of_nearest_note(float volts) {
     return res;
 }
 
-int volts_to_note(float volts) {
-    int res = abs(static_cast<int>( roundf( (volts * 12.0f) ) ) ) % 12;
-    // debug("volts_to_note volts=%f res=%d", volts, res);
-    return res;
+int volts_to_note(float volts, float a440_octave) {
+    int note_index = abs(static_cast<int>( roundf( ((volts + a440_octave) * 12.0f) ) ) ) % 12;
+    // debug("volts: %f note_index: %d", volts, note_index);
+    return note_index;
 }
 
 int volts_to_octave(float volts, float a440_octave) {
@@ -114,6 +116,7 @@ int volts_to_octave(float volts, float a440_octave) {
 
 float volts_to_note_cents(float volts, float a440_octave) {
     float nearest_note = volts_of_nearest_note(volts);
+    // debug("nearest note: %f", nearest_note);
     float cent_volt = 1.0f / 12.0f / 100.0f;
 
     float offset_cents = (volts-nearest_note)/cent_volt;
@@ -379,7 +382,8 @@ void NoteNameField::onChange(EventChange &e) {
      {
         float cv_volts = module->params[SpecificValue::VALUE1_PARAM].value;
         int octave = volts_to_octave(cv_volts, module->params[SpecificValue::OCTAVE_PARAM].value);
-        int note_number = volts_to_note(cv_volts);
+        int note_number = volts_to_note(cv_volts, module->A440_octave);
+        // debug("vc_volts: %f, octave=%d, note_number=%d, note=%d", cv_volts, octave, note_number, note_name_vec[note_number].c_str());
         // float semi_cents = volts_to_note_and_cents(cv_volts, module->params[SpecificValue::OCTAVE_PARAM].value);
         // note_info = volts_to_note_info(cv_volts, module->params[SpecificValue::OCTAVE_PARAM].value);
         // TODO: modf for oct/fract part, need to get +/- cents from chromatic notes

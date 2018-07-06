@@ -7,31 +7,21 @@ using namespace rack;
 #include <unordered_map>
 #include <iostream>
 
-#include "prettyprint.hpp"
+// #include "prettyprint.hpp"
 
 // using namespace rack;
 
 std::vector<std::string> note_name_vec = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
-
-//std::unordered_map<std::string, float> gen_note_name_map();
-//std::unordered_map<std::string, std::string> gen_enharmonic_name_map();
 
 std::unordered_map<std::string, float> gen_note_name_map() {
     float volt = -10.0f;
     std::string note_name;
     std::unordered_map<std::string, float> note_name_map;
     std::vector<std::string>::iterator it;
-    int n = 0;
-    int octave = 3;
-
-    for (it = note_name_vec.begin(); it != note_name_vec.end(); it++, n++)
-    {
-        note_name_map[stringf("%s%d", note_name_vec[n].c_str(), octave)] = volt;
-    }
 
     // FIXME: add a map of note name (including enharmonic) to voltage offset from C
     //        then just iterate over it for each octave
-    for (int i = -10; i <= 10; i++)
+    for (int i = -6; i <= 14; i++)
     {
         for (int j = 0; j < 12; j++)
         {

@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4.7487803"
-     inkscape:cx="43.647533"
-     inkscape:cy="88.933851"
+     inkscape:cx="-6.8917604"
+     inkscape:cy="299.51424"
      inkscape:document-units="px"
      inkscape:current-layer="layer6"
      showgrid="false"
@@ -38,7 +38,7 @@
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:window-width="1440"
      inkscape:window-height="851"
-     inkscape:window-x="16"
+     inkscape:window-x="-462"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:measure-start="0,0"
@@ -2110,7 +2110,7 @@
      inkscape:groupmode="layer"
      id="layer6"
      inkscape:label="blorp"
-     style="display:inline;opacity:0.63700005">
+     style="display:inline;opacity:0.8">
     <rect
        style="opacity:0.86499999;fill:#aa87de;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.4890098;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709"
        id="rect17463"
@@ -2120,11 +2120,11 @@
        y="261.43265"
        ry="6.1289797" />
     <rect
-       style="opacity:0.86499999;fill:#ffe680;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.69944859;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709"
+       style="opacity:0.86499999;fill:#ffe680;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.70341611;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709"
        id="rect17453"
-       width="92.548027"
+       width="93.600929"
        height="40.876293"
-       x="-0.61034065"
+       x="-1.6632426"
        y="32.880169" />
     <rect
        style="opacity:0.86499999;fill:#aade87;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.9229328;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709"
@@ -2134,7 +2134,7 @@
        x="-1.1034255"
        y="114.30482" />
     <rect
-       style="opacity:0.86499999;fill:#00ccff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.63082546;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709"
+       style="opacity:0.86400003;fill:#00ccff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.63082546;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709"
        id="rect17457"
        width="93.444595"
        height="39.971695"

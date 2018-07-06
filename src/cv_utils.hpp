@@ -44,7 +44,7 @@ float lfo_freq_to_cv(float lfo_freq, float lfo_offset_from_baseline) {
 }
 
 float cv_to_freq(float volts, float offset_from_baseline) {
-    offset_from_baseline = 0.0f;
+    // offset_from_baseline = 0.0f;
     float freq = VCO_BASELINE_FREQ / powf(2.0f, VCO_BASELINE_VOLTAGE) * powf(2.0f, volts - offset_from_baseline);
 
     debug("cv_to_freq: cv volts=%f -> freq=%f (offset_from_baseline=%f  vco_baseline_freq=%f)",

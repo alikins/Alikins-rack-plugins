@@ -575,7 +575,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     float x_pos = 10.0f;
     // debug("adding field %d", i);
 
-    y_baseline = 45.0f;
+    y_baseline = 38.0f;
 
     volts_field = new FloatField(module);
     volts_field->box.pos = Vec(x_pos, y_baseline);
@@ -583,7 +583,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     volts_field->value = module->params[SpecificValue::VALUE1_PARAM].value;
     addChild(volts_field);
 
-    y_baseline = 90.0f;
+    y_baseline = 78.0f;
 
     float h_pos = x_pos;
     hz_field = new HZFloatField(module);
@@ -592,7 +592,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     hz_field->value = module->hz_value;
     addChild(hz_field);
 
-    y_baseline = 135.0f;
+    y_baseline = 120.0f;
 
     lfo_hz_field = new LFOHzFloatField(module);
     lfo_hz_field->box.pos = Vec(h_pos, y_baseline);
@@ -601,7 +601,20 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
 
     addChild(lfo_hz_field);
 
-    y_baseline = 180.0f;
+    y_baseline += lfo_hz_field->box.size.y;
+    y_baseline += 5.0f;
+    y_baseline += 12.0f;
+
+    lfo_bpm_field = new LFOBpmFloatField(module);
+    lfo_bpm_field->box.pos = Vec(x_pos, y_baseline);
+    lfo_bpm_field->box.size = Vec(70.0f, 22.0f);
+    lfo_bpm_field->value = module->lfo_bpm_value;
+    addChild(lfo_bpm_field);
+
+    y_baseline += lfo_bpm_field->box.size.y;
+    y_baseline += 20.0f;
+
+    // y_baseline = 180.0f;
 
     note_name_field = new NoteNameField(module);
     note_name_field->box.pos = Vec(x_pos, y_baseline);
@@ -622,19 +635,15 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     y_baseline += cents_field->box.size.y;
     y_baseline += 5.0f;
 
-    lfo_bpm_field = new LFOBpmFloatField(module);
-    lfo_bpm_field->box.pos = Vec(x_pos, y_baseline);
-    lfo_bpm_field->box.size = Vec(55.0f, 22.0f);
-    lfo_bpm_field->value = module->lfo_bpm_value;
-    addChild(lfo_bpm_field);
-
     // y_baseline += period_field->box.size.y;
     //y_baseline += 20.0f;
 
     float middle = box.size.x / 2.0f;
     float in_port_x = 15.0f;
 
-    y_baseline += 24.0f + 12.0f;
+    // y_baseline += 24.0f + 12.0f;
+    y_baseline += 12.0f;
+    // y_baseline += lfo_hz_field->box.size.y;
 
     Port *value_in_port = Port::create<PJ301MPort>(
         Vec(in_port_x, y_baseline),
@@ -646,20 +655,6 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
 
     inputs.push_back(value_in_port);
     addChild(value_in_port);
-
-    /*
-    // octave trimpot
-    SmallPurpleTrimpot *octaveTrimpot = ParamWidget::create<SmallPurpleTrimpot>(
-        Vec(middle, y_baseline + 2.5f),
-        module,
-        SpecificValue::OCTAVE_PARAM,
-        0.0f, 8.0f, 4.0f);
-
-    // params.push_back(octaveTrimpot);
-    octaveTrimpot->box.pos = Vec(middle - octaveTrimpot->box.size.x / 2, y_baseline + 2.5f);
-    octaveTrimpot->snap = true;
-    addChild(octaveTrimpot);
-    */
 
     float out_port_x = middle + 24.0f;
 
@@ -678,7 +673,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     y_baseline += 16.0f;
 
     PurpleTrimpot *trimpot = ParamWidget::create<PurpleTrimpot>(
-        Vec(middle - 24.0f, y_baseline + 2.5f),
+        Vec(middle - 24.0f, y_baseline + 4.5f),
         module,
         SpecificValue::VALUE1_PARAM,
         -10.0f, 10.0f, 0.0f);

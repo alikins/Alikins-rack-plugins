@@ -571,6 +571,10 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     //    module->params[SpecificValue::VALUE1_PARAM].value);
     params.push_back(trimpot);
     addChild(trimpot);
+
+    // fire off an event to refresh all the widgets
+    EventChange e;
+    onChange(e);
 }
 
 void SpecificValueWidget::step() {

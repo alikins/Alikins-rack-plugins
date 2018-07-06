@@ -7,6 +7,53 @@ Plugins for use with VCV Rack virtual module synthesizer (https://github.com/VCV
 
 ## Modules
 
+### SpecificValue
+
+#### What
+
+A controller module for outputting a specific voltage
+with displays and text input fields for voltage,
+frequency, note name ('C3' etc) and detune (cents),
+LFO bpm, and LFO hz.
+
+Can also be used as a 'meter' displaying all of
+the above info for CV voltages fed into the IN
+input. This includes animation of the controller
+dial.
+
+##### Note Input
+
+A specific note can be entered into the note text
+field.
+
+The note format includes a note a letter and a
+positive or negative 'octave'.
+
+For example, Valid formats include:
+
+- C4
+- c3   (lower case note name)
+- F#2  (sharps are indicated by the '#' char)
+- Ab0  (flats are indicate with a 'b' in the second field.
+       Note that flats are currently converted to the equilivent sharp for display)
+- C-2  (The C six octaves below C4)
+
+For notes that are slighty sharp or flat from a A440 tuning, the
+cents display shows how the amount of detuning.
+
+##### LFO values
+
+The LFO fields show the hz and bpms (beats per minute) corresponding to
+the current voltage, based on the standard at
+https://vcvrack.com/manual/VoltageStandards.html#pitch-and-frequencies
+
+##### HZ
+
+The HZ fields shows the hz corresponding to the current voltage for a
+VCO, based on the standard at https://vcvrack.com/manual/VoltageStandards.html#pitch-and-frequencies
+
+
+
 ### IdleSwitch
 
 #### What

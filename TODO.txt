@@ -132,6 +132,20 @@ plugin ideas:
     - interval from a root ( third, flat fifth, etc)
     - staff / note
     - bpm (for a LFO or general nerdery)
+- SpecificNote
+  - choose a specific note from options
+  - possible UI that could be implemented like a
+    imagemap (ie, use x,y of where clicked to pick note)
+    - piano keyboard image
+    - piano key style but 2d, with stacked one
+      octave keys (kind of accordian-ish)
+    - musical staffs
+      - possibly with areas along X to indicate note length?
+      - maybe left side of X axis for flat, middle for natural, right
+        for sharp
+    - just a grid
+    - various alternative keyboard styles (hex, axis64, starrlab, jammer keyboard)
+  - could use multiple instances and a 'Whats New Now' to combine them
 - generic voltage quantizer
   - based on 'table' module
   - except input CV is 'rounded' to edge of maps
@@ -142,6 +156,14 @@ plugin ideas:
   - Could be a list
   - would need to sort out how to only serialize/persist on 'real' save
     vs autosave (to avoid constantly saving the whole thing to autosave.vcv)
+- 'Attached Preset' module
+  - more or less 'Attached File' but tweaked for including vcvm presets
+  - automatically write out presets to current presets folder?
+    - well, not automatically, but more or less just one interactive step
+      like a 'save to presets folder' button
+  - can a ModuleWidget subclass customize fromJson to allow a module to
+    accept 'paste preset' from any plugin?
+    - would be easiest UI for attaching a preset
 - 'Maze Table'
   - wave table, but with a maze
   - instead of phasor indexing an array, would "index" into
@@ -210,3 +232,35 @@ plugin ideas:
     (https://pdfs.semanticscholar.org/6b9c/30f94551aaf05f077aa491f31b196898cd90.pdf)
   - "Sequency" - theres a module name if I ever heard one.
 - Add DC blocker option to Big Mute Button ?
+- Whats New Now
+  - multiple inputs, detect, choose and output the most recently change value
+  - use to multiple multiple controllers (like Specific Value) together and
+    use the 'active' one
+  - for each input, track previous (N?) input value[s]
+     - on each step, compare current value to previous
+     - if different, it's 'new'
+     - compare to some value precision (ie, the epsilon to use when comparing floats)
+     - compare to some time precision (running average of last N values?)
+     - if only one new/changed input, send the new value to the output
+     - if multiple new/changed inputs, need to pick which to use
+       - most recently chosen for output? ie, stick with input that first started changing
+       - least recently chosen?  kind of round robin
+       - value that most recently started changing? (track how long each input has been changing,
+         and choose the one that just "woke up")
+  - output a trigger when output value is changing (for ex, a new cv note was detected, send a trigger
+    to potentially start a gate...)
+  - almost surely already exists with different name/terminology
+     - maybe envelope followers and logic?
+  - uses:
+    - allow multiple CV controllers to be used (ie, a midi-to-cv, a SpecificValue, a TwelveKeys) with
+      the final output being DWIM for user (ie, whatever changed last)
+    - kind of multiplexing?
+    - bet it would make weird noises at audio rate
+  - options:
+    - way to avoid discont/aliasing in output?
+      - interpolation?
+      - miniblep?
+    - gate out for 'something is changing right now'
+    - default output value (0?) if nothing is changing?
+- Blocked In DC!
+  - just DC blocker, but I like the name

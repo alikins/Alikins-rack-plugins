@@ -7,11 +7,41 @@ using namespace rack;
 #include <unordered_map>
 #include <iostream>
 
-// #include "prettyprint.hpp"
-
 // using namespace rack;
 
 std::vector<std::string> note_name_vec = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+
+enum NoteName {
+    C_NATURAL,
+    C_SHARP,
+    D_NATURAL,
+    D_SHARP,
+    E_NATURAL,
+    F_NATURAL,
+    F_SHARP,
+    G_NATURAL,
+    G_SHARP,
+    A_NATURAL,
+    A_SHARP,
+    B_NATURAL
+};
+
+// add a NoteValue obj based on volts, with
+// methods for voltToText, voltToNote, etc
+struct NoteOct {
+    std::string name;
+    std::string octave;
+    std::string flag;
+    int rank;
+
+    NoteOct() {
+        // if no octave number, assume it is octave 4
+        name = "C";
+        octave = "4";
+        flag = "";
+        rank = 0;
+    }
+};
 
 std::unordered_map<std::string, float> gen_note_name_map() {
     float volt = -10.0f;
@@ -93,4 +123,46 @@ std::unordered_map<std::string, std::string> gen_enharmonic_name_map() {
     enharmonic_map["b#"] = "C";
 
     return enharmonic_map;
+}
+
+std::unordered_map<std::string, std::string> enharmonic_name_map = gen_enharmonic_name_map();
+std::unordered_map<std::string, float> note_name_to_volts_map = gen_note_name_map();
+
+NoteOct* parseNote(std::string text) {
+    // split into 'stuff before any int or -' and a number like string
+    // ie C#11 -> C# 11,  A-4 -> A 4
+    std::size_t note_flag_found_loc = text.find_last_of("#♯b♭");
+
+    std::string note_flag = "";
+    if(note_flag_found_loc!=std::string::npos){
+        note_flag = text[note_flag_found_loc];
+    }
+
+    std::size_t found = text.find_first_of("-0123456789");
+
+    // if no octave number, assume it is octave 4
+    std::string note_name = text;
+    std::string note_oct = "4";
+
+    if(found != std::string::npos){
+        note_name = text.substr(0, found);
+        note_oct = text.substr(found, text.length());
+    }
+
+    std::string can_note_name = enharmonic_name_map[note_name];
+
+    NoteOct *noteOct = new NoteOct();
+    noteOct->name = can_note_name;
+    noteOct->octave = note_oct;
+    noteOct->flag = note_flag;
+
+    return noteOct;
+}
+
+std::string getCanNoteId(NoteOct *noteOct) {
+    std::string can_note_name = enharmonic_name_map[noteOct->name];
+
+    std::string can_note_id = stringf("%s%s", can_note_name.c_str(), noteOct->octave.c_str());
+
+    return can_note_id;
 }

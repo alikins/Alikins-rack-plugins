@@ -8,11 +8,16 @@
 #include <math.h>
 #include <float.h>
 
+#include "window.hpp"
+#include <GLFW/glfw3.h>
+
+
 #include "alikins.hpp"
 #include "ui.hpp"
 #include "enharmonic.hpp"
 #include "cv_utils.hpp"
 #include "specificValueWidgets.hpp"
+
 
 struct SpecificValue : Module
 {
@@ -38,6 +43,7 @@ struct SpecificValue : Module
         NUM_LIGHTS
     };
 
+
     SpecificValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 
     void step() override;
@@ -50,12 +56,8 @@ struct SpecificValue : Module
 
 };
 
-std::unordered_map<std::string, float> note_name_to_volts_map = gen_note_name_map();
-std::unordered_map<std::string, std::string> enharmonic_name_map = gen_enharmonic_name_map();
-
 void SpecificValue::step()
 {
-
     if (inputs[VALUE1_INPUT].active) {
         params[VALUE1_PARAM].value = inputs[VALUE1_INPUT].value;
     }
@@ -63,31 +65,44 @@ void SpecificValue::step()
     outputs[VALUE1_OUTPUT].value = volt_value;
 }
 
+enum AdjustKey
+{
+    UP,
+    DOWN,
+    INITIAL
+};
+
 struct FloatField : TextField
 {
-    float value;
     SpecificValue *module;
 
-    FloatField(SpecificValue *_module);
+    FloatField(SpecificValue *module);
 
     void onAction(EventAction &e) override;
     void onChange(EventChange &e) override;
+    void onKey(EventKey &e) override;
+
+    virtual void increment(float delta);
 
     float textToVolts(std::string field_text);
     std::string voltsToText(float param_volts);
+
+    virtual void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
+
+    float INC = 1.0f;
+    float SHIFT_INC = 0.1f;
+    float MOD_INC = 0.001f;
 };
+
 
 FloatField::FloatField(SpecificValue *_module)
 {
     module = _module;
-    value = module->params[SpecificValue::VALUE1_PARAM].value;
-    text = voltsToText(value);
+    INC = 0.01f;
+    SHIFT_INC = 0.1f;
+    MOD_INC = 0.001f;
 }
 
-// TODO: this is really data stuff, so could be in type/struct/class for the data
-//       (volt, freq/hz, period/seconds, note_name)
-//       and instanced and provided to a generic ValueField widget
-//       that has-a data type converter thingy
 float FloatField::textToVolts(std::string field_text) {
     return atof(field_text.c_str());
 }
@@ -97,49 +112,83 @@ std::string FloatField::voltsToText(float param_volts){
 }
 
 void FloatField::onChange(EventChange &e) {
-    //debug("FloatField onChange  text=%s param=%f", text.c_str(),
-    // module->params[SpecificValue::VALUE1_PARAM].value);
-
-     if (this != gFocusedWidget) {
-        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
-        setText(new_text);
-     }
+    // debug("FloatField onChange  text=%s param=%f", text.c_str(),
+    //    module->params[SpecificValue::VALUE1_PARAM].value);
+    std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+    setText(new_text);
 }
 
 void FloatField::onAction(EventAction &e)
 {
-    //debug("FloatField onAction text=%s", text.c_str());
-
-    //update text first?
     TextField::onAction(e);
-
     float volts = textToVolts(text);
-
-    //debug("FloatField setting volts=%f text=%s", volts, text.c_str());
     module->params[SpecificValue::VALUE1_PARAM].value = volts;
-
-    //debug("FloatField onAction2 text=%s volts=%f module->volt_values=%f",
-    //      text.c_str(), volts, module->volt_value);
-
 }
 
+void FloatField::increment(float delta) {
+    // debug("inc delta: %f", delta);
+    float field_value = atof(text.c_str());
+    field_value += delta;
+    text = voltsToText(field_value);
+    // debug("new text: %s", text.c_str());
+}
 
-struct HZFloatField : TextField
+void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
+    // debug("INC %f shift_pressed: %d mod_pressed: %d", INC, shift_pressed, mod_pressed);
+    float inc = shift_pressed ? SHIFT_INC : INC;
+    // mod "wins" if shift and mod pressed
+    inc = mod_pressed ? MOD_INC : inc;
+    inc = adjustKey == AdjustKey::UP ? inc : -inc;
+
+    // debug("inc: %f", inc);
+    increment(inc);
+
+    EventAction e;
+    onAction(e);
+}
+
+void FloatField::onKey(EventKey &e) {
+    // debug("e.key: %d", e.key);
+    bool shift_pressed = windowIsShiftPressed();
+    bool mod_pressed = windowIsModPressed();
+
+	switch (e.key) {
+		case GLFW_KEY_UP: {
+			e.consumed = true;
+            handleKey(AdjustKey::UP, shift_pressed, mod_pressed);
+		} break;
+		case GLFW_KEY_DOWN: {
+			e.consumed = true;
+            handleKey(AdjustKey::DOWN, shift_pressed, mod_pressed);
+		} break;
+	}
+
+	if (!e.consumed) {
+		TextField::onKey(e);
+	}
+}
+
+struct HZFloatField : FloatField
 {
-    float value;
     SpecificValue *module;
 
-    HZFloatField(SpecificValue *_module);
+    HZFloatField(SpecificValue *_module) ;
     void onChange(EventChange &e) override;
     void onAction(EventAction &e) override;
 
+    void increment(float delta) override;
+
     float textToVolts(std::string field_text);
     std::string voltsToText(float param_volts);
+
 };
 
-HZFloatField::HZFloatField(SpecificValue *_module)
+HZFloatField::HZFloatField(SpecificValue *_module) : FloatField(_module)
 {
     module = _module;
+    INC = 1.0f;
+    SHIFT_INC = 10.0f;
+    MOD_INC = 0.1f;
 }
 
 float HZFloatField::textToVolts(std::string field_text) {
@@ -153,12 +202,14 @@ std::string HZFloatField::voltsToText(float param_volts){
     return new_text;
 }
 
+void HZFloatField::increment(float delta){
+    // debug("HZ incr delta=%f", delta);
+    float field_value = atof(text.c_str());
+    field_value += delta;
+    text = stringf("%0.*f", field_value < 100 ? 4 : 3, field_value);
+}
+
 void HZFloatField::onChange(EventChange &e) {
-    //debug("HZFloatField onChange  text=%s param=%f", text.c_str(),
-    // module->params[SpecificValue::VALUE1_PARAM].value);
-
-     //TextField::onChange(e);
-
      if (this != gFocusedWidget)
      {
          std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
@@ -166,95 +217,89 @@ void HZFloatField::onChange(EventChange &e) {
      }
 }
 
-void HZFloatField::onAction(EventAction &e)
-{
-    //debug("HZFloatField onAction text=%s", text.c_str());
-
-    //update text first?
+void HZFloatField::onAction(EventAction &e) {
     TextField::onAction(e);
 
     float volts = textToVolts(text);
 
-    //debug("HZ FloatField onAction about to set VALUE*_PARAM to volts: %f", volts);
     module->params[SpecificValue::VALUE1_PARAM].value = volts;
 }
 
-struct LFOHzFloatField : TextField {
-    float value;
+struct LFOHzFloatField : FloatField {
     SpecificValue *module;
 
     LFOHzFloatField(SpecificValue *_module);
     void onAction(EventAction &e) override;
     void onChange(EventChange &e) override;
 
+    void increment(float delta) override;
+
     float textToVolts(std::string field_text);
     std::string voltsToText(float param_volts);
 };
 
-LFOHzFloatField::LFOHzFloatField(SpecificValue *_module)
+LFOHzFloatField::LFOHzFloatField(SpecificValue *_module) : FloatField(_module)
 {
     module = _module;
+    INC = 0.01f;
+    SHIFT_INC = 0.1f;
+    MOD_INC = 0.001f;
 }
 
 float LFOHzFloatField::textToVolts(std::string field_text) {
     float freq_hz = strtof(text.c_str(), NULL);
-    // float freq_hz = lfo_bpm
     return lfo_freq_to_cv(freq_hz);
 }
 
-std::string LFOHzFloatField::voltsToText(float param_volts){
+std::string LFOHzFloatField::voltsToText(float param_volts) {
     float lfo_freq_hz = lfo_cv_to_freq(param_volts);
-    // float lfo_bpm = freq_hz * 60.0f;
     std::string new_text = stringf("%0.*f", lfo_freq_hz < 100 ? 4 : 3, lfo_freq_hz);
     return new_text;
 }
 
+void LFOHzFloatField::increment(float delta) {
+    float field_value = atof(text.c_str());
+    field_value += delta;
+    text = stringf("%0.*f", field_value < 100 ? 4 : 3, field_value);
+}
+
 void LFOHzFloatField::onChange(EventChange &e) {
-    // debug("LFOHzFloatField onChange  text=%s param=%f", text.c_str(),
-    //      module->params[SpecificValue::VALUE1_PARAM].value);
-
-     //TextField::onChange(e);
-
-     if (this != gFocusedWidget)
-     {
-         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
-         setText(new_text);
-     }
+    if (this != gFocusedWidget)
+    {
+        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+        setText(new_text);
+    }
 }
 
 void LFOHzFloatField::onAction(EventAction &e)
 {
-    // debug("LFOHzFloatField onAction text=%s", text.c_str());
-
-    //update text first?
     TextField::onAction(e);
-
     float volts = textToVolts(text);
-
-    //debug("LFOhZ FloatField onAction about to set VALUE*_PARAM to volts: %f", volts);
     module->params[SpecificValue::VALUE1_PARAM].value = volts;
 }
 
-struct LFOBpmFloatField : TextField {
-    float value;
+struct LFOBpmFloatField : FloatField {
     SpecificValue *module;
 
     LFOBpmFloatField(SpecificValue *_module);
     void onAction(EventAction &e) override;
     void onChange(EventChange &e) override;
 
+    void increment(float delta) override;
     float textToVolts(std::string field_text);
     std::string voltsToText(float param_volts);
 };
 
-LFOBpmFloatField::LFOBpmFloatField(SpecificValue *_module)
+LFOBpmFloatField::LFOBpmFloatField(SpecificValue *_module) : FloatField(_module)
 {
     module = _module;
+    INC = 1.0f;
+    SHIFT_INC = 10.0f;
+    MOD_INC = 0.1f;
 }
 
 float LFOBpmFloatField::textToVolts(std::string field_text) {
     float lfo_bpm = strtof(text.c_str(), NULL);
-    // float freq_hz = lfo_bpm
     float lfo_hz = lfo_bpm / 60.0f;
     return lfo_freq_to_cv(lfo_hz);
 }
@@ -266,12 +311,13 @@ std::string LFOBpmFloatField::voltsToText(float param_volts){
     return new_text;
 }
 
+void LFOBpmFloatField::increment(float delta) {
+    float field_value = atof(text.c_str());
+    field_value += delta;
+    text = stringf("%0.*f", field_value < 100 ? 4 : 3, field_value);
+}
+
 void LFOBpmFloatField::onChange(EventChange &e) {
-    // debug("LFOHzFloatField onChange  text=%s param=%f", text.c_str(),
-    //      module->params[SpecificValue::VALUE1_PARAM].value);
-
-     //TextField::onChange(e);
-
      if (this != gFocusedWidget)
      {
          std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
@@ -281,42 +327,38 @@ void LFOBpmFloatField::onChange(EventChange &e) {
 
 void LFOBpmFloatField::onAction(EventAction &e)
 {
-    // debug("LFOHzFloatField onAction text=%s", text.c_str());
-
-    //update text first?
     TextField::onAction(e);
-
     float volts = textToVolts(text);
-
-    //debug("LFOhZ FloatField onAction about to set VALUE*_PARAM to volts: %f", volts);
     module->params[SpecificValue::VALUE1_PARAM].value = volts;
 }
 
-struct CentsField : TextField {
-    float value;
+struct CentsField : FloatField {
     SpecificValue *module;
 
     CentsField(SpecificValue *_module);
     void onChange(EventChange &e) override;
     void onAction(EventAction &e) override;
 
+    void increment(float delta) override;
 };
 
-CentsField::CentsField(SpecificValue *_module) {
+CentsField::CentsField(SpecificValue *_module) : FloatField(_module) {
     module = _module;
+    INC = 0.1f;
+    SHIFT_INC = 1.0f;
+    MOD_INC = 0.01f;
+}
+
+void CentsField::increment(float delta) {
+    float field_value = atof(text.c_str());
+    field_value += delta;
+    text = stringf("% 0.2f", field_value < 100 ? 4 : 3, field_value);
 }
 
 void CentsField::onChange(EventChange &e) {
-    // debug("CentsField onChange");
     float cents = volts_to_note_cents(module->params[SpecificValue::VALUE1_PARAM].value);
-
-    // debug("CentsField onChange cents: %f", cents);
-    if (this != gFocusedWidget || fabs(cents) >= 0.50f)
-    {
-        float cents = volts_to_note_cents(module->params[SpecificValue::VALUE1_PARAM].value);
-        std::string new_text = stringf("% 0.2f", cents);
-        setText(new_text);
-    }
+    std::string new_text = stringf("% 0.2f", cents);
+    setText(new_text);
 }
 
 void CentsField::onAction(EventAction &e) {
@@ -328,21 +370,21 @@ void CentsField::onAction(EventAction &e) {
     float cent_volt = 1.0f / 12.0f / 100.0f;
     float delta_volt = cents * cent_volt;
     float nearest_note_voltage = volts_of_nearest_note(module->params[SpecificValue::VALUE1_PARAM].value);
-    //debug("volts: %f nearest_volts: %f",
-    //  module->params[SpecificValue::VALUE1_PARAM].value, nearest_note_voltage);
-    //debug("delta_volt: %+f nearest_note_voltage+delta_volt: %f", delta_volt, nearest_note_voltage,
-    //    nearest_note_voltage + delta_volt);
+
     module->params[SpecificValue::VALUE1_PARAM].value = nearest_note_voltage + delta_volt;
 
 }
 
 struct NoteNameField : TextField {
-    float value;
     SpecificValue *module;
 
     NoteNameField(SpecificValue *_module);
     void onChange(EventChange &e) override;
     void onAction(EventAction &e) override;
+    void onKey(EventKey &e) override;
+
+    void increment(float delta);
+    void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
 };
 
 NoteNameField::NoteNameField(SpecificValue *_module)
@@ -350,73 +392,79 @@ NoteNameField::NoteNameField(SpecificValue *_module)
     module = _module;
 }
 
-void NoteNameField::onChange(EventChange &e) {
-    //debug("NoteNameField onChange  text=%s param=%f", text.c_str(),
-    // module->params[SpecificValue::VALUE1_PARAM].value);
-
-     //TextField::onChange(e);
-
-     if (this != gFocusedWidget)
-     {
-        float cv_volts = module->params[SpecificValue::VALUE1_PARAM].value;
-        int octave = volts_to_octave(cv_volts);
-        int note_number = volts_to_note(cv_volts);
-        // debug("vc_volts: %f, octave=%d, note_number=%d, note=%d", cv_volts, octave, note_number, note_name_vec[note_number].c_str());
-        // float semi_cents = volts_to_note_and_cents(cv_volts, module->params[SpecificValue::OCTAVE_PARAM].value);
-        // note_info = volts_to_note_info(cv_volts, module->params[SpecificValue::OCTAVE_PARAM].value);
-        // TODO: modf for oct/fract part, need to get +/- cents from chromatic notes
-
-        std::string new_text = stringf("%s%d", note_name_vec[note_number].c_str(), octave);
-        // debug("foo %f bar %f", )
-        setText(new_text);
-     }
-
+void NoteNameField::increment(float delta) {
+    module->params[SpecificValue::VALUE1_PARAM].value += delta * 1.0f / 12.0f;
 }
 
+void NoteNameField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
+    //inc by oct for shift, and 1 cent for mod
+    float inc = shift_pressed ? 12.0f : 1.0f;
+    inc = mod_pressed ? 0.01f : inc;
+    inc = adjustKey == AdjustKey::UP ? inc : -inc;
+
+    increment(inc);
+
+    EventChange e;
+    onChange(e);
+}
+
+void NoteNameField::onKey(EventKey &e) {
+    bool shift_pressed = windowIsShiftPressed();
+    bool mod_pressed = windowIsModPressed();
+
+	switch (e.key) {
+		case GLFW_KEY_UP: {
+			e.consumed = true;
+            handleKey(AdjustKey::UP, shift_pressed, mod_pressed );
+		} break;
+		case GLFW_KEY_DOWN: {
+			e.consumed = true;
+            handleKey(AdjustKey::DOWN, shift_pressed, mod_pressed);
+		} break;
+	}
+
+	if (!e.consumed) {
+		TextField::onKey(e);
+	}
+}
+
+void NoteNameField::onChange(EventChange &e) {
+    float cv_volts = module->params[SpecificValue::VALUE1_PARAM].value;
+    int octave = volts_to_octave(cv_volts);
+    int note_number = volts_to_note(cv_volts);
+
+    std::string new_text = stringf("%s%d", note_name_vec[note_number].c_str(), octave);
+
+    setText(new_text);
+}
 
 void NoteNameField::onAction(EventAction &e) {
     TextField::onAction(e);
 
-    // split into 'stuff before any int or -' and a number like string
-    // ie C#11 -> C# 11,  A-4 -> A 4
-    std::size_t note_flag_found_loc = text.find_last_of("#♯b♭");
+    // canoicalize the entered note name into a canonical note id
+    // (ie, c4 -> C4, Db3 -> C#3, etc)
+    // then look that up in enharmonic_name_map to voltage
+    NoteOct *noteOct = parseNote(text);
 
-    std::string note_flag = "";
-    if(note_flag_found_loc!=std::string::npos){
-        note_flag = text[note_flag_found_loc];
-    }
-
-    std::size_t found = text.find_first_of("-0123456789");
-
-    // if no oct number, assume it is oct 4
-    std::string note_name = text;
-    std::string note_oct = "4";
-
-    if(found != std::string::npos){
-
-        note_name = text.substr(0, found);
-        note_oct = text.substr(found, text.length());
-    }
-
-    auto enharm_search = enharmonic_name_map.find(note_name);
+    auto enharm_search = enharmonic_name_map.find(noteOct->name);
     if (enharm_search == enharmonic_name_map.end())
     {
-        debug("%s was  NOT A VALID note name", note_name.c_str());
+        debug("%s was  NOT A VALID note name", noteOct->name.c_str());
         return;
     }
 
-    std::string can_note_name = enharmonic_name_map[note_name];
+    std::string can_note_name = enharmonic_name_map[noteOct->name];
 
-    std::string can_note_id = stringf("%s%s", can_note_name.c_str(), note_oct.c_str());
+    std::string can_note_id = stringf("%s%s", can_note_name.c_str(), noteOct->octave.c_str());
 
-
+    /*
     debug("text: %s", text.c_str());
-    debug("note_name: %s", note_name.c_str());
+    debug("note_name: %s", noteOct->name.c_str());
     debug("can_note_name: %s", can_note_name.c_str());
-    debug("note_name_flag: %s", note_flag.c_str());
-    debug("note_oct: %s", note_oct.c_str());
+    debug("note_name_flag: %s", noteOct->flag.c_str());
+    debug("note_oct: %s", noteOct->octave.c_str());
     debug("can_note_id: %s", can_note_id.c_str());
-
+    */
 
     // search for can_note_id in map to find volts value
 
@@ -462,14 +510,13 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     Vec lfo_hz_field_size = Vec(70.0f, 22.0f);
 
     float x_pos = 10.0f;
-    // debug("adding field %d", i);
 
     y_baseline = 38.0f;
 
     volts_field = new FloatField(module);
     volts_field->box.pos = Vec(x_pos, y_baseline);
     volts_field->box.size = volt_field_size;
-    volts_field->value = module->params[SpecificValue::VALUE1_PARAM].value;
+
     addChild(volts_field);
 
     y_baseline = 78.0f;
@@ -478,7 +525,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     hz_field = new HZFloatField(module);
     hz_field->box.pos = Vec(x_pos, y_baseline);
     hz_field->box.size = hz_field_size;
-    hz_field->value = module->hz_value;
+
     addChild(hz_field);
 
     y_baseline = 120.0f;
@@ -486,7 +533,6 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     lfo_hz_field = new LFOHzFloatField(module);
     lfo_hz_field->box.pos = Vec(h_pos, y_baseline);
     lfo_hz_field->box.size = lfo_hz_field_size;
-    lfo_hz_field->value = module->lfo_hz_value;
 
     addChild(lfo_hz_field);
 
@@ -497,49 +543,41 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     lfo_bpm_field = new LFOBpmFloatField(module);
     lfo_bpm_field->box.pos = Vec(x_pos, y_baseline);
     lfo_bpm_field->box.size = Vec(70.0f, 22.0f);
-    lfo_bpm_field->value = module->lfo_bpm_value;
+
     addChild(lfo_bpm_field);
 
     y_baseline += lfo_bpm_field->box.size.y;
     y_baseline += 20.0f;
 
-    // y_baseline = 180.0f;
-
     note_name_field = new NoteNameField(module);
     note_name_field->box.pos = Vec(x_pos, y_baseline);
     note_name_field->box.size = Vec(70.0f, 22.0f);
-    note_name_field->value = module->volt_value;
+
     addChild(note_name_field);
 
     y_baseline += note_name_field->box.size.y;
     y_baseline += 5.0f;
-    // y_baseline += 20.0f;
 
     cents_field = new CentsField(module);
     cents_field->box.pos = Vec(x_pos, y_baseline);
     cents_field->box.size = Vec(55.0f, 22.0f);
-    cents_field->value = module->cents_value;
+
     addChild(cents_field);
 
     y_baseline += cents_field->box.size.y;
     y_baseline += 5.0f;
 
-    // y_baseline += period_field->box.size.y;
-    //y_baseline += 20.0f;
-
     float middle = box.size.x / 2.0f;
     float in_port_x = 15.0f;
 
-    // y_baseline += 24.0f + 12.0f;
     y_baseline += 12.0f;
-    // y_baseline += lfo_hz_field->box.size.y;
 
     Port *value_in_port = Port::create<PJ301MPort>(
         Vec(in_port_x, y_baseline),
         Port::INPUT,
         module,
         SpecificValue::VALUE1_INPUT);
-    //value_in_port->box.pos = Vec(middle - value_in_port->box.size.x / 2, y_baseline);
+
     value_in_port->box.pos = Vec(2.0f, y_baseline);
 
     inputs.push_back(value_in_port);
@@ -567,8 +605,6 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
         SpecificValue::VALUE1_PARAM,
         -10.0f, 10.0f, 0.0f);
 
-    //debug(" trimpot: dv: %f v: %f p.value: %f", trimpot->defaultValue, trimpot->value,
-    //    module->params[SpecificValue::VALUE1_PARAM].value);
     params.push_back(trimpot);
     addChild(trimpot);
 
@@ -592,7 +628,6 @@ void SpecificValueWidget::step() {
 }
 
 void SpecificValueWidget::onChange(EventChange &e) {
-    // debug("SpvWidget onChange");
     ModuleWidget::onChange(e);
     volts_field->onChange(e);
     hz_field->onChange(e);
@@ -603,4 +638,4 @@ void SpecificValueWidget::onChange(EventChange &e) {
 }
 
 Model *modelSpecificValue = Model::create<SpecificValue, SpecificValueWidget>(
-    "Alikins", "SpecificValue", "Specific Values", UTILITY_TAG);
+    "Alikins", "SpecificValue", "Specific Value", UTILITY_TAG);

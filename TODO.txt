@@ -264,3 +264,6 @@ plugin ideas:
     - default output value (0?) if nothing is changing?
 - Blocked In DC!
   - just DC blocker, but I like the name
+- Big VUte Button
+  - The Big Mute Button, but with clickable
+    stero VU meters

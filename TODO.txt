@@ -20,7 +20,7 @@ plugin ideas:
     - 1x speed or faster/slower
     - scrubbing?
   - multiple channels of events
-- table module
+- Table module
   - "an oscillator is a phasor and a table"
   - phasor input  (0.0 -> 1.0) or other scaled
   - value output
@@ -264,3 +264,47 @@ plugin ideas:
     - default output value (0?) if nothing is changing?
 - Blocked In DC!
   - just DC blocker, but I like the name
+- The Big VUte Button
+  - The Big Mute Button, but with clickable
+    stereo VU meters
+- CV Key Splitter Switch
+  - one CV input
+  - 12 (* N) outputs, one for each chromatic note
+  - if CV in is 1.0V, then only the 'C' output sends signal
+  - split a CV into output for each note
+  - one octave 'small' version could do it for any octave
+    (ie, C0, C-4, C5 all go out the C output)
+  - larger versions
+    - 5X 5x12 outputs
+    - outputs correspond to specific note@octave
+    - ie, C0 goes to C0 out, C4 goes to C4 out
+    - 10X 10x12 outputs, for -5.0V to 5.0V coverage
+  - possibly include a oct adjustment
+  - maybe a fine tune
+    - ie, a440 vs a437 etc
+    - SpecificValue style text box?
+  - possibly note-on/note-off style trigger outputs
+  - ditto for a gate
+     - start gate when new output is chosen, end it
+       when the next note is detected
+  - maybe some sort of keyboard like widget?
+- CV Key Range
+  - like CV Key Splitter Switch except outputs to a set
+    of range/group outputs
+  - each note has choice of which group/range it goes to
+    - set of N (4?) buttons?  (could go to more than one range...)
+    - a knob with detents?
+  - in some way range would just be a more specific version the
+    Table module with CV/note specific UI
+    (ie, a map of an input to one or more output values)
+- Audio Key Splitter/Range
+  - like CV Key stuff, except with audio inputs
+  - needs fft magic
+  - detect the main harmonics of audio and send output to
+    note specific output
+    - possibly more than one harmonic
+    - ie, audio with fundamental at C4, and another strong harmonic at
+      G5 would output from C4 and G5 outputs
+  - outputs could be trigger/gate or corresponding CV value
+  - or out to some set/group/range of outputs
+  - CV value would be Pitch-To-CV

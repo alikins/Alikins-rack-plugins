@@ -297,9 +297,20 @@ plugin ideas:
   - in some way range would just be a more specific version the
     Table module with CV/note specific UI
     (ie, a map of an input to one or more output values)
+  - incoming CV split into N ranges
+    (bass/treble, bass/baritone/alto/soprano)
+  - ranges can overlap
+  - two knob/param for each range (low and high)
+  - could use FloatFiend/NoteName field from SpecificValue
+    for text entry
+  - presets/default for
+    - bass/treble
+    - bass/baritone/alto/soprano/tenor
+    - rumble or sub bass / bass / treble
+    - below human / human / above human
 - Audio Key Splitter/Range
   - like CV Key stuff, except with audio inputs
-  - needs fft magic
+  - needs fft magic likely (or at least filters)
   - detect the main harmonics of audio and send output to
     note specific output
     - possibly more than one harmonic

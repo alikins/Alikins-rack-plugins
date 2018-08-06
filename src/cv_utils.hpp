@@ -30,8 +30,8 @@ float LFO_BASELINE_FREQ = 2.0f;
 //   261.626f == C4 == 0v
 float freq_to_cv(float freq) {
     float volts = log2f(freq / VCO_BASELINE_FREQ * powf(2.0f, VCO_BASELINE_VOLTAGE));
-    debug("freq_to_vc freq=%f -> vc volts=%f (vco_baseline_freq=%f)",
-          freq, volts, VCO_BASELINE_VOLTAGE);
+    // debug("freq_to_vc freq=%f -> vc volts=%f (vco_baseline_freq=%f)",
+    //       freq, volts, VCO_BASELINE_VOLTAGE);
     return volts;
 }
 
@@ -44,7 +44,6 @@ float lfo_freq_to_cv(float lfo_freq) {
 
 float cv_to_freq(float volts) {
     float freq = VCO_BASELINE_FREQ / powf(2.0f, VCO_BASELINE_VOLTAGE) * powf(2.0f, volts);
-
     // debug("cv_to_freq: cv volts=%f -> freq=%f (vco_baseline_freq=%f)",
     //      volts, freq, VCO_BASELINE_FREQ);
     return freq;
@@ -75,8 +74,6 @@ int volts_to_note(float volts) {
 }
 
 int volts_to_octave(float volts) {
-    // debug("a440_octave=%f", a440_octave);
-    //offset_from_baseline = 0.0f;
     int octave = floor(volts) + VCO_BASELINE_NOTE_OCTAVE_OFFSET;
     //debug("volts_to_octaves: volts=%f -> octave=%d (offset_from_baseline=%f, v+ofb=%f)",
     //      volts, octave, offset_from_baseline, volts+offset_from_baseline);

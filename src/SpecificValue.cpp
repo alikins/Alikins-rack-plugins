@@ -124,8 +124,12 @@ std::string FloatField::voltsToText(float param_volts){
 void FloatField::onChange(EventChange &e) {
     // debug("FloatField onChange  text=%s param=%f", text.c_str(),
     //    module->params[SpecificValue::VALUE1_PARAM].value);
-    std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
-    setText(new_text);
+    // if (this != gFocusedWidget)
+    if (true)
+    {
+        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+        setText(new_text);
+    }
 }
 
 void FloatField::onAction(EventAction &e)
@@ -148,6 +152,7 @@ void FloatField::onDragStart(EventDragStart &e) {
 
 void FloatField::onDragMove(EventDragMove &e)
 {
+    TextField::onDragMove(e);
     float range;
     range = maxValue - minValue;
     // scrollWidget->offset.x += e.mouseRel.x;
@@ -177,13 +182,15 @@ void FloatField::onDragMove(EventDragMove &e)
     // module->params[SpecificValue::VALUE1_PARAM].value = dragValue;
     increment(delta);
 
-
+    EventAction ae;
+    onAction(ae);
 }
 
 void FloatField::onDragEnd(EventDragEnd &e) {
     debug("onDragEnd");
     dragging = false;
     // windowCursorUnlock();
+
 }
 
 void FloatField::increment(float delta) {
@@ -192,9 +199,9 @@ void FloatField::increment(float delta) {
     field_value += delta;
     field_value = clamp2(field_value, minValue, maxValue);
     text = voltsToText(field_value);
+
     // debug("new text: %s", text.c_str());
-    EventAction e;
-    onAction(e);
+
 }
 
 void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
@@ -207,8 +214,8 @@ void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pre
     // debug("inc: %f", inc);
     increment(inc);
 
-    //EventAction e;
-    //onAction(e);
+    EventAction e;
+    onAction(e);
 }
 
 void FloatField::onKey(EventKey &e) {
@@ -274,11 +281,11 @@ void HZFloatField::increment(float delta){
 }
 
 void HZFloatField::onChange(EventChange &e) {
-     if (this != gFocusedWidget)
-     {
-         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
-         setText(new_text);
-     }
+    if (this != gFocusedWidget)
+    {
+        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+        setText(new_text);
+    }
 }
 
 void HZFloatField::onAction(EventAction &e) {
@@ -580,6 +587,8 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     volts_field = new FloatField(module);
     volts_field->box.pos = Vec(x_pos, y_baseline);
     volts_field->box.size = volt_field_size;
+    volts_field->minValue = -10.0f;
+    volts_field->maxValue = 10.0f;
 
     addChild(volts_field);
 
@@ -589,6 +598,8 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     hz_field = new HZFloatField(module);
     hz_field->box.pos = Vec(x_pos, y_baseline);
     hz_field->box.size = hz_field_size;
+    hz_field->minValue = 0.0f;
+    hz_field->maxValue = cv_to_freq(10.0f);
 
     addChild(hz_field);
 

@@ -101,8 +101,8 @@ struct FloatField : TextField
     virtual void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
 
     float INC = 1.0f;
-    float SHIFT_INC = 0.1f;
-    float MOD_INC = 0.001f;
+    float SHIFT_INC = 10.1f;
+    float MOD_INC = 0.1f;
 };
 
 
@@ -483,7 +483,6 @@ struct NoteNameField : TextField {
     NoteNameField(SpecificValue *_module);
 
     float dragValue = 0.0f;
-    float sensitivity = 1.0f;
     float minValue = -10.0f;
     float maxValue = 10.0f;
 
@@ -500,6 +499,11 @@ struct NoteNameField : TextField {
 
     void increment(float delta);
     void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
+
+    float INC = 1.0f;
+    float SHIFT_INC = 12.0f;
+    float MOD_INC = 0.01f;
+
 };
 
 NoteNameField::NoteNameField(SpecificValue *_module)
@@ -517,8 +521,8 @@ void NoteNameField::increment(float delta) {
 
 void NoteNameField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
     //inc by oct for shift, and 1 cent for mod
-    float inc = shift_pressed ? 12.0f : 1.0f;
-    inc = mod_pressed ? 0.01f : inc;
+    float inc = shift_pressed ? SHIFT_INC : INC;
+    inc = mod_pressed ? MOD_INC : inc;
     inc = adjustKey == AdjustKey::UP ? inc : -inc;
 
     increment(inc);
@@ -620,7 +624,13 @@ void NoteNameField::onDragMove(EventDragMove &e)
     dragEndPos.x += e.mouseRel.x;
     dragEndPos.y += e.mouseRel.y;
 
-    float delta = sensitivity * -e.mouseRel.y;
+    bool shift_pressed = windowIsShiftPressed();
+    bool mod_pressed = windowIsModPressed();
+
+    float inc = shift_pressed ? SHIFT_INC : INC;
+    inc = mod_pressed ? MOD_INC : inc;
+
+    float delta = inc * -e.mouseRel.y;
 
     debug("v: %0.5f, x: %0.5f, dx: %0.5f, y: %0.5f, dy: %0.5f, delta: %0.5f",
         module->params[SpecificValue::VALUE1_PARAM].value,
@@ -632,8 +642,6 @@ void NoteNameField::onDragMove(EventDragMove &e)
     EventChange ce;
     onChange(ce);
 
-    //EventAction ae;
-    //onAction(ae);
 }
 
 void NoteNameField::onDragEnd(EventDragEnd &e) {

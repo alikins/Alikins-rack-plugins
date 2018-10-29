@@ -158,11 +158,18 @@ void FloatField::onDragMove(EventDragMove &e)
         return;
     }
 
+    bool shift_pressed = windowIsShiftPressed();
+    bool mod_pressed = windowIsModPressed();
+
+    float inc = shift_pressed ? SHIFT_INC : INC;
+    // mod "wins" if shift and mod pressed
+    inc = mod_pressed ? MOD_INC : inc;
+
     dragEndPos.x += e.mouseRel.x;
     dragEndPos.y += e.mouseRel.y;
 
     //float delta = sensitivity * -e.mouseRel.y;
-    float delta = INC * -e.mouseRel.y;
+    float delta = inc * -e.mouseRel.y;
     // setValue(rescale(randomUniform(), 0.f, 1.f, minValue, maxValue));
     float redelta = rescale(e.mouseRel.y, minValue, maxValue, -1.0f, 1.0f);
 
@@ -178,7 +185,7 @@ void FloatField::onDragMove(EventDragMove &e)
         module->params[SpecificValue::VALUE1_PARAM].value,
         dragEndPos.y, e.mouseRel.y,
         delta,
-        INC);
+        inc);
 
     increment(delta);
 

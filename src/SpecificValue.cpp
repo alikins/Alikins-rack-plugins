@@ -81,23 +81,32 @@ struct FloatField : TextField
     void onAction(EventAction &e) override;
     void onChange(EventChange &e) override;
     void onKey(EventKey &e) override;
+    void onDragStart(EventDragStart &e) override;
+    void onDragMove(EventDragMove &e) override;
+    void onDragEnd(EventDragEnd &e) override;
 
     virtual void increment(float delta);
 
     float textToVolts(std::string field_text);
     std::string voltsToText(float param_volts);
 
+    float minValue = -10.0f;
+    float maxValue = 10.0f;
+
+    bool dragging = false;
+
     virtual void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
 
     float INC = 1.0f;
-    float SHIFT_INC = 0.1f;
-    float MOD_INC = 0.001f;
+    float SHIFT_INC = 10.1f;
+    float MOD_INC = 0.1f;
 };
 
 
 FloatField::FloatField(SpecificValue *_module)
 {
     module = _module;
+
     INC = 0.01f;
     SHIFT_INC = 0.1f;
     MOD_INC = 0.001f;
@@ -116,31 +125,73 @@ void FloatField::onChange(EventChange &e) {
     //    module->params[SpecificValue::VALUE1_PARAM].value);
     std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
     setText(new_text);
+
 }
 
 void FloatField::onAction(EventAction &e)
 {
     TextField::onAction(e);
     float volts = textToVolts(text);
+
     module->params[SpecificValue::VALUE1_PARAM].value = volts;
 }
 
+void FloatField::onDragStart(EventDragStart &e) {
+    if (dragging) {
+        return;
+    }
+    windowCursorLock();
+    dragging = true;
+}
+
+void FloatField::onDragMove(EventDragMove &e)
+{
+    TextField::onDragMove(e);
+
+    if (e.mouseRel.y == 0.0f) {
+        return;
+    }
+
+    bool shift_pressed = windowIsShiftPressed();
+    bool mod_pressed = windowIsModPressed();
+
+    float inc = shift_pressed ? SHIFT_INC : INC;
+    // mod "wins" if shift and mod pressed
+    inc = mod_pressed ? MOD_INC : inc;
+
+    float delta = inc * -e.mouseRel.y;
+
+    debug("v: %0.5f, dy: %0.5f, delta: %0.5f, INC: %0.5f",
+        module->params[SpecificValue::VALUE1_PARAM].value,
+        e.mouseRel.y,
+        delta,
+        inc);
+
+    increment(delta);
+
+    EventAction ae;
+    onAction(ae);
+}
+
+void FloatField::onDragEnd(EventDragEnd &e) {
+    dragging = false;
+    windowCursorUnlock();
+}
+
 void FloatField::increment(float delta) {
-    // debug("inc delta: %f", delta);
     float field_value = atof(text.c_str());
     field_value += delta;
+
+    field_value = clamp2(field_value, minValue, maxValue);
     text = voltsToText(field_value);
-    // debug("new text: %s", text.c_str());
 }
 
 void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
-    // debug("INC %f shift_pressed: %d mod_pressed: %d", INC, shift_pressed, mod_pressed);
     float inc = shift_pressed ? SHIFT_INC : INC;
     // mod "wins" if shift and mod pressed
     inc = mod_pressed ? MOD_INC : inc;
     inc = adjustKey == AdjustKey::UP ? inc : -inc;
 
-    // debug("inc: %f", inc);
     increment(inc);
 
     EventAction e;
@@ -173,6 +224,7 @@ struct HZFloatField : FloatField
     SpecificValue *module;
 
     HZFloatField(SpecificValue *_module) ;
+
     void onChange(EventChange &e) override;
     void onAction(EventAction &e) override;
 
@@ -180,7 +232,6 @@ struct HZFloatField : FloatField
 
     float textToVolts(std::string field_text);
     std::string voltsToText(float param_volts);
-
 };
 
 HZFloatField::HZFloatField(SpecificValue *_module) : FloatField(_module)
@@ -189,6 +240,9 @@ HZFloatField::HZFloatField(SpecificValue *_module) : FloatField(_module)
     INC = 1.0f;
     SHIFT_INC = 10.0f;
     MOD_INC = 0.1f;
+
+    minValue = cv_to_freq(-10.0f);
+    maxValue = cv_to_freq(10.0f);
 }
 
 float HZFloatField::textToVolts(std::string field_text) {
@@ -203,18 +257,19 @@ std::string HZFloatField::voltsToText(float param_volts){
 }
 
 void HZFloatField::increment(float delta){
-    // debug("HZ incr delta=%f", delta);
     float field_value = atof(text.c_str());
     field_value += delta;
+    field_value = clamp2(field_value, minValue, maxValue);
+
     text = stringf("%0.*f", field_value < 100 ? 4 : 3, field_value);
 }
 
 void HZFloatField::onChange(EventChange &e) {
-     if (this != gFocusedWidget)
-     {
-         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
-         setText(new_text);
-     }
+    if (this != gFocusedWidget)
+    {
+        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+        setText(new_text);
+    }
 }
 
 void HZFloatField::onAction(EventAction &e) {
@@ -229,6 +284,7 @@ struct LFOHzFloatField : FloatField {
     SpecificValue *module;
 
     LFOHzFloatField(SpecificValue *_module);
+
     void onAction(EventAction &e) override;
     void onChange(EventChange &e) override;
 
@@ -244,6 +300,9 @@ LFOHzFloatField::LFOHzFloatField(SpecificValue *_module) : FloatField(_module)
     INC = 0.01f;
     SHIFT_INC = 0.1f;
     MOD_INC = 0.001f;
+
+    minValue = lfo_cv_to_freq(-10.0f);
+    maxValue = lfo_cv_to_freq(10.0f);
 }
 
 float LFOHzFloatField::textToVolts(std::string field_text) {
@@ -260,6 +319,8 @@ std::string LFOHzFloatField::voltsToText(float param_volts) {
 void LFOHzFloatField::increment(float delta) {
     float field_value = atof(text.c_str());
     field_value += delta;
+
+    field_value = clamp2(field_value, minValue, maxValue);
     text = stringf("%0.*f", field_value < 100 ? 4 : 3, field_value);
 }
 
@@ -282,6 +343,7 @@ struct LFOBpmFloatField : FloatField {
     SpecificValue *module;
 
     LFOBpmFloatField(SpecificValue *_module);
+
     void onAction(EventAction &e) override;
     void onChange(EventChange &e) override;
 
@@ -296,6 +358,9 @@ LFOBpmFloatField::LFOBpmFloatField(SpecificValue *_module) : FloatField(_module)
     INC = 1.0f;
     SHIFT_INC = 10.0f;
     MOD_INC = 0.1f;
+
+    minValue = lfo_cv_to_freq(-10.0f)* 60.0f;
+    maxValue = lfo_cv_to_freq(10.0f) * 60.0f;
 }
 
 float LFOBpmFloatField::textToVolts(std::string field_text) {
@@ -314,15 +379,17 @@ std::string LFOBpmFloatField::voltsToText(float param_volts){
 void LFOBpmFloatField::increment(float delta) {
     float field_value = atof(text.c_str());
     field_value += delta;
+
+    field_value = clamp2(field_value, minValue, maxValue);
     text = stringf("%0.*f", field_value < 100 ? 4 : 3, field_value);
 }
 
 void LFOBpmFloatField::onChange(EventChange &e) {
-     if (this != gFocusedWidget)
-     {
-         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
-         setText(new_text);
-     }
+    if (this != gFocusedWidget)
+    {
+        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+        setText(new_text);
+    }
 }
 
 void LFOBpmFloatField::onAction(EventAction &e)
@@ -347,11 +414,16 @@ CentsField::CentsField(SpecificValue *_module) : FloatField(_module) {
     INC = 0.1f;
     SHIFT_INC = 1.0f;
     MOD_INC = 0.01f;
+
+    minValue = -50.0f;
+    maxValue = 50.0f;
 }
 
 void CentsField::increment(float delta) {
     float field_value = atof(text.c_str());
     field_value += delta;
+
+    field_value = clamp2(field_value, minValue, maxValue);
     text = stringf("% 0.2f", field_value < 100 ? 4 : 3, field_value);
 }
 
@@ -379,12 +451,27 @@ struct NoteNameField : TextField {
     SpecificValue *module;
 
     NoteNameField(SpecificValue *_module);
+
+    float minValue = -10.0f;
+    float maxValue = 10.0f;
+
+    bool dragging = false;
+
     void onChange(EventChange &e) override;
     void onAction(EventAction &e) override;
     void onKey(EventKey &e) override;
 
+    void onDragStart(EventDragStart &e) override;
+    void onDragMove(EventDragMove &e) override;
+    void onDragEnd(EventDragEnd &e) override;
+
     void increment(float delta);
     void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
+
+    float INC = 1.0f;
+    float SHIFT_INC = 12.0f;
+    float MOD_INC = 0.01f;
+
 };
 
 NoteNameField::NoteNameField(SpecificValue *_module)
@@ -393,13 +480,17 @@ NoteNameField::NoteNameField(SpecificValue *_module)
 }
 
 void NoteNameField::increment(float delta) {
-    module->params[SpecificValue::VALUE1_PARAM].value += delta * 1.0f / 12.0f;
+    float field_value = module->params[SpecificValue::VALUE1_PARAM].value;
+    field_value += delta * 1.0f / 12.0f;
+    field_value = clamp2(field_value, minValue, maxValue);
+
+    module->params[SpecificValue::VALUE1_PARAM].value = field_value;
 }
 
 void NoteNameField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
     //inc by oct for shift, and 1 cent for mod
-    float inc = shift_pressed ? 12.0f : 1.0f;
-    inc = mod_pressed ? 0.01f : inc;
+    float inc = shift_pressed ? SHIFT_INC : INC;
+    inc = mod_pressed ? MOD_INC : inc;
     inc = adjustKey == AdjustKey::UP ? inc : -inc;
 
     increment(inc);
@@ -479,6 +570,47 @@ void NoteNameField::onAction(EventAction &e) {
         return;
     }
 }
+
+void NoteNameField::onDragStart(EventDragStart &e) {
+    TextField::onDragStart(e);
+    windowCursorLock();
+    dragging = true;
+}
+
+void NoteNameField::onDragMove(EventDragMove &e)
+{
+    TextField::onDragMove(e);
+
+    if (e.mouseRel.y == 0.0f) {
+        return;
+    }
+
+    bool shift_pressed = windowIsShiftPressed();
+    bool mod_pressed = windowIsModPressed();
+
+    float inc = shift_pressed ? SHIFT_INC : INC;
+    inc = mod_pressed ? MOD_INC : inc;
+
+    float delta = inc * -e.mouseRel.y;
+
+    debug("v: %0.5f, dy: %0.5f, delta: %0.5f",
+        module->params[SpecificValue::VALUE1_PARAM].value,
+        e.mouseRel.y,
+        delta);
+
+    increment(delta);
+
+    EventChange ce;
+    onChange(ce);
+
+}
+
+void NoteNameField::onDragEnd(EventDragEnd &e) {
+    TextField::onDragEnd(e);
+    windowCursorUnlock();
+    dragging = false;
+}
+
 
 struct SpecificValueWidget : ModuleWidget
 {

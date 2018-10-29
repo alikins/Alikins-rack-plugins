@@ -84,6 +84,8 @@ struct FloatField : TextField
     void onDragStart(EventDragStart &e) override;
     void onDragMove(EventDragMove &e) override;
     void onDragEnd(EventDragEnd &e) override;
+    void onDragEnter(EventDragEnter &e) override;
+	void onDragLeave(EventDragEnter &e) override;
 
     virtual void increment(float delta);
 
@@ -142,44 +144,41 @@ void FloatField::onAction(EventAction &e)
 
 void FloatField::onDragStart(EventDragStart &e) {
     debug("onDragStart");
+    if (dragging) {
+        return;
+    }
     dragging = true;
     dragEndPos.x = 0.0f;
     dragEndPos.y = 0.0f;
     dragValue = 0.0f;
-    // std::cout << "onDragStart e: %s" << e << std::endl;
+}
 
+void FloatField::onDragEnter(EventDragEnter &e) {
+    debug("onDragEnter");
+}
+
+void FloatField::onDragLeave(EventDragEnter &e) {
+    debug("onDragLeave");
 }
 
 void FloatField::onDragMove(EventDragMove &e)
 {
     TextField::onDragMove(e);
-    float range;
-    range = maxValue - minValue;
-    // scrollWidget->offset.x += e.mouseRel.x;
+
+    if (e.mouseRel.y == 0.0f) {
+        return;
+    }
+
     dragEndPos.x += e.mouseRel.x;
     dragEndPos.y += e.mouseRel.y;
-    float vlength = dragEndPos.norm();
-    float deltavlength = e.mouseRel.norm();
 
-    // vlength of ~200 seems reasonable for max delta
-
-    // float delta = sensitivity * -e.mouseRel.y * speed * range * vlength;
-    // float delta = sensitivity * sgn(e.mouseRel.y) * vlength
-    // float delta = sensitivity * sgn(-dragEndPos.y) * vlength;
-    // float delta = sensitivity * sgn(-dragEndPos.y) * deltavlength;
-    // float delta = sensitivity * deltavlength;
     float delta = sensitivity * -e.mouseRel.y;
-    debug("delta: %0.5f dclamp: %0.5f", delta, clamp2(delta, minValue, maxValue));
-    debug("v: %0.5f, x: %0.5f dx: %0.5f y: %0.5f dy: %0.5f sgn: %0.5f vlength: %0.5f delta: %0.5f deltav: %0.5f",
+
+    debug("v: %0.5f, x: %0.5f, dx: %0.5f, y: %0.5f, dy: %0.5f, delta: %0.5f",
         module->params[SpecificValue::VALUE1_PARAM].value,
         dragEndPos.x, e.mouseRel.x, dragEndPos.y, e.mouseRel.y,
-        sgn(-dragEndPos.y), vlength, delta, delta * sgn(-dragEndPos.y));
-    // dragValue += delta;
-    // dragValue = clamp2(dragValue, minValue, maxValue);
-    //debug("dragValue: %f", dragValue);
-    // increment()
-    //    setValue(dragValue);
-    // module->params[SpecificValue::VALUE1_PARAM].value = dragValue;
+        delta);
+
     increment(delta);
 
     EventAction ae;
@@ -189,8 +188,6 @@ void FloatField::onDragMove(EventDragMove &e)
 void FloatField::onDragEnd(EventDragEnd &e) {
     debug("onDragEnd");
     dragging = false;
-    // windowCursorUnlock();
-
 }
 
 void FloatField::increment(float delta) {
@@ -389,11 +386,11 @@ void LFOBpmFloatField::increment(float delta) {
 }
 
 void LFOBpmFloatField::onChange(EventChange &e) {
-     if (this != gFocusedWidget)
-     {
-         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
-         setText(new_text);
-     }
+    if (this != gFocusedWidget)
+    {
+        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+        setText(new_text);
+    }
 }
 
 void LFOBpmFloatField::onAction(EventAction &e)
@@ -450,9 +447,20 @@ struct NoteNameField : TextField {
     SpecificValue *module;
 
     NoteNameField(SpecificValue *_module);
+
+    float dragValue = 0.0f;
+    float sensitivity = 1.0f;
+    float minValue = -10.0f;
+    float maxValue = 10.0f;
+    Vec dragEndPos = Vec(0.0f, 0.0f);
+    bool dragging = false;
+
     void onChange(EventChange &e) override;
     void onAction(EventAction &e) override;
     void onKey(EventKey &e) override;
+    void onDragStart(EventDragStart &e) override;
+    void onDragMove(EventDragMove &e) override;
+    void onDragEnd(EventDragEnd &e) override;
 
     void increment(float delta);
     void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
@@ -464,7 +472,11 @@ NoteNameField::NoteNameField(SpecificValue *_module)
 }
 
 void NoteNameField::increment(float delta) {
-    module->params[SpecificValue::VALUE1_PARAM].value += delta * 1.0f / 12.0f;
+    float field_value = module->params[SpecificValue::VALUE1_PARAM].value;
+    field_value += delta * 1.0f / 12.0f;
+    field_value = clamp2(field_value, minValue, maxValue);
+
+    module->params[SpecificValue::VALUE1_PARAM].value = field_value;
 }
 
 void NoteNameField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
@@ -550,6 +562,47 @@ void NoteNameField::onAction(EventAction &e) {
         return;
     }
 }
+
+void NoteNameField::onDragStart(EventDragStart &e) {
+    debug("onDragStart");
+    TextField::onDragStart(e);
+    windowCursorLock();
+    dragging = true;
+    dragEndPos.x = 0.0f;
+    dragEndPos.y = 0.0f;
+    dragValue = 0.0f;
+}
+
+void NoteNameField::onDragMove(EventDragMove &e)
+{
+    TextField::onDragMove(e);
+
+    dragEndPos.x += e.mouseRel.x;
+    dragEndPos.y += e.mouseRel.y;
+
+    float delta = sensitivity * -e.mouseRel.y;
+
+    debug("v: %0.5f, x: %0.5f, dx: %0.5f, y: %0.5f, dy: %0.5f, delta: %0.5f",
+        module->params[SpecificValue::VALUE1_PARAM].value,
+        dragEndPos.x, e.mouseRel.x, dragEndPos.y, e.mouseRel.y,
+        delta);
+
+    increment(delta);
+
+    EventChange ce;
+    onChange(ce);
+
+    //EventAction ae;
+    //onAction(ae);
+}
+
+void NoteNameField::onDragEnd(EventDragEnd &e) {
+    debug("onDragEnd");
+    TextField::onDragEnd(e);
+    windowCursorUnlock();
+    dragging = false;
+}
+
 
 struct SpecificValueWidget : ModuleWidget
 {

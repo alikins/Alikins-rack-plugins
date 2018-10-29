@@ -85,17 +85,15 @@ struct FloatField : TextField
     void onDragMove(EventDragMove &e) override;
     void onDragEnd(EventDragEnd &e) override;
 
-
     virtual void increment(float delta);
 
     float textToVolts(std::string field_text);
     std::string voltsToText(float param_volts);
 
-    float dragValue = 0.0f;
     float sensitivity = 0.1f;
     float minValue = -10.0f;
     float maxValue = 10.0f;
-    Vec dragEndPos = Vec(0.0f, 0.0f);
+
     bool dragging = false;
 
     virtual void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
@@ -109,6 +107,7 @@ struct FloatField : TextField
 FloatField::FloatField(SpecificValue *_module)
 {
     module = _module;
+
     INC = 0.01f;
     SHIFT_INC = 0.1f;
     MOD_INC = 0.001f;
@@ -139,15 +138,11 @@ void FloatField::onAction(EventAction &e)
 }
 
 void FloatField::onDragStart(EventDragStart &e) {
-    debug("onDragStart");
     if (dragging) {
         return;
     }
     windowCursorLock();
     dragging = true;
-    dragEndPos.x = 0.0f;
-    dragEndPos.y = 0.0f;
-    dragValue = 0.0f;
 }
 
 void FloatField::onDragMove(EventDragMove &e)
@@ -165,23 +160,11 @@ void FloatField::onDragMove(EventDragMove &e)
     // mod "wins" if shift and mod pressed
     inc = mod_pressed ? MOD_INC : inc;
 
-    dragEndPos.x += e.mouseRel.x;
-    dragEndPos.y += e.mouseRel.y;
-
     float delta = inc * -e.mouseRel.y;
-    // setValue(rescale(randomUniform(), 0.f, 1.f, minValue, maxValue));
 
-    /*
-    debug("v: %0.5f, x: %0.5f, dx: %0.5f, y: %0.5f, dy: %0.5f, delta: %0.5f, redelta: %0.5f",
+    debug("v: %0.5f, dy: %0.5f, delta: %0.5f, INC: %0.5f",
         module->params[SpecificValue::VALUE1_PARAM].value,
-        dragEndPos.x, e.mouseRel.x, dragEndPos.y, e.mouseRel.y,
-        delta,
-        redelta);
-    */
-
-    debug("v: %0.5f, y: %0.5f, dy: %0.5f, delta: %0.5f, INC: %0.5f",
-        module->params[SpecificValue::VALUE1_PARAM].value,
-        dragEndPos.y, e.mouseRel.y,
+        e.mouseRel.y,
         delta,
         inc);
 
@@ -192,31 +175,24 @@ void FloatField::onDragMove(EventDragMove &e)
 }
 
 void FloatField::onDragEnd(EventDragEnd &e) {
-    debug("onDragEnd");
     dragging = false;
     windowCursorUnlock();
 }
 
 void FloatField::increment(float delta) {
-    // debug("inc delta: %f", delta);
     float field_value = atof(text.c_str());
     field_value += delta;
 
     field_value = clamp2(field_value, minValue, maxValue);
     text = voltsToText(field_value);
-
-    // debug("new text: %s", text.c_str());
-
 }
 
 void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
-    // debug("INC %f shift_pressed: %d mod_pressed: %d", INC, shift_pressed, mod_pressed);
     float inc = shift_pressed ? SHIFT_INC : INC;
     // mod "wins" if shift and mod pressed
     inc = mod_pressed ? MOD_INC : inc;
     inc = adjustKey == AdjustKey::UP ? inc : -inc;
 
-    // debug("inc: %f", inc);
     increment(inc);
 
     EventAction e;
@@ -482,11 +458,9 @@ struct NoteNameField : TextField {
 
     NoteNameField(SpecificValue *_module);
 
-    float dragValue = 0.0f;
     float minValue = -10.0f;
     float maxValue = 10.0f;
 
-    Vec dragEndPos = Vec(0.0f, 0.0f);
     bool dragging = false;
 
     void onChange(EventChange &e) override;
@@ -604,13 +578,9 @@ void NoteNameField::onAction(EventAction &e) {
 }
 
 void NoteNameField::onDragStart(EventDragStart &e) {
-    debug("onDragStart");
     TextField::onDragStart(e);
     windowCursorLock();
     dragging = true;
-    dragEndPos.x = 0.0f;
-    dragEndPos.y = 0.0f;
-    dragValue = 0.0f;
 }
 
 void NoteNameField::onDragMove(EventDragMove &e)
@@ -621,9 +591,6 @@ void NoteNameField::onDragMove(EventDragMove &e)
         return;
     }
 
-    dragEndPos.x += e.mouseRel.x;
-    dragEndPos.y += e.mouseRel.y;
-
     bool shift_pressed = windowIsShiftPressed();
     bool mod_pressed = windowIsModPressed();
 
@@ -632,9 +599,9 @@ void NoteNameField::onDragMove(EventDragMove &e)
 
     float delta = inc * -e.mouseRel.y;
 
-    debug("v: %0.5f, x: %0.5f, dx: %0.5f, y: %0.5f, dy: %0.5f, delta: %0.5f",
+    debug("v: %0.5f, dy: %0.5f, delta: %0.5f",
         module->params[SpecificValue::VALUE1_PARAM].value,
-        dragEndPos.x, e.mouseRel.x, dragEndPos.y, e.mouseRel.y,
+        e.mouseRel.y,
         delta);
 
     increment(delta);
@@ -645,7 +612,6 @@ void NoteNameField::onDragMove(EventDragMove &e)
 }
 
 void NoteNameField::onDragEnd(EventDragEnd &e) {
-    debug("onDragEnd");
     TextField::onDragEnd(e);
     windowCursorUnlock();
     dragging = false;

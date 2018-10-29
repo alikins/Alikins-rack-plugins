@@ -168,10 +168,8 @@ void FloatField::onDragMove(EventDragMove &e)
     dragEndPos.x += e.mouseRel.x;
     dragEndPos.y += e.mouseRel.y;
 
-    //float delta = sensitivity * -e.mouseRel.y;
     float delta = inc * -e.mouseRel.y;
     // setValue(rescale(randomUniform(), 0.f, 1.f, minValue, maxValue));
-    float redelta = rescale(e.mouseRel.y, minValue, maxValue, -1.0f, 1.0f);
 
     /*
     debug("v: %0.5f, x: %0.5f, dx: %0.5f, y: %0.5f, dy: %0.5f, delta: %0.5f, redelta: %0.5f",
@@ -203,6 +201,7 @@ void FloatField::increment(float delta) {
     // debug("inc delta: %f", delta);
     float field_value = atof(text.c_str());
     field_value += delta;
+
     field_value = clamp2(field_value, minValue, maxValue);
     text = voltsToText(field_value);
 
@@ -270,6 +269,9 @@ HZFloatField::HZFloatField(SpecificValue *_module) : FloatField(_module)
     INC = 1.0f;
     SHIFT_INC = 10.0f;
     MOD_INC = 0.1f;
+
+    minValue = cv_to_freq(-10.0f);
+    maxValue = cv_to_freq(10.0f);
 }
 
 float HZFloatField::textToVolts(std::string field_text) {
@@ -287,6 +289,8 @@ void HZFloatField::increment(float delta){
     // debug("HZ incr delta=%f", delta);
     float field_value = atof(text.c_str());
     field_value += delta;
+    field_value = clamp2(field_value, minValue, maxValue);
+
     text = stringf("%0.*f", field_value < 100 ? 4 : 3, field_value);
 }
 
@@ -311,9 +315,6 @@ struct LFOHzFloatField : FloatField {
 
     LFOHzFloatField(SpecificValue *_module);
 
-    float minValue = lfo_cv_to_freq(-10.0f);
-    float maxValue = lfo_cv_to_freq(10.0f);
-
     void onAction(EventAction &e) override;
     void onChange(EventChange &e) override;
 
@@ -329,6 +330,9 @@ LFOHzFloatField::LFOHzFloatField(SpecificValue *_module) : FloatField(_module)
     INC = 0.01f;
     SHIFT_INC = 0.1f;
     MOD_INC = 0.001f;
+
+    minValue = lfo_cv_to_freq(-10.0f);
+    maxValue = lfo_cv_to_freq(10.0f);
 }
 
 float LFOHzFloatField::textToVolts(std::string field_text) {
@@ -345,6 +349,8 @@ std::string LFOHzFloatField::voltsToText(float param_volts) {
 void LFOHzFloatField::increment(float delta) {
     float field_value = atof(text.c_str());
     field_value += delta;
+
+    field_value = clamp2(field_value, minValue, maxValue);
     text = stringf("%0.*f", field_value < 100 ? 4 : 3, field_value);
 }
 
@@ -368,10 +374,6 @@ struct LFOBpmFloatField : FloatField {
 
     LFOBpmFloatField(SpecificValue *_module);
 
-    float minValue = lfo_cv_to_freq(-10.0f)* 60.0f;
-    float maxValue = lfo_cv_to_freq(10.0f) * 60.0f;
-
-
     void onAction(EventAction &e) override;
     void onChange(EventChange &e) override;
 
@@ -387,7 +389,8 @@ LFOBpmFloatField::LFOBpmFloatField(SpecificValue *_module) : FloatField(_module)
     SHIFT_INC = 10.0f;
     MOD_INC = 0.1f;
 
-    // sensitivity = INC;
+    minValue = lfo_cv_to_freq(-10.0f)* 60.0f;
+    maxValue = lfo_cv_to_freq(10.0f) * 60.0f;
 }
 
 float LFOBpmFloatField::textToVolts(std::string field_text) {
@@ -406,6 +409,8 @@ std::string LFOBpmFloatField::voltsToText(float param_volts){
 void LFOBpmFloatField::increment(float delta) {
     float field_value = atof(text.c_str());
     field_value += delta;
+
+    field_value = clamp2(field_value, minValue, maxValue);
     text = stringf("%0.*f", field_value < 100 ? 4 : 3, field_value);
 }
 
@@ -439,11 +444,16 @@ CentsField::CentsField(SpecificValue *_module) : FloatField(_module) {
     INC = 0.1f;
     SHIFT_INC = 1.0f;
     MOD_INC = 0.01f;
+
+    minValue = -50.0f;
+    maxValue = 50.0f;
 }
 
 void CentsField::increment(float delta) {
     float field_value = atof(text.c_str());
     field_value += delta;
+
+    field_value = clamp2(field_value, minValue, maxValue);
     text = stringf("% 0.2f", field_value < 100 ? 4 : 3, field_value);
 }
 

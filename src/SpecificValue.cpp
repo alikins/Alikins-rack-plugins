@@ -81,9 +81,12 @@ struct FloatField : TextField
     void onAction(EventAction &e) override;
     void onChange(EventChange &e) override;
     void onKey(EventKey &e) override;
+
     void onDragStart(EventDragStart &e) override;
     void onDragMove(EventDragMove &e) override;
     void onDragEnd(EventDragEnd &e) override;
+
+    void onFocus(EventFocus &e) override;
 
     virtual void increment(float delta);
 
@@ -92,6 +95,8 @@ struct FloatField : TextField
 
     float minValue = -10.0f;
     float maxValue = 10.0f;
+
+    std::string orig_string;
 
     bool dragging = false;
 
@@ -125,7 +130,6 @@ void FloatField::onChange(EventChange &e) {
     //    module->params[SpecificValue::VALUE1_PARAM].value);
     std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
     setText(new_text);
-
 }
 
 void FloatField::onAction(EventAction &e)
@@ -134,6 +138,12 @@ void FloatField::onAction(EventAction &e)
     float volts = textToVolts(text);
 
     module->params[SpecificValue::VALUE1_PARAM].value = volts;
+}
+
+void FloatField::onFocus(EventFocus &e) {
+    orig_string = text;
+    // debug("onFocus orig_string: %s text: %s", orig_string.c_str(), text.c_str());
+    TextField::onFocus(e);
 }
 
 void FloatField::onDragStart(EventDragStart &e) {
@@ -161,11 +171,13 @@ void FloatField::onDragMove(EventDragMove &e)
 
     float delta = inc * -e.mouseRel.y;
 
+    /*
     debug("v: %0.5f, dy: %0.5f, delta: %0.5f, INC: %0.5f",
         module->params[SpecificValue::VALUE1_PARAM].value,
         e.mouseRel.y,
         delta,
         inc);
+    */
 
     increment(delta);
 
@@ -184,6 +196,7 @@ void FloatField::increment(float delta) {
 
     field_value = clamp2(field_value, minValue, maxValue);
     text = voltsToText(field_value);
+    // debug("orig_string: %s text: %s", orig_string.c_str(), text.c_str());
 }
 
 void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
@@ -212,6 +225,13 @@ void FloatField::onKey(EventKey &e) {
 			e.consumed = true;
             handleKey(AdjustKey::DOWN, shift_pressed, mod_pressed);
 		} break;
+        case GLFW_KEY_ESCAPE: {
+            e.consumed = true;
+            // debug("escape key pressed, orig_string: %s", orig_string.c_str());
+            text = orig_string;
+            EventAction ea;
+            onAction(ea);
+        } break;
 	}
 
 	if (!e.consumed) {
@@ -456,6 +476,7 @@ struct NoteNameField : TextField {
     float maxValue = 10.0f;
 
     bool dragging = false;
+    float orig_value;
 
     void onChange(EventChange &e) override;
     void onAction(EventAction &e) override;
@@ -464,6 +485,8 @@ struct NoteNameField : TextField {
     void onDragStart(EventDragStart &e) override;
     void onDragMove(EventDragMove &e) override;
     void onDragEnd(EventDragEnd &e) override;
+
+    void onFocus(EventFocus &e) override;
 
     void increment(float delta);
     void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
@@ -512,11 +535,24 @@ void NoteNameField::onKey(EventKey &e) {
 			e.consumed = true;
             handleKey(AdjustKey::DOWN, shift_pressed, mod_pressed);
 		} break;
+        case GLFW_KEY_ESCAPE: {
+            e.consumed = true;
+            // debug("escape key pressed, orig_value: %0.5f", orig_value);
+            module->params[SpecificValue::VALUE1_PARAM].value = orig_value;
+            EventChange ec;
+            onChange(ec);
+        } break;
 	}
 
 	if (!e.consumed) {
 		TextField::onKey(e);
 	}
+}
+
+void NoteNameField::onFocus(EventFocus &e) {
+    orig_value = module->params[SpecificValue::VALUE1_PARAM].value;
+    // debug("onFocus orig_value: %0.5f", orig_value);
+    TextField::onFocus(e);
 }
 
 void NoteNameField::onChange(EventChange &e) {
@@ -593,10 +629,12 @@ void NoteNameField::onDragMove(EventDragMove &e)
 
     float delta = inc * -e.mouseRel.y;
 
+    /*
     debug("v: %0.5f, dy: %0.5f, delta: %0.5f",
         module->params[SpecificValue::VALUE1_PARAM].value,
         e.mouseRel.y,
         delta);
+    */
 
     increment(delta);
 

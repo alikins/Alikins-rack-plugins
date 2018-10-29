@@ -84,8 +84,7 @@ struct FloatField : TextField
     void onDragStart(EventDragStart &e) override;
     void onDragMove(EventDragMove &e) override;
     void onDragEnd(EventDragEnd &e) override;
-    void onDragEnter(EventDragEnter &e) override;
-	void onDragLeave(EventDragEnter &e) override;
+
 
     virtual void increment(float delta);
 
@@ -126,12 +125,9 @@ std::string FloatField::voltsToText(float param_volts){
 void FloatField::onChange(EventChange &e) {
     // debug("FloatField onChange  text=%s param=%f", text.c_str(),
     //    module->params[SpecificValue::VALUE1_PARAM].value);
-    // if (this != gFocusedWidget)
-    if (true)
-    {
-        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
-        setText(new_text);
-    }
+    std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+    setText(new_text);
+
 }
 
 void FloatField::onAction(EventAction &e)
@@ -145,20 +141,13 @@ void FloatField::onAction(EventAction &e)
 void FloatField::onDragStart(EventDragStart &e) {
     debug("onDragStart");
     if (dragging) {
+        debug("dragging already");
         return;
     }
     dragging = true;
     dragEndPos.x = 0.0f;
     dragEndPos.y = 0.0f;
     dragValue = 0.0f;
-}
-
-void FloatField::onDragEnter(EventDragEnter &e) {
-    debug("onDragEnter");
-}
-
-void FloatField::onDragLeave(EventDragEnter &e) {
-    debug("onDragLeave");
 }
 
 void FloatField::onDragMove(EventDragMove &e)
@@ -452,12 +441,14 @@ struct NoteNameField : TextField {
     float sensitivity = 1.0f;
     float minValue = -10.0f;
     float maxValue = 10.0f;
+
     Vec dragEndPos = Vec(0.0f, 0.0f);
     bool dragging = false;
 
     void onChange(EventChange &e) override;
     void onAction(EventAction &e) override;
     void onKey(EventKey &e) override;
+
     void onDragStart(EventDragStart &e) override;
     void onDragMove(EventDragMove &e) override;
     void onDragEnd(EventDragEnd &e) override;
@@ -576,6 +567,10 @@ void NoteNameField::onDragStart(EventDragStart &e) {
 void NoteNameField::onDragMove(EventDragMove &e)
 {
     TextField::onDragMove(e);
+
+    if (e.mouseRel.y == 0.0f) {
+        return;
+    }
 
     dragEndPos.x += e.mouseRel.x;
     dragEndPos.y += e.mouseRel.y;

@@ -90,7 +90,6 @@ struct FloatField : TextField
     float textToVolts(std::string field_text);
     std::string voltsToText(float param_volts);
 
-    float sensitivity = 0.1f;
     float minValue = -10.0f;
     float maxValue = 10.0f;
 
@@ -226,9 +225,6 @@ struct HZFloatField : FloatField
 
     HZFloatField(SpecificValue *_module) ;
 
-    float minValue = cv_to_freq(-10.0f);
-    float maxValue = cv_to_freq(10.0f);
-
     void onChange(EventChange &e) override;
     void onAction(EventAction &e) override;
 
@@ -236,7 +232,6 @@ struct HZFloatField : FloatField
 
     float textToVolts(std::string field_text);
     std::string voltsToText(float param_volts);
-
 };
 
 HZFloatField::HZFloatField(SpecificValue *_module) : FloatField(_module)
@@ -262,7 +257,6 @@ std::string HZFloatField::voltsToText(float param_volts){
 }
 
 void HZFloatField::increment(float delta){
-    // debug("HZ incr delta=%f", delta);
     float field_value = atof(text.c_str());
     field_value += delta;
     field_value = clamp2(field_value, minValue, maxValue);

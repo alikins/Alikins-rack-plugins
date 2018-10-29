@@ -141,9 +141,9 @@ void FloatField::onAction(EventAction &e)
 void FloatField::onDragStart(EventDragStart &e) {
     debug("onDragStart");
     if (dragging) {
-        debug("dragging already");
         return;
     }
+    windowCursorLock();
     dragging = true;
     dragEndPos.x = 0.0f;
     dragEndPos.y = 0.0f;
@@ -161,12 +161,24 @@ void FloatField::onDragMove(EventDragMove &e)
     dragEndPos.x += e.mouseRel.x;
     dragEndPos.y += e.mouseRel.y;
 
-    float delta = sensitivity * -e.mouseRel.y;
+    //float delta = sensitivity * -e.mouseRel.y;
+    float delta = INC * -e.mouseRel.y;
+    // setValue(rescale(randomUniform(), 0.f, 1.f, minValue, maxValue));
+    float redelta = rescale(e.mouseRel.y, minValue, maxValue, -1.0f, 1.0f);
 
-    debug("v: %0.5f, x: %0.5f, dx: %0.5f, y: %0.5f, dy: %0.5f, delta: %0.5f",
+    /*
+    debug("v: %0.5f, x: %0.5f, dx: %0.5f, y: %0.5f, dy: %0.5f, delta: %0.5f, redelta: %0.5f",
         module->params[SpecificValue::VALUE1_PARAM].value,
         dragEndPos.x, e.mouseRel.x, dragEndPos.y, e.mouseRel.y,
-        delta);
+        delta,
+        redelta);
+    */
+
+    debug("v: %0.5f, y: %0.5f, dy: %0.5f, delta: %0.5f, INC: %0.5f",
+        module->params[SpecificValue::VALUE1_PARAM].value,
+        dragEndPos.y, e.mouseRel.y,
+        delta,
+        INC);
 
     increment(delta);
 
@@ -177,6 +189,7 @@ void FloatField::onDragMove(EventDragMove &e)
 void FloatField::onDragEnd(EventDragEnd &e) {
     debug("onDragEnd");
     dragging = false;
+    windowCursorUnlock();
 }
 
 void FloatField::increment(float delta) {
@@ -230,6 +243,10 @@ struct HZFloatField : FloatField
     SpecificValue *module;
 
     HZFloatField(SpecificValue *_module) ;
+
+    float minValue = cv_to_freq(-10.0f);
+    float maxValue = cv_to_freq(10.0f);
+
     void onChange(EventChange &e) override;
     void onAction(EventAction &e) override;
 
@@ -286,6 +303,10 @@ struct LFOHzFloatField : FloatField {
     SpecificValue *module;
 
     LFOHzFloatField(SpecificValue *_module);
+
+    float minValue = lfo_cv_to_freq(-10.0f);
+    float maxValue = lfo_cv_to_freq(10.0f);
+
     void onAction(EventAction &e) override;
     void onChange(EventChange &e) override;
 
@@ -339,6 +360,11 @@ struct LFOBpmFloatField : FloatField {
     SpecificValue *module;
 
     LFOBpmFloatField(SpecificValue *_module);
+
+    float minValue = lfo_cv_to_freq(-10.0f)* 60.0f;
+    float maxValue = lfo_cv_to_freq(10.0f) * 60.0f;
+
+
     void onAction(EventAction &e) override;
     void onChange(EventChange &e) override;
 
@@ -353,6 +379,8 @@ LFOBpmFloatField::LFOBpmFloatField(SpecificValue *_module) : FloatField(_module)
     INC = 1.0f;
     SHIFT_INC = 10.0f;
     MOD_INC = 0.1f;
+
+    // sensitivity = INC;
 }
 
 float LFOBpmFloatField::textToVolts(std::string field_text) {
@@ -635,8 +663,6 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     volts_field = new FloatField(module);
     volts_field->box.pos = Vec(x_pos, y_baseline);
     volts_field->box.size = volt_field_size;
-    volts_field->minValue = -10.0f;
-    volts_field->maxValue = 10.0f;
 
     addChild(volts_field);
 
@@ -646,8 +672,6 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     hz_field = new HZFloatField(module);
     hz_field->box.pos = Vec(x_pos, y_baseline);
     hz_field->box.size = hz_field_size;
-    hz_field->minValue = 0.0f;
-    hz_field->maxValue = cv_to_freq(10.0f);
 
     addChild(hz_field);
 

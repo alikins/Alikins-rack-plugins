@@ -81,11 +81,21 @@ struct FloatField : TextField
     void onAction(EventAction &e) override;
     void onChange(EventChange &e) override;
     void onKey(EventKey &e) override;
+    void onDragStart(EventDragStart &e) override;
+    void onDragMove(EventDragMove &e) override;
+    void onDragEnd(EventDragEnd &e) override;
 
     virtual void increment(float delta);
 
     float textToVolts(std::string field_text);
     std::string voltsToText(float param_volts);
+
+    float dragValue = 0.0f;
+    float sensitivity = 0.1f;
+    float minValue = -10.0f;
+    float maxValue = 10.0f;
+    Vec dragEndPos = Vec(0.0f, 0.0f);
+    bool dragging = false;
 
     virtual void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
 
@@ -122,15 +132,69 @@ void FloatField::onAction(EventAction &e)
 {
     TextField::onAction(e);
     float volts = textToVolts(text);
+
     module->params[SpecificValue::VALUE1_PARAM].value = volts;
+}
+
+void FloatField::onDragStart(EventDragStart &e) {
+    debug("onDragStart");
+    dragging = true;
+    dragEndPos.x = 0.0f;
+    dragEndPos.y = 0.0f;
+    dragValue = 0.0f;
+    // std::cout << "onDragStart e: %s" << e << std::endl;
+
+}
+
+void FloatField::onDragMove(EventDragMove &e)
+{
+    float range;
+    range = maxValue - minValue;
+    // scrollWidget->offset.x += e.mouseRel.x;
+    dragEndPos.x += e.mouseRel.x;
+    dragEndPos.y += e.mouseRel.y;
+    float vlength = dragEndPos.norm();
+    float deltavlength = e.mouseRel.norm();
+
+    // vlength of ~200 seems reasonable for max delta
+
+    // float delta = sensitivity * -e.mouseRel.y * speed * range * vlength;
+    // float delta = sensitivity * sgn(e.mouseRel.y) * vlength
+    // float delta = sensitivity * sgn(-dragEndPos.y) * vlength;
+    // float delta = sensitivity * sgn(-dragEndPos.y) * deltavlength;
+    // float delta = sensitivity * deltavlength;
+    float delta = sensitivity * -e.mouseRel.y;
+    debug("delta: %0.5f dclamp: %0.5f", delta, clamp2(delta, minValue, maxValue));
+    debug("v: %0.5f, x: %0.5f dx: %0.5f y: %0.5f dy: %0.5f sgn: %0.5f vlength: %0.5f delta: %0.5f deltav: %0.5f",
+        module->params[SpecificValue::VALUE1_PARAM].value,
+        dragEndPos.x, e.mouseRel.x, dragEndPos.y, e.mouseRel.y,
+        sgn(-dragEndPos.y), vlength, delta, delta * sgn(-dragEndPos.y));
+    // dragValue += delta;
+    // dragValue = clamp2(dragValue, minValue, maxValue);
+    //debug("dragValue: %f", dragValue);
+    // increment()
+    //    setValue(dragValue);
+    // module->params[SpecificValue::VALUE1_PARAM].value = dragValue;
+    increment(delta);
+
+
+}
+
+void FloatField::onDragEnd(EventDragEnd &e) {
+    debug("onDragEnd");
+    dragging = false;
+    // windowCursorUnlock();
 }
 
 void FloatField::increment(float delta) {
     // debug("inc delta: %f", delta);
     float field_value = atof(text.c_str());
     field_value += delta;
+    field_value = clamp2(field_value, minValue, maxValue);
     text = voltsToText(field_value);
     // debug("new text: %s", text.c_str());
+    EventAction e;
+    onAction(e);
 }
 
 void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
@@ -143,8 +207,8 @@ void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pre
     // debug("inc: %f", inc);
     increment(inc);
 
-    EventAction e;
-    onAction(e);
+    //EventAction e;
+    //onAction(e);
 }
 
 void FloatField::onKey(EventKey &e) {

@@ -9,6 +9,8 @@ Plugins for use with VCV Rack virtual module synthesizer (https://github.com/VCV
 
 ### SpecificValue
 
+![specific_value](./screenshots/specific_value.png)
+
 #### What
 
 A controller module for outputting a specific voltage
@@ -29,7 +31,6 @@ the above info for CV voltages fed into the IN
 input. This includes animation of the controller
 dial.
 
-
 ##### Note Input
 
 A specific note can be entered into the note text
@@ -38,14 +39,14 @@ field.
 The note format includes a note a letter and a
 positive or negative 'octave'.
 
-For example, Valid formats include:
+Examples of valid formats include:
 
-- C4
-- c3   (lower case note name)
-- F#2  (sharps are indicated by the '#' char)
-- Ab0  (flats are indicate with a 'b' in the second field.
-       Note that flats are currently converted to the equilivent sharp for display)
-- C-2  (The C six octaves below C4)
+- `C4`   (C in the 4th octave)
+- `c3`   (note names can be upper or lower case)
+- `F#2`  (sharps are indicated by a'#' in the second field)
+- `Ab0`  (flats are indicated by a 'b' in the second field).
+          Note that flats are currently converted to the equivalent sharp for display)
+- `C-2`  (The C six octaves below C4)
 
 For notes that are slighty sharp or flat from a A440 tuning, the
 Cents display shows how the amount of detuning.
@@ -72,34 +73,36 @@ changing the value.
 
 | Key or mouse         | Modifier     | Action                             |
 | -------------------- | ------------ | ---------------------------------- |
-| Up arrow key         |              | increment value by default amount  |
-| Up arrow key         | Shift        | increment value by "large" amount  |
-| Up arrow key         | Ctrl/Command | increment value by "small" amount  |
-| Down arrow key       |              | decrement value by default amount  |
-| Down arrow key       | Shift        | decrement value by "large" amount  |
-| Down arrow key       | Ctrl/Command | decrement value by "small" amount  |
+| Up arrow key         |              | increment                          |
+| Up arrow key         | Shift        | increment by "large" amount        |
+| Up arrow key         | Ctrl/Command | increment by "small" amount        |
+| Down arrow key       |              | decrement by default amount        |
+| Down arrow key       | Shift        | decrement by "large" amount        |
+| Down arrow key       | Ctrl/Command | decrement by "small" amount        |
 | Esc                  |              | "undo" and reset to original value |
 
 To change the value using the mouse, click on a field and 'drag' it up
 to increment and drag it 'down' to decrement. To change the value in
 larger steps, hold 'Shift' while dragging. To use small steps, hold
-'Ctrl' or 'Command' while dragging.
+the mod key ('Ctrl' or 'Command') while dragging.
 
 The default, "large", or "small" increment depends on which field
 is being used.
 
-| Field           | small   |   default  |  large (shift  |
-| --------------- | ------- | ---------- | -------------- |
-| Volts           | 0.001   | 0.01       | 0.1            |
-| Frequency (hz)  | 0.1     | 1.0        | 10.0           |
-| LFO (hz)        | 0.001   | 0.01       | 0.1            |
-| LFO (bpm)       | 0.1     | 1.0        | 1.0            |
-| Note            | 1 cent  | 1 step     | 1 octave       |
-| Cents           | .01     | 0.1        | 1.0            |
+| Field           | default  | mod (small) | shift (large)  |
+| --------------- | -------- | ----------- | -------------- |
+| Volts           | 0.01 V   | 0.1 V       | 0.001 V        |
+| Frequency (hz)  | 1.0  hz  | 10.0 hz     | 0.1 hz         |
+| LFO (hz)        | 0.01 hz  | 0.1 hz      | 0.001 hz       |
+| LFO (bpm)       | 1.0  bpm | 1.0 bpm     | 0.1 bpm        |
+| Note            | 1 step   | 1 octave    | 1 cent         |
+| Cents           | 0.1 cent | 1.0 cent    | .01 cent       |
 
 
 
 ### IdleSwitch
+
+![idle_switch](./screenshots/idle_switch.png)
 
 #### What
 
@@ -217,6 +220,8 @@ make weird noises.
 
 ### ColorPanel
 
+![color_panel](./screenshots/color_panel.png)
+
 A CV controlled RGB/HSL color "blank" panel.
 
 Supports selectable input ranges (0V to 10V or -5V to 5V) via right click context menu
@@ -225,6 +230,8 @@ The color input mode is also selectable via the context menu.
 Module is resizable.
 
 ### BigMuteButton
+
+![big_mute_button](./screenshots/big_mute_button.png)
 
 A big mute button.
 
@@ -238,7 +245,22 @@ the tiny mute button on mixers.
 
 ### MomentaryOnButtons
 
+![momentary_on_buttons](./screenshots/momentary_on_buttons.png)
+
 A set of GUI buttons that send a +10V output while pressed.
+
+### Gate Length
+
+![gate_length](./screenshots/gate_length.png)
+
+Change the length of a gate between 0 and 10 seconds.
+Length of gate is CV controllable.
+
+### Reference Voltages
+
+![reference_voltages](./screenshots/reference_voltages.png)
+
+Output some useful reference voltags: -10V, -5V, -1V, 0V, 1V, 5V, 10V
 
 ## License
 

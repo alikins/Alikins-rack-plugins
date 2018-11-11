@@ -1,19 +1,5 @@
 #include "rack.hpp"
 
-
-
-struct SmallPurpleTrimpot : Trimpot {
-    SmallPurpleTrimpot();
-};
-
-SmallPurpleTrimpot::SmallPurpleTrimpot() : Trimpot() {
-    setSVG(SVG::load(assetPlugin(plugin, "res/SmallPurpleTrimpot.svg")));
-    shadow->blurRadius = 0.0;
-    shadow->opacity = 0.10;
-    shadow->box.pos = Vec(0.0, box.size.y * 0.1);
-}
-
-
 struct PurpleTrimpot : Trimpot {
 	Module *module;
     bool initialized = false;
@@ -30,11 +16,12 @@ PurpleTrimpot::PurpleTrimpot() : Trimpot() {
     shadow->box.pos = Vec(0.0, box.size.y * 0.05);
 }
 
+
 // FIXME: if we are getting moving inputs and we are hovering
 //        over the trimpot, we kind of jitter arround.
 // maybe run this via an onChange()?
 void PurpleTrimpot::step() {
-	//debug("paramId=%d this->initialized: %d initialized: %d this->value: %f value: %f param.value: %f",
+	// debug("paramId=%d this->initialized: %d initialized: %d this->value: %f value: %f param.value: %f",
      // paramId,  this->initialized, initialized, this->value, value, module->params[paramId].value);
 
     if (this->value != module->params[paramId].value) {

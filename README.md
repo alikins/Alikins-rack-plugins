@@ -39,14 +39,14 @@ field.
 The note format includes a note a letter and a
 positive or negative 'octave'.
 
-For example, Valid formats include:
+Examples of valid formats include:
 
-- C4
-- c3   (lower case note name)
-- F#2  (sharps are indicated by the '#' char)
-- Ab0  (flats are indicate with a 'b' in the second field.
-       Note that flats are currently converted to the equilivent sharp for display)
-- C-2  (The C six octaves below C4)
+- `C4`   (C in the 4th octave)
+- `c3`   (note names can be upper or lower case)
+- `F#2`  (sharps are indicated by a'#' in the second field)
+- `Ab0`  (flats are indicated by a 'b' in the second field).
+          Note that flats are currently converted to the equivalent sharp for display)
+- `C-2`  (The C six octaves below C4)
 
 For notes that are slighty sharp or flat from a A440 tuning, the
 Cents display shows how the amount of detuning.

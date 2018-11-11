@@ -12,14 +12,23 @@ Plugins for use with VCV Rack virtual module synthesizer (https://github.com/VCV
 #### What
 
 A controller module for outputting a specific voltage
-with displays and text input fields for voltage,
-frequency, note name ('C3' etc) and detune (cents),
-LFO bpm, and LFO hz.
+with displays and text input fields for:
+
+- CV voltage,
+- frequency (hz)
+- note name ('C3' etc)
+- note detune (cents)
+- LFO (bpm)
+- LFO (hz)
+
+A specific value can be chosen with the knob widget
+or can entering values into any of the text fields.
 
 Can also be used as a 'meter' displaying all of
 the above info for CV voltages fed into the IN
 input. This includes animation of the controller
 dial.
+
 
 ##### Note Input
 
@@ -39,11 +48,11 @@ For example, Valid formats include:
 - C-2  (The C six octaves below C4)
 
 For notes that are slighty sharp or flat from a A440 tuning, the
-cents display shows how the amount of detuning.
+Cents display shows how the amount of detuning.
 
 ##### LFO values
 
-The LFO fields show the hz and bpms (beats per minute) corresponding to
+The LFO fields show the hz and bpm (beats per minute) corresponding to
 the current voltage, based on the standard at
 https://vcvrack.com/manual/VoltageStandards.html#pitch-and-frequencies
 
@@ -51,6 +60,42 @@ https://vcvrack.com/manual/VoltageStandards.html#pitch-and-frequencies
 
 The HZ fields shows the hz corresponding to the current voltage for a
 VCO, based on the standard at https://vcvrack.com/manual/VoltageStandards.html#pitch-and-frequencies
+
+##### Using the text fields
+
+Values can be type into the text fields
+directly.
+
+There are also keyboard shortcuts available for
+changing the value.
+
+
+| Key or mouse         | Modifier     | Action                             |
+| -------------------- | ------------ | ---------------------------------- |
+| Up arrow key         |              | increment value by default amount  |
+| Up arrow key         | Shift        | increment value by "large" amount  |
+| Up arrow key         | Ctrl/Command | increment value by "small" amount  |
+| Down arrow key       |              | decrement value by default amount  |
+| Down arrow key       | Shift        | decrement value by "large" amount  |
+| Down arrow key       | Ctrl/Command | decrement value by "small" amount  |
+| Esc                  |              | "undo" and reset to original value |
+
+To change the value using the mouse, click on a field and 'drag' it up
+to increment and drag it 'down' to decrement. To change the value in
+larger steps, hold 'Shift' while dragging. To use small steps, hold
+'Ctrl' or 'Command' while dragging.
+
+The default, "large", or "small" increment depends on which field
+is being used.
+
+| Field           | small   |   default  |  large (shift  |
+| --------------- | ------- | ---------- | -------------- |
+| Volts           | 0.001   | 0.01       | 0.1            |
+| Frequency (hz)  | 0.1     | 1.0        | 10.0           |
+| LFO (hz)        | 0.001   | 0.01       | 0.1            |
+| LFO (bpm)       | 0.1     | 1.0        | 1.0            |
+| Note            | 1 cent  | 1 step     | 1 octave       |
+| Cents           | .01     | 0.1        | 1.0            |
 
 
 

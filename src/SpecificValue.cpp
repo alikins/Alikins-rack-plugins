@@ -80,11 +80,14 @@ struct FloatField : TextField
     void onChange(EventChange &e) override;
     void onKey(EventKey &e) override;
 
-    void onDragStart(EventDragStart &e) override;
+	void onMouseMove(EventMouseMove &e) override;
+
     void onDragMove(EventDragMove &e) override;
     void onDragEnd(EventDragEnd &e) override;
 
     void onFocus(EventFocus &e) override;
+
+    virtual void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
 
     virtual void increment(float delta);
 
@@ -96,15 +99,13 @@ struct FloatField : TextField
 
     std::string orig_string;
 
-    bool dragging = false;
-
-    virtual void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
+    bool y_dragging = false;
 
     float INC = 1.0f;
     float SHIFT_INC = 10.1f;
     float MOD_INC = 0.1f;
-};
 
+};
 
 FloatField::FloatField(SpecificValue *_module)
 {
@@ -120,7 +121,7 @@ float FloatField::textToVolts(std::string field_text) {
 }
 
 std::string FloatField::voltsToText(float param_volts){
-    return stringf("%0.3f", param_volts);
+    return stringf("%#.4g", param_volts);
 }
 
 void FloatField::onChange(EventChange &e) {
@@ -140,25 +141,35 @@ void FloatField::onAction(EventAction &e)
 
 void FloatField::onFocus(EventFocus &e) {
     orig_string = text;
-    // debug("onFocus orig_string: %s text: %s", orig_string.c_str(), text.c_str());
     TextField::onFocus(e);
 }
 
-void FloatField::onDragStart(EventDragStart &e) {
-    if (dragging) {
-        return;
+void FloatField::onMouseMove(EventMouseMove &e) {
+	if (this == gDraggedWidget) {
+        // debug("FloatField::onMouseMove y_dragging: %d", y_dragging);
+        if (e.mouseRel.x != 0.0f && !y_dragging)  {
+            TextField::onMouseMove(e);
+            return;
+        }
     }
-    windowCursorLock();
-    dragging = true;
 }
 
 void FloatField::onDragMove(EventDragMove &e)
 {
-    TextField::onDragMove(e);
+    // wait until we are moving and can tell if up/down or left/right before locking the cursor
 
-    if (e.mouseRel.y == 0.0f) {
-        return;
+    // no vertical cursor movement, dont do anything. In particular, not
+    // locking the cursor so text selection keeps working.
+    if (e.mouseRel.y == 0.0f || fabs(e.mouseRel.x) >= 1.0f) {
+        if (this == gDraggedWidget) {
+            return;
+        }
     }
+    // debug("FloatField::onDragMove doing SOMETHING, start y_dragging");
+    y_dragging = true;
+
+    // lock the 
+    windowCursorLock();
 
     bool shift_pressed = windowIsShiftPressed();
     bool mod_pressed = windowIsModPressed();
@@ -169,22 +180,16 @@ void FloatField::onDragMove(EventDragMove &e)
 
     float delta = inc * -e.mouseRel.y;
 
-    /*
-    debug("v: %0.5f, dy: %0.5f, delta: %0.5f, INC: %0.5f",
-        module->params[SpecificValue::VALUE1_PARAM].value,
-        e.mouseRel.y,
-        delta,
-        inc);
-    */
-
     increment(delta);
 
+    // we change the text in the field, trigger onAction to update the param
     EventAction ae;
     onAction(ae);
 }
 
 void FloatField::onDragEnd(EventDragEnd &e) {
-    dragging = false;
+    // mouse key released, stop dragging and release the cursor lock
+    y_dragging = false;
     windowCursorUnlock();
 }
 
@@ -270,7 +275,9 @@ float HZFloatField::textToVolts(std::string field_text) {
 
 std::string HZFloatField::voltsToText(float param_volts){
     float freq = cv_to_freq(param_volts);
-    std::string new_text = stringf("%0.*f", freq < 100 ? 4 : 3, freq);
+    // std::string new_text = stringf("%0.*g", freq < 100 ? 3 : 2, freq);
+    std::string new_text = stringf("%#.*g", freq < 100 ? 6: 7, freq);
+
     return new_text;
 }
 
@@ -279,7 +286,7 @@ void HZFloatField::increment(float delta){
     field_value += delta;
     field_value = clamp2(field_value, minValue, maxValue);
 
-    text = stringf("%0.*f", field_value < 100 ? 4 : 3, field_value);
+    text = stringf("%#.*g", field_value < 100 ? 6: 7, field_value);
 }
 
 void HZFloatField::onChange(EventChange &e) {
@@ -330,7 +337,8 @@ float LFOHzFloatField::textToVolts(std::string field_text) {
 
 std::string LFOHzFloatField::voltsToText(float param_volts) {
     float lfo_freq_hz = lfo_cv_to_freq(param_volts);
-    std::string new_text = stringf("%0.*f", lfo_freq_hz < 100 ? 4 : 3, lfo_freq_hz);
+    // std::string new_text = stringf("%0.*f", lfo_freq_hz < 100 ? 4 : 3, lfo_freq_hz);
+    std::string new_text = stringf("%#0.*g", lfo_freq_hz < 100 ? 5 : 6, lfo_freq_hz);
     return new_text;
 }
 
@@ -339,7 +347,7 @@ void LFOHzFloatField::increment(float delta) {
     field_value += delta;
 
     field_value = clamp2(field_value, minValue, maxValue);
-    text = stringf("%0.*f", field_value < 100 ? 4 : 3, field_value);
+    text = stringf("%#0.*g", 6, field_value);
 }
 
 void LFOHzFloatField::onChange(EventChange &e) {
@@ -390,7 +398,7 @@ float LFOBpmFloatField::textToVolts(std::string field_text) {
 std::string LFOBpmFloatField::voltsToText(float param_volts){
     float lfo_freq_hz = lfo_cv_to_freq(param_volts);
     float lfo_bpm = lfo_freq_hz * 60.0f;
-    std::string new_text = stringf("%0.*f", lfo_bpm < 100 ? 4 : 3, lfo_bpm);
+    std::string new_text = stringf("%.6g", lfo_bpm);
     return new_text;
 }
 
@@ -399,7 +407,7 @@ void LFOBpmFloatField::increment(float delta) {
     field_value += delta;
 
     field_value = clamp2(field_value, minValue, maxValue);
-    text = stringf("%0.*f", field_value < 100 ? 4 : 3, field_value);
+    text = stringf("%.6g", field_value);
 }
 
 void LFOBpmFloatField::onChange(EventChange &e) {
@@ -429,9 +437,9 @@ struct CentsField : FloatField {
 
 CentsField::CentsField(SpecificValue *_module) : FloatField(_module) {
     module = _module;
-    INC = 0.1f;
-    SHIFT_INC = 1.0f;
-    MOD_INC = 0.01f;
+    INC = 1.0f;
+    SHIFT_INC = 10.0f;
+    MOD_INC = 0.1f;
 
     minValue = -50.0f;
     maxValue = 50.0f;
@@ -442,26 +450,30 @@ void CentsField::increment(float delta) {
     field_value += delta;
 
     field_value = clamp2(field_value, minValue, maxValue);
-    text = stringf("% 0.2f", field_value < 100 ? 4 : 3, field_value);
+    // debug("field_value1: %f", field_value);
+    field_value = chop(field_value, 0.01f);
+    // debug("field_value2: %f", field_value);
+    text = stringf("%0.2f", field_value);
 }
 
 void CentsField::onChange(EventChange &e) {
     float cents = volts_to_note_cents(module->params[SpecificValue::VALUE1_PARAM].value);
-    std::string new_text = stringf("% 0.2f", cents);
+    cents = chop(cents, 0.01f);
+    std::string new_text = stringf("%0.2f", cents);
     setText(new_text);
 }
 
 void CentsField::onAction(EventAction &e) {
 
     TextField::onAction(e);
-    float cents = strtof(text.c_str(), NULL);
+    double cents = strtod(text.c_str(), NULL);
 
     // figure what to tweak the current volts
-    float cent_volt = 1.0f / 12.0f / 100.0f;
-    float delta_volt = cents * cent_volt;
-    float nearest_note_voltage = volts_of_nearest_note(module->params[SpecificValue::VALUE1_PARAM].value);
+    double cent_volt = 1.0 / 12.0 / 100.0;
+    double delta_volt = cents * cent_volt;
+    double nearest_note_voltage = volts_of_nearest_note(module->params[SpecificValue::VALUE1_PARAM].value);
 
-    module->params[SpecificValue::VALUE1_PARAM].value = nearest_note_voltage + delta_volt;
+    module->params[SpecificValue::VALUE1_PARAM].value = (float) (nearest_note_voltage + delta_volt);
 
 }
 
@@ -473,14 +485,14 @@ struct NoteNameField : TextField {
     float minValue = -10.0f;
     float maxValue = 10.0f;
 
-    bool dragging = false;
     float orig_value;
 
     void onChange(EventChange &e) override;
     void onAction(EventAction &e) override;
     void onKey(EventKey &e) override;
 
-    void onDragStart(EventDragStart &e) override;
+	void onMouseMove(EventMouseMove &e) override;
+
     void onDragMove(EventDragMove &e) override;
     void onDragEnd(EventDragEnd &e) override;
 
@@ -488,6 +500,8 @@ struct NoteNameField : TextField {
 
     void increment(float delta);
     void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
+
+    bool y_dragging = false;
 
     float INC = 1.0f;
     float SHIFT_INC = 12.0f;
@@ -502,9 +516,10 @@ NoteNameField::NoteNameField(SpecificValue *_module)
 
 void NoteNameField::increment(float delta) {
     float field_value = module->params[SpecificValue::VALUE1_PARAM].value;
-    field_value += delta * 1.0f / 12.0f;
-    field_value = clamp2(field_value, minValue, maxValue);
+    field_value += (float) delta * 1.0 / 12.0;
 
+    field_value = clamp2(field_value, minValue, maxValue);
+    field_value = chop(field_value, 0.001f);
     module->params[SpecificValue::VALUE1_PARAM].value = field_value;
 }
 
@@ -557,7 +572,8 @@ void NoteNameField::onChange(EventChange &e) {
     float cv_volts = module->params[SpecificValue::VALUE1_PARAM].value;
     int octave = volts_to_octave(cv_volts);
     int note_number = volts_to_note(cv_volts);
-
+    /* debug("cv_volts: %f, octave: %d, note_number: %d, can: %s",
+     cv_volts, octave, note_number, note_name_vec[note_number].c_str()); */
     std::string new_text = stringf("%s%d", note_name_vec[note_number].c_str(), octave);
 
     setText(new_text);
@@ -595,7 +611,10 @@ void NoteNameField::onAction(EventAction &e) {
 
     auto search = note_name_to_volts_map.find(can_note_id);
     if(search != note_name_to_volts_map.end()) {
-        module->params[SpecificValue::VALUE1_PARAM].value = note_name_to_volts_map[can_note_id];
+        // float f = (float) orig;
+        // module->params[SpecificValue::VALUE1_PARAM].value = note_name_to_volts_map[can_note_id];
+        module->params[SpecificValue::VALUE1_PARAM].value = (float) note_name_to_volts_map[can_note_id];
+
         return;
     }
     else {
@@ -605,19 +624,28 @@ void NoteNameField::onAction(EventAction &e) {
     }
 }
 
-void NoteNameField::onDragStart(EventDragStart &e) {
-    TextField::onDragStart(e);
-    windowCursorLock();
-    dragging = true;
+void NoteNameField::onMouseMove(EventMouseMove &e) {
+	if (this == gDraggedWidget) {
+        if (e.mouseRel.x != 0.0f && !y_dragging)  {
+            TextField::onMouseMove(e);
+            return;
+        }
+    }
 }
 
 void NoteNameField::onDragMove(EventDragMove &e)
 {
-    TextField::onDragMove(e);
+    // TextField::onDragMove(e);
 
-    if (e.mouseRel.y == 0.0f) {
-        return;
+    if (e.mouseRel.y == 0.0f || fabs(e.mouseRel.x) >= 1.0f) {
+        if (this == gDraggedWidget) {
+            return;
+        }
     }
+
+    y_dragging = true;
+
+    windowCursorLock();
 
     bool shift_pressed = windowIsShiftPressed();
     bool mod_pressed = windowIsModPressed();
@@ -638,13 +666,11 @@ void NoteNameField::onDragMove(EventDragMove &e)
 
     EventChange ce;
     onChange(ce);
-
 }
 
 void NoteNameField::onDragEnd(EventDragEnd &e) {
-    TextField::onDragEnd(e);
     windowCursorUnlock();
-    dragging = false;
+    y_dragging = false;
 }
 
 

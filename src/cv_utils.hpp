@@ -57,8 +57,8 @@ float lfo_cv_to_freq(float volts) {
 }
 
 // can return negative
-float volts_of_nearest_note(float volts) {
-    float res =  roundf( (volts * 12.0f) )  / 12.0f;
+double volts_of_nearest_note(float volts) {
+    double res = round( (volts * 12.0) )  / 12.0;
     return res;
 }
 
@@ -82,9 +82,9 @@ int volts_to_octave(float volts) {
 
 float volts_to_note_cents(float volts) {
     float nearest_note = volts_of_nearest_note(volts);
-    float cent_volt = 1.0f / 12.0f / 100.0f;
+    double cent_volt = 1.0f / 12.0f / 100.0f;
 
-    float offset_cents = (volts-nearest_note)/cent_volt;
+    float offset_cents = (volts - nearest_note)/cent_volt;
     // debug("volts: %f volts_of_nearest: %f volts-volts_nearest: %f offset_cents %f",
     //     volts, nearest_note, volts-nearest_note, offset_cents);
 

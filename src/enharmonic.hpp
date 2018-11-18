@@ -42,11 +42,14 @@ struct NoteOct {
     }
 };
 
+// Build a map of note_name ('C4', 'Ab3', etc) to it's CV voltage
 std::map<std::string, float> gen_note_name_map() {
-    float volt = -10.0f;
+
+    double volt = -10.0;
     std::string note_name;
     std::map<std::string, float> note_name_map;
     std::vector<std::string>::iterator it;
+    double semi = 1.0/12.0;
 
     // FIXME: add a map of note name (including enharmonic) to voltage offset from C
     //        then just iterate over it for each octave
@@ -57,7 +60,7 @@ std::map<std::string, float> gen_note_name_map() {
             // debug("oct=%d note=%s volt=%f ", i, note_name_vec[j].c_str(), volt);
             note_name_map[stringf("%s%d",
                                   note_name_vec[j].c_str(), i)] = volt;
-            volt += (1.0f / 12.0f);
+            volt += semi;
         }
     }
     return note_name_map;
@@ -148,7 +151,10 @@ NoteOct* parseNote(std::string text) {
         note_oct = text.substr(found, text.length());
     }
 
+    // debug("parseNote note_name: %s, note_oct: %s", note_name.c_str(), note_oct.c_str());
+
     std::string can_note_name = enharmonic_name_map[note_name];
+    // debug("parseNote can_not_name: %s", can_note_name.c_str());
 
     NoteOct *noteOct = new NoteOct();
     noteOct->name = can_note_name;

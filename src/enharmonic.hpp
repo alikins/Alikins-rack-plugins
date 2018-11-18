@@ -4,7 +4,6 @@ using namespace rack;
 #include <stdio.h>
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <iostream>
 
 // using namespace rack;
@@ -43,10 +42,10 @@ struct NoteOct {
     }
 };
 
-std::unordered_map<std::string, float> gen_note_name_map() {
+std::map<std::string, float> gen_note_name_map() {
     float volt = -10.0f;
     std::string note_name;
-    std::unordered_map<std::string, float> note_name_map;
+    std::map<std::string, float> note_name_map;
     std::vector<std::string>::iterator it;
 
     // FIXME: add a map of note name (including enharmonic) to voltage offset from C
@@ -64,8 +63,8 @@ std::unordered_map<std::string, float> gen_note_name_map() {
     return note_name_map;
 }
 
-std::unordered_map<std::string, std::string> gen_enharmonic_name_map() {
-    std::unordered_map<std::string, std::string> enharmonic_map;
+std::map<std::string, std::string> gen_enharmonic_name_map() {
+    std::map<std::string, std::string> enharmonic_map;
 
     enharmonic_map["c"] = "C";
     enharmonic_map["C"] = "C";
@@ -125,8 +124,8 @@ std::unordered_map<std::string, std::string> gen_enharmonic_name_map() {
     return enharmonic_map;
 }
 
-std::unordered_map<std::string, std::string> enharmonic_name_map = gen_enharmonic_name_map();
-std::unordered_map<std::string, float> note_name_to_volts_map = gen_note_name_map();
+std::map<std::string, std::string> enharmonic_name_map = gen_enharmonic_name_map();
+std::map<std::string, float> note_name_to_volts_map = gen_note_name_map();
 
 NoteOct* parseNote(std::string text) {
     // split into 'stuff before any int or -' and a number like string

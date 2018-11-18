@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <array>
 #include <map>
-#include <unordered_map>
 #include <math.h>
 #include <float.h>
 
@@ -37,7 +36,6 @@ struct SpecificValue : Module
         VALUE1_OUTPUT,
         NUM_OUTPUTS
     };
-
     enum LightIds
     {
         NUM_LIGHTS

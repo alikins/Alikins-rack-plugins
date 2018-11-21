@@ -64,11 +64,17 @@ VCO, based on the standard at https://vcvrack.com/manual/VoltageStandards.html#p
 
 ##### Using the text fields
 
-Values can be type into the text fields
+Values can be typed into the text fields
 directly.
 
-There are also keyboard shortcuts available for
-changing the value.
+Left and Right arrow keys move the text cursor
+as normal when editing text.
+
+To select all text to replace, use Ctrl/Command + 'a',
+or doubleclick on the field.
+
+
+Up and Down arrow keys change the value as follows:
 
 
 | Key or mouse         | Modifier     | Action                             |

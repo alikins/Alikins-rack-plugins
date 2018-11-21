@@ -6,10 +6,10 @@
 #include <map>
 #include <math.h>
 #include <float.h>
+#include <sys/time.h>
 
 #include "window.hpp"
 #include <GLFW/glfw3.h>
-
 
 #include "alikins.hpp"
 #include "ui.hpp"
@@ -17,6 +17,18 @@
 #include "cv_utils.hpp"
 #include "specificValueWidgets.hpp"
 
+#define DOUBLE_CLICK_SECS 0.5
+
+// From KISS FFT,
+// https://github.com/mborgerding/kissfft/blob/master/test/testcpp.cc
+// BSD-3-Clause
+static inline
+double curtime(void)
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (double)tv.tv_sec + (double)tv.tv_usec*.000001;
+}
 
 struct SpecificValue : Module
 {
@@ -81,6 +93,7 @@ struct FloatField : TextField
     void onKey(EventKey &e) override;
 
 	void onMouseMove(EventMouseMove &e) override;
+    void onMouseUp(EventMouseUp &e) override;
 
     void onDragMove(EventDragMove &e) override;
     void onDragEnd(EventDragEnd &e) override;
@@ -96,6 +109,8 @@ struct FloatField : TextField
 
     float minValue = -10.0f;
     float maxValue = 10.0f;
+
+    double prev_mouse_up_time = 0.0;
 
     std::string orig_string;
 
@@ -142,6 +157,18 @@ void FloatField::onAction(EventAction &e)
 void FloatField::onFocus(EventFocus &e) {
     orig_string = text;
     TextField::onFocus(e);
+}
+
+void FloatField::onMouseUp(EventMouseUp &e) {
+    double new_mouse_up_time = curtime();
+    double delta = new_mouse_up_time - prev_mouse_up_time;
+    prev_mouse_up_time = new_mouse_up_time;
+
+    if (delta <= DOUBLE_CLICK_SECS) {
+        // Select 'all' text in the field
+        selection = 0;
+		cursor = text.size();
+    }
 }
 
 void FloatField::onMouseMove(EventMouseMove &e) {
@@ -492,6 +519,7 @@ struct NoteNameField : TextField {
     void onKey(EventKey &e) override;
 
 	void onMouseMove(EventMouseMove &e) override;
+    void onMouseUp(EventMouseUp &e) override;
 
     void onDragMove(EventDragMove &e) override;
     void onDragEnd(EventDragEnd &e) override;
@@ -502,6 +530,8 @@ struct NoteNameField : TextField {
     void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
 
     bool y_dragging = false;
+
+    double prev_mouse_up_time = 0.0;
 
     float INC = 1.0f;
     float SHIFT_INC = 12.0f;
@@ -630,6 +660,20 @@ void NoteNameField::onMouseMove(EventMouseMove &e) {
             TextField::onMouseMove(e);
             return;
         }
+    }
+}
+
+// FIXME: refactor to share this and other bits better
+// with FloatField and friends
+void NoteNameField::onMouseUp(EventMouseUp &e) {
+    double new_mouse_up_time = curtime();
+    double delta = new_mouse_up_time - prev_mouse_up_time;
+    prev_mouse_up_time = new_mouse_up_time;
+
+    if (delta <= DOUBLE_CLICK_SECS) {
+        // Select 'all' text in the field
+        selection = 0;
+		cursor = text.size();
     }
 }
 

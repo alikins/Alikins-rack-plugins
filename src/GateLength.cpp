@@ -45,7 +45,7 @@ struct GateLength : Module {
     PulseGenerator gateGenerator[GATE_LENGTH_INPUTS];
 
     GateLength() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-    
+
     void step() override;
 
     void onReset() override {
@@ -57,10 +57,18 @@ void GateLength::step() {
     // FIXME: add way to support >10.0s gate length
 
     float sample_time = engineGetSampleTime();
-    
+    float knob_powf_value;
+
     for (int i = 0; i < GATE_LENGTH_INPUTS; i++) {
-        gate_length[i] = clamp(params[GATE_LENGTH_PARAM1 + i].value + inputs[GATE_LENGTH_INPUT1 + i].value, 0.0f, 10.0f);
-    
+
+        // power scale knob's 0->10 range to, well.. 0->10
+        knob_powf_value = powf(params[GATE_LENGTH_PARAM1 + i].value, 2) / 10.0f;
+
+        // We just add the value from the length knob (0->10v) and the CV length (0->10v)
+        // and clamp. Maybe multiplying or cross fading would make more sense, but
+        // need a new param for that to not change existing patches.
+        gate_length[i] = clamp(knob_powf_value + inputs[GATE_LENGTH_INPUT1 + i].value, 0.0f, 10.0f);
+
         if (inputOnTrigger[i].process(inputs[TRIGGER_INPUT1 + i].value)) {
             // debug("GL INPUT ON TRIGGER %d gate_length: %f", i, gate_length[i]);
             gateGenerator[i].trigger(gate_length[i]);
@@ -80,7 +88,7 @@ GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
     setPanel(SVG::load(assetPlugin(plugin, "res/GateLength.svg")));
 
     float y_pos = 2.0f;
-    
+
     for (int i = 0; i < GATE_LENGTH_INPUTS; i++) {
         float x_pos = 4.0f;
         y_pos += 39.0f;

@@ -12,17 +12,15 @@ void init(rack::Plugin *p) {
     p->website = "https://github.com/alikins/Alikins-rack-plugins";
     p->manual = "https://github.com/alikins/Alikins-rack-plugins/blob/master/README.md";
 
-    p->addModel(modelIdleSwitch);
-    p->addModel(modelMomentaryOnButtons);
     p->addModel(modelBigMuteButton);
     p->addModel(modelColorPanel);
     p->addModel(modelGateLength);
-    p->addModel(modelSpecificValue);
+    p->addModel(modelIdleSwitch);
+    p->addModel(modelMomentaryOnButtons);
     p->addModel(modelReference);
     p->addModel(modelHoveredValue);
     p->addModel(modelInjectValue);
     p->addModel(modelShiftPedal);
-
-    // Any other plugin initialization may go here.
-    // As an alternative, consider lazy-loading assets and lookup tables when your module is created to reduce startup times of Rack.
+    p->addModel(modelSpecificValue);
+    p->addModel(modelValueSaver);
 }

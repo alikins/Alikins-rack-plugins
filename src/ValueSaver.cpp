@@ -1,19 +1,20 @@
+#include "dsp/digital.hpp"
 #include "alikins.hpp"
 
 #define VALUE_COUNT 8
-#define CLOSE_ENOUGH 0.001f
+#define CLOSE_ENOUGH 0.01f
 
 struct ValueSaver : Module {
     enum ParamIds {
-        ENUMS(VALUE_PARAM, 8),
+        ENUMS(VALUE_PARAM, VALUE_COUNT),
         NUM_PARAMS
     };
     enum InputIds {
-        ENUMS(VALUE_INPUT, 8),
+        ENUMS(VALUE_INPUT, VALUE_COUNT),
         NUM_INPUTS
     };
     enum OutputIds {
-        ENUMS(VALUE_OUTPUT, 8),
+        ENUMS(VALUE_OUTPUT, VALUE_COUNT),
         NUM_OUTPUTS
     };
     enum LightIds {
@@ -32,29 +33,40 @@ struct ValueSaver : Module {
 
     float values[VALUE_COUNT] = {0.0f};
     bool activeAndChangingInputs[VALUE_COUNT] = {};
+    SchmittTrigger valueChangeTrigger[VALUE_COUNT];
+
 };
 
 void ValueSaver::step()
 {
-    for (int i = 0; i < VALUE_COUNT; i++)
-    {
+    bool trig = false;
+    for (int i = 0; i < VALUE_COUNT; i++) {
         if (inputs[VALUE_INPUT + i].active) {
-            // saved value is about the input value, close enough to start input?
-            if (fabs(inputs[VALUE_INPUT + i].value - values[i]) < CLOSE_ENOUGH) {
+            trig = valueChangeTrigger[i].process(rescale(inputs[i].value,
+             values[i] - CLOSE_ENOUGH, values[i], 0.0f, 1.0f));
+
+            if (trig) {
+                debug("input[%d] %f was around values[%d] %f, chg? eps %f",
+                i, inputs[i].value, i, values[i], values[i] - CLOSE_ENOUGH );
                 activeAndChangingInputs[i] = true;
             }
-            // start changing the saved value, ie, reading from the inputs
-            // values[i] = inputs[VALUE_INPUT1 + i].value;
+            // float gate = inputs[triggerInput].value;
+		    // int triggered = trigger.process(rescale(gate, params[PARAM_TRIGGER].value - 0.1f, params[PARAM_TRIGGER].value, 0.0f, 1.0f));
+
+            // saved value is about the input value, close enough to start input?
+            // if (fabs(inputs[VALUE_INPUT + i].value - values[i]) < CLOSE_ENOUGH) {
+            //    activeAndChangingInputs[i] = true;
+            // }
         } else {
             activeAndChangingInputs[i] = false;
         }
+
         if (activeAndChangingInputs[i]) {
             // start changing the saved value, ie, reading from the inputs
             values[i] = inputs[VALUE_INPUT + i].value;
         }
         outputs[VALUE_OUTPUT + i].value = values[i];
     }
-
 }
 
 json_t* ValueSaver::toJson() {
@@ -64,6 +76,7 @@ json_t* ValueSaver::toJson() {
     json_t *valuesJ = json_array();
     for (int i = 0; i < VALUE_COUNT; i++)
     {
+        debug("toJson current values[%d]: %f", i, values[i]);
         json_t *valueJ = json_real(values[i]);
         json_array_append_new(valuesJ, valueJ);
     }
@@ -78,7 +91,7 @@ void ValueSaver::fromJson(json_t *rootJ) {
     {
         for (int i = 0; i < VALUE_COUNT; i++)
         {
-            debug("fromJson i: %d", i);
+            // debug("fromJson i: %d", i);
             debug("current values[%d]: %f", i, values[i]);
             json_t *valueJ = json_array_get(valuesJ, i);
             if (valueJ) {

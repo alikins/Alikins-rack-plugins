@@ -32,40 +32,62 @@ struct ValueSaver : Module {
     void fromJson(json_t *rootJ) override;
 
     float values[VALUE_COUNT] = {0.0f};
-    bool activeAndChangingInputs[VALUE_COUNT] = {};
-    SchmittTrigger valueChangeTrigger[VALUE_COUNT];
+    float prevInputs[VALUE_COUNT] = {0.0f};
+
+    bool initialized = false;
+
+    bool changingInputs[VALUE_COUNT] = {};
+    SchmittTrigger valueUpTrigger[VALUE_COUNT];
+    SchmittTrigger valueDownTrigger[VALUE_COUNT];
 
 };
 
 void ValueSaver::step()
 {
-    bool trig = false;
+
     for (int i = 0; i < VALUE_COUNT; i++) {
-        if (inputs[VALUE_INPUT + i].active) {
-            trig = valueChangeTrigger[i].process(rescale(inputs[i].value,
-             values[i] - CLOSE_ENOUGH, values[i], 0.0f, 1.0f));
+        // if (i == 0) { debug("A changingInputs[%d]: %d", i, changingInputs[i]);}
 
-            if (trig) {
-                debug("input[%d] %f was around values[%d] %f, chg? eps %f",
-                i, inputs[i].value, i, values[i], values[i] - CLOSE_ENOUGH );
-                activeAndChangingInputs[i] = true;
-            }
-            // float gate = inputs[triggerInput].value;
-		    // int triggered = trigger.process(rescale(gate, params[PARAM_TRIGGER].value - 0.1f, params[PARAM_TRIGGER].value, 0.0f, 1.0f));
+        if (!initialized) {
+            debug("not initialized");
+            outputs[VALUE_OUTPUT + i].value = values[i];
+            changingInputs[i] = false;
+            continue;
 
-            // saved value is about the input value, close enough to start input?
-            // if (fabs(inputs[VALUE_INPUT + i].value - values[i]) < CLOSE_ENOUGH) {
-            //    activeAndChangingInputs[i] = true;
-            // }
-        } else {
-            activeAndChangingInputs[i] = false;
+        }
+        // Just output the "saved" value if no active input
+        if (!inputs[VALUE_INPUT + i].active) {
+            prevInputs[i] = inputs[i].value;
+            changingInputs[i] = false;
+            outputs[VALUE_OUTPUT + i].value = values[i];
+            continue;
+            // continue;
         }
 
-        if (activeAndChangingInputs[i]) {
-            // start changing the saved value, ie, reading from the inputs
+        if (changingInputs[i] || fabs(prevInputs[i] - inputs[i].value) > CLOSE_ENOUGH) {
+            changingInputs[i] = true;
+        }
+
+        if (changingInputs[i]) {
             values[i] = inputs[VALUE_INPUT + i].value;
+            if (i == 0) {
+                debug("B changingInputs[%d]=%d: prevInputs[%d]=%f input[%d]=%f values[%d]: %f",
+                 i, changingInputs[i], i, prevInputs[i], i, inputs[i].value, i, values[i]);
+            }
+            prevInputs[i] = inputs[VALUE_INPUT + i].value;
+            // outputs[VALUE_OUTPUT + i].value = values[i];
+            // continue;
         }
+
         outputs[VALUE_OUTPUT + i].value = values[i];
+        //prevInputs[i] = inputs[i].value;
+        //prevInputs[i] = values[i];
+        changingInputs[i] = false;
+        //if (activeAndChangingInputs[i]) {
+        //    // start changing the saved value, ie, reading from the inputs
+        //    values[i] = inputs[VALUE_INPUT + i].value;
+        //}
+        //outputs[VALUE_OUTPUT + i].value = values[i];
     }
 }
 
@@ -76,7 +98,7 @@ json_t* ValueSaver::toJson() {
     json_t *valuesJ = json_array();
     for (int i = 0; i < VALUE_COUNT; i++)
     {
-        debug("toJson current values[%d]: %f", i, values[i]);
+        // debug("toJson current values[%d]: %f", i, values[i]);
         json_t *valueJ = json_real(values[i]);
         json_array_append_new(valuesJ, valueJ);
     }
@@ -87,6 +109,7 @@ json_t* ValueSaver::toJson() {
 
 void ValueSaver::fromJson(json_t *rootJ) {
     json_t *valuesJ = json_object_get(rootJ, "values");
+    float savedInput;
     if (valuesJ)
     {
         for (int i = 0; i < VALUE_COUNT; i++)
@@ -96,11 +119,16 @@ void ValueSaver::fromJson(json_t *rootJ) {
             json_t *valueJ = json_array_get(valuesJ, i);
             if (valueJ) {
                 debug("fromJson values[%d] value: %f", i, json_number_value(valueJ));
-                values[i] = json_number_value(valueJ);
-                activeAndChangingInputs[i] = false;
+                savedInput = json_number_value(valueJ);
+                prevInputs[i] = savedInput;
+                //inputs[i].value = savedInput;
+                values[i] = savedInput;
+                changingInputs[i] = false;
             }
         }
     }
+    debug("INITIALIZED!");
+    initialized = true;
 
 }
 

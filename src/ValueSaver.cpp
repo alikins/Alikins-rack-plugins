@@ -37,6 +37,7 @@ struct ValueSaver : Module {
     bool initialized = false;
 
     bool changingInputs[VALUE_COUNT] = {};
+    bool initializedInputs[VALUE_COUNT] = {};
     SchmittTrigger valueUpTrigger[VALUE_COUNT];
     SchmittTrigger valueDownTrigger[VALUE_COUNT];
 
@@ -44,50 +45,47 @@ struct ValueSaver : Module {
 
 void ValueSaver::step()
 {
-
+    // states:
+    //  - active inputs, meaningful current input -> output
+    //  - active inputs,
+    //  - in active inputs, meaningful 'saved' input -> output
+    //  - in active inputs, default/unset value -> output
+    //
     for (int i = 0; i < VALUE_COUNT; i++) {
         // if (i == 0) { debug("A changingInputs[%d]: %d", i, changingInputs[i]);}
 
-        if (!initialized) {
-            debug("not initialized");
-            outputs[VALUE_OUTPUT + i].value = values[i];
-            changingInputs[i] = false;
-            continue;
-
-        }
         // Just output the "saved" value if no active input
         if (!inputs[VALUE_INPUT + i].active) {
-            prevInputs[i] = inputs[i].value;
-            changingInputs[i] = false;
+            // prevInputs[i] = inputs[i].value;
             outputs[VALUE_OUTPUT + i].value = values[i];
+            prevInputs[i] = values[i];
             continue;
-            // continue;
         }
-
-        if (changingInputs[i] || fabs(prevInputs[i] - inputs[i].value) > CLOSE_ENOUGH) {
-            changingInputs[i] = true;
-        }
-
+        // active inputs
+        // prevInputs[i] = values[i];
+        // trigger?
         if (changingInputs[i]) {
+            debug("changing value %f to input.value %f", values[i], inputs[VALUE_INPUT + i].value);
             values[i] = inputs[VALUE_INPUT + i].value;
+            changingInputs[i] = false;
+        }
+
+        if (fabs(prevInputs[i] - values[i]) > CLOSE_ENOUGH) {
+            changingInputs[i] = true;
+            // values[i] = inputs[VALUE_INPUT + i].value;
             if (i == 0) {
                 debug("B changingInputs[%d]=%d: prevInputs[%d]=%f input[%d]=%f values[%d]: %f",
                  i, changingInputs[i], i, prevInputs[i], i, inputs[i].value, i, values[i]);
             }
-            prevInputs[i] = inputs[VALUE_INPUT + i].value;
+            // prevInputs[i] = inputs[VALUE_INPUT + i].value;
             // outputs[VALUE_OUTPUT + i].value = values[i];
             // continue;
         }
-
+        prevInputs[i] = values[i];
+        values[i] = inputs[VALUE_INPUT + i].value;
         outputs[VALUE_OUTPUT + i].value = values[i];
-        //prevInputs[i] = inputs[i].value;
-        //prevInputs[i] = values[i];
-        changingInputs[i] = false;
-        //if (activeAndChangingInputs[i]) {
-        //    // start changing the saved value, ie, reading from the inputs
-        //    values[i] = inputs[VALUE_INPUT + i].value;
-        //}
-        //outputs[VALUE_OUTPUT + i].value = values[i];
+        // outputs[VALUE_OUTPUT + i].value = values[i];
+
     }
 }
 

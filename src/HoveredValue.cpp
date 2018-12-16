@@ -7,8 +7,6 @@
 #include <math.h>
 #include <float.h>
 #include <sys/time.h>
-#include <cxxabi.h>
-#include <typeinfo>
 
 #include "window.hpp"
 #include <GLFW/glfw3.h>
@@ -81,26 +79,21 @@ ParamFloatField::ParamFloatField(HoveredValue *_module)
     module = _module;
 }
 
-std::string ParamFloatField::paramValueToText(float param_value){
+std::string ParamFloatField::paramValueToText(float param_value) {
     return stringf("%#.4g", param_value);
 }
 
 void ParamFloatField::setValue(float value) {
-	this->hovered_value = value;
+    this->hovered_value = value;
     this->module->param_value = value;
-	EventChange e;
-	onChange(e);
+    EventChange e;
+    onChange(e);
 }
 
-
 void ParamFloatField::onChange(EventChange &e) {
-    // debug("ParamFloatField onChange  text=%s param=%f", text.c_str(),
-    //    module->params[HoveredValue::VALUE1_PARAM].value);
     std::string new_text = paramValueToText(hovered_value);
     setText(new_text);
 }
-
-
 
 struct HoveredValueWidget : ModuleWidget
 {
@@ -108,9 +101,6 @@ struct HoveredValueWidget : ModuleWidget
 
     void step() override;
     void onChange(EventChange &e) override;
-
-    // float prev_volts = 0.0f;
-    // float prev_input = 0.0f;
 
     ParamFloatField *param_value_field;
     TextField *min_field;
@@ -195,72 +185,40 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 
 void HoveredValueWidget::step() {
     ModuleWidget::step();
-    int status;
-    char *realname;
-
-/*
-    if (prev_volts != module->params[HoveredValue::VALUE1_PARAM].value ||
-        prev_input != module->params[HoveredValue::VALUE1_INPUT].value) {
-            // debug("SpVWidget step - emitting EventChange / onChange prev_volts=%f param=%f",
-            //     prev_volts, module->params[HoveredValue::VALUE1_PARAM].value);
-            prev_volts = module->params[HoveredValue::VALUE1_PARAM].value;
-            prev_input = module->params[HoveredValue::VALUE1_INPUT].value;
-            EventChange e;
-		    onChange(e);
-    }
-    */
 
     if (gHoveredWidget) {
 
-        //realname = abi::__cxa_demangle(typeid(*gHoveredWidget).name(), 0, 0, &status);
-        //debug("gHoveredWidget type %s", realname);
-        //free(realname);
-
-
-        // TODO: if widget is an input/output, read it's value?
+        // TODO/FIXME: I assume there is a better way to check type?
         ParamWidget *pwidget = dynamic_cast<ParamWidget*>(gHoveredWidget);
         if (pwidget) {
-            /*
-            realname = abi::__cxa_demangle(typeid(*pwidget).name(), 0, 0, &status);
-            debug("pWidget type %s value: %f", realname, pwidget->value);
-            free(realname);
-            */
-            // module.
-            // trimpot->setValue(pwidget->value);
             param_value_field->setValue(pwidget->value);
             min_field->setText(stringf("%#.4g", pwidget->minValue));
             max_field->setText(stringf("%#.4g", pwidget->maxValue));
             default_field->setText(stringf("%#.4g", pwidget->defaultValue));
             widget_type_field->setText("Param");
         }
+
         Port *port = dynamic_cast<Port*>(gHoveredWidget);
         if (port) {
-            // debug("port type %d", port->type);
-            // debug("port id: %d", port->portId);
             if (port->type == port->INPUT) {
-                // debug("port input value: %f", port->module->inputs[port->portId].value);
                 param_value_field->setValue(port->module->inputs[port->portId].value);
                 widget_type_field->setText("Input");
             }
             if (port->type == port->OUTPUT) {
-                // debug("port output value: %f", port->module->outputs[port->portId].value);
                 param_value_field->setValue(port->module->outputs[port->portId].value);
                 widget_type_field->setText("Output");
             }
+
             // inputs/outputs dont have variable min/max, so just use the -10/+10 and
             // 0 for the default to get the point across.
             min_field->setText(stringf("%#.4g", -10.0f));
             max_field->setText(stringf("%#.4g", 10.0f));
             default_field->setText(stringf("%#.4g", 0.0f));
-            // port->module->inputs[0].
-        }
-        // TODO: if a WireWidget, can we figure out it's in/out and current value? That would be cool.
-        WireWidget *wire_widget = dynamic_cast<WireWidget*>(gHoveredWidget);
-        if (wire_widget) {
 
         }
-        //Widget *p = dynamic_cast<Widget*>(gHoveredWidget);
-        // ModuleWidget *m = getAncestorOfType<ModuleWidget>();
+
+        // TODO: if a WireWidget, can we figure out it's in/out and current value? That would be cool,
+        //       though it doesn't look like WireWidgets are ever hovered (or gHoveredWidget never // //       seems to be a WireWidget).
 
     }
 

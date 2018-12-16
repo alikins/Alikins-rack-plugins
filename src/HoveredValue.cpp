@@ -18,7 +18,7 @@
 
 // #include "specificValueWidgets.hpp"
 
-struct ShowParamValue : Module
+struct HoveredValue : Module
 {
     enum ParamIds
     {
@@ -40,7 +40,7 @@ struct ShowParamValue : Module
     };
 
 
-    ShowParamValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    HoveredValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 
     void step() override;
 
@@ -48,7 +48,7 @@ struct ShowParamValue : Module
 
 };
 
-void ShowParamValue::step()
+void HoveredValue::step()
 {
     outputs[PARAM_VALUE_OUTPUT].value = param_value;
 }
@@ -64,10 +64,10 @@ enum AdjustKey
 //             just inherit from both?
 struct ParamFloatField : TextField
 {
-    ShowParamValue *module;
+    HoveredValue *module;
     float hovered_value;
 
-    ParamFloatField(ShowParamValue *module);
+    ParamFloatField(HoveredValue *module);
 
     void setValue(float value);
     void onChange(EventChange &e) override;
@@ -76,7 +76,7 @@ struct ParamFloatField : TextField
 
 };
 
-ParamFloatField::ParamFloatField(ShowParamValue *_module)
+ParamFloatField::ParamFloatField(HoveredValue *_module)
 {
     module = _module;
 }
@@ -95,16 +95,16 @@ void ParamFloatField::setValue(float value) {
 
 void ParamFloatField::onChange(EventChange &e) {
     // debug("ParamFloatField onChange  text=%s param=%f", text.c_str(),
-    //    module->params[ShowParamValue::VALUE1_PARAM].value);
+    //    module->params[HoveredValue::VALUE1_PARAM].value);
     std::string new_text = paramValueToText(hovered_value);
     setText(new_text);
 }
 
 
 
-struct ShowParamValueWidget : ModuleWidget
+struct HoveredValueWidget : ModuleWidget
 {
-    ShowParamValueWidget(ShowParamValue *module);
+    HoveredValueWidget(HoveredValue *module);
 
     void step() override;
     void onChange(EventChange &e) override;
@@ -119,9 +119,9 @@ struct ShowParamValueWidget : ModuleWidget
     TextField *widget_type_field;
 };
 
-ShowParamValueWidget::ShowParamValueWidget(ShowParamValue *module) : ModuleWidget(module)
+HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(module)
 {
-    setPanel(SVG::load(assetPlugin(plugin, "res/ShowParamValue.svg")));
+    setPanel(SVG::load(assetPlugin(plugin, "res/HoveredValue.svg")));
 
     // TODO: widget with these children?
     float y_baseline = 45.0f;
@@ -176,7 +176,7 @@ ShowParamValueWidget::ShowParamValueWidget(ShowParamValue *module) : ModuleWidge
         Vec(out_port_x, y_baseline),
         Port::OUTPUT,
         module,
-        ShowParamValue::PARAM_VALUE_OUTPUT);
+        HoveredValue::PARAM_VALUE_OUTPUT);
 
     outputs.push_back(value_out_port);
     value_out_port->box.pos = Vec(middle - value_out_port->box.size.x/2, y_baseline);
@@ -193,18 +193,18 @@ ShowParamValueWidget::ShowParamValueWidget(ShowParamValue *module) : ModuleWidge
     onChange(e);
 }
 
-void ShowParamValueWidget::step() {
+void HoveredValueWidget::step() {
     ModuleWidget::step();
     int status;
     char *realname;
 
 /*
-    if (prev_volts != module->params[ShowParamValue::VALUE1_PARAM].value ||
-        prev_input != module->params[ShowParamValue::VALUE1_INPUT].value) {
+    if (prev_volts != module->params[HoveredValue::VALUE1_PARAM].value ||
+        prev_input != module->params[HoveredValue::VALUE1_INPUT].value) {
             // debug("SpVWidget step - emitting EventChange / onChange prev_volts=%f param=%f",
-            //     prev_volts, module->params[ShowParamValue::VALUE1_PARAM].value);
-            prev_volts = module->params[ShowParamValue::VALUE1_PARAM].value;
-            prev_input = module->params[ShowParamValue::VALUE1_INPUT].value;
+            //     prev_volts, module->params[HoveredValue::VALUE1_PARAM].value);
+            prev_volts = module->params[HoveredValue::VALUE1_PARAM].value;
+            prev_input = module->params[HoveredValue::VALUE1_INPUT].value;
             EventChange e;
 		    onChange(e);
     }
@@ -266,10 +266,10 @@ void ShowParamValueWidget::step() {
 
 }
 
-void ShowParamValueWidget::onChange(EventChange &e) {
+void HoveredValueWidget::onChange(EventChange &e) {
     ModuleWidget::onChange(e);
     param_value_field->onChange(e);
 }
 
-Model *modelShowParamValue = Model::create<ShowParamValue, ShowParamValueWidget>(
+Model *modelHoveredValue = Model::create<HoveredValue, HoveredValueWidget>(
     "Alikins", "HoveredValue", "Show Value Of Hovered Widget", UTILITY_TAG);

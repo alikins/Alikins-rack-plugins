@@ -19,4 +19,4 @@ extern Model *modelColorPanel;
 extern Model *modelGateLength;
 extern Model *modelSpecificValue;
 extern Model *modelReference;
-extern Model *modelShowParamValue;
+extern Model *modelHoveredValue;

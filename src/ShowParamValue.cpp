@@ -116,6 +116,7 @@ struct ShowParamValueWidget : ModuleWidget
     TextField *min_field;
     TextField *max_field;
     TextField *default_field;
+    TextField *widget_type_field;
 };
 
 ShowParamValueWidget::ShowParamValueWidget(ShowParamValue *module) : ModuleWidget(module)
@@ -160,7 +161,13 @@ ShowParamValueWidget::ShowParamValueWidget(ShowParamValue *module) : ModuleWidge
 
     addChild(default_field);
 
-    // defaultValue
+    y_baseline = 198.0f;
+    widget_type_field = new TextField();
+    widget_type_field->box.pos = Vec(x_pos, y_baseline);
+    widget_type_field->box.size = min_field_size;
+
+    addChild(widget_type_field);
+
     float middle = box.size.x / 2.0f;
     float out_port_x = middle;
 
@@ -224,6 +231,7 @@ void ShowParamValueWidget::step() {
             min_field->setText(stringf("%#.4g", pwidget->minValue));
             max_field->setText(stringf("%#.4g", pwidget->maxValue));
             default_field->setText(stringf("%#.4g", pwidget->defaultValue));
+            widget_type_field->setText("Param");
         }
         Port *port = dynamic_cast<Port*>(gHoveredWidget);
         if (port) {
@@ -232,10 +240,12 @@ void ShowParamValueWidget::step() {
             if (port->type == port->INPUT) {
                 // debug("port input value: %f", port->module->inputs[port->portId].value);
                 param_value_field->setValue(port->module->inputs[port->portId].value);
+                widget_type_field->setText("Input");
             }
             if (port->type == port->OUTPUT) {
                 // debug("port output value: %f", port->module->outputs[port->portId].value);
                 param_value_field->setValue(port->module->outputs[port->portId].value);
+                widget_type_field->setText("Output");
             }
             // inputs/outputs dont have variable min/max, so just use the -10/+10 and
             // 0 for the default to get the point across.

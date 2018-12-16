@@ -48,17 +48,11 @@ struct ParamFloatField : TextField
     void setValue(float value);
     void onChange(EventChange &e) override;
 
-    std::string paramValueToText(float param_value);
-
 };
 
 ParamFloatField::ParamFloatField(HoveredValue *_module)
 {
     module = _module;
-}
-
-std::string ParamFloatField::paramValueToText(float param_value) {
-    return stringf("%#.4g", param_value);
 }
 
 void ParamFloatField::setValue(float value) {
@@ -69,7 +63,7 @@ void ParamFloatField::setValue(float value) {
 }
 
 void ParamFloatField::onChange(EventChange &e) {
-    std::string new_text = paramValueToText(hovered_value);
+    std::string new_text = stringf("%#.4g", hovered_value);
     setText(new_text);
 }
 

@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 5c3e80d, 2017-08-06"
-   sodipodi:docname="ShowParamValue.svg"
+   sodipodi:docname="HoveredValue.svg"
    style="enable-background:new">
   <sodipodi:namedview
      id="base"
@@ -93,7 +93,7 @@
        inkscape:locked="false" />
     <sodipodi:guide
        id="guide12605"
-       position="0,190.0"
+       position="-22.846342,148.50122"
        orientation="0,330.0"
        inkscape:locked="false" />
     <sodipodi:guide
@@ -262,7 +262,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -348,7 +348,7 @@
        width="93.058578"
        height="40.876293"
        x="-1.219738"
-       y="190.88017" />
+       y="188.88017" />
     <g
        aria-label="max"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
@@ -618,7 +618,8 @@
     <g
        aria-label="type"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
-       id="text2104">
+       id="text2104"
+       transform="translate(0,-2)">
       <path
          d="m 35.042498,224.96753 h -0.645833 v -1.04688 h 0.645833 v -1.13541 l 1.302083,-0.47917 v 1.61458 h 1.53125 v 1.04688 h -1.53125 v 2.44271 q 0,0.59896 0.1875,0.84896 0.1875,0.24479 0.65625,0.24479 0.46875,0 0.875,-0.25521 v 1.19792 q -0.453125,0.15625 -1.291666,0.15625 -0.833334,0 -1.28125,-0.46875 -0.447917,-0.47396 -0.447917,-1.34375 z"
          id="path2106"

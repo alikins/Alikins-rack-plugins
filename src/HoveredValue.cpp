@@ -1,11 +1,16 @@
 #include "alikins.hpp"
+#include <math.h>
 #include "ui.hpp"
+#include "window.hpp"
+#include "dsp/digital.hpp"
+
 
 struct HoveredValue : Module
 {
     enum ParamIds
     {
         HOVERED_PARAM_VALUE_PARAM,
+        HOVER_ENABLED_PARAM,
         NUM_PARAMS
     };
     enum InputIds
@@ -22,17 +27,22 @@ struct HoveredValue : Module
         NUM_LIGHTS
     };
 
+    enum HoverEnabled {OFF, WITH_SHIFT, ALWAYS};
 
     HoveredValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 
     void step() override;
 
     float param_value;
+    HoverEnabled enabled = WITH_SHIFT;
+
+    SchmittTrigger hoverArmedTrigger;
 
 };
 
 void HoveredValue::step()
 {
+    HoverEnabled enabled = static_cast<HoverEnabled>(roundf(params[HOVER_ENABLED_PARAM].value));
     outputs[PARAM_VALUE_OUTPUT].value = param_value;
 }
 
@@ -128,9 +138,14 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     addChild(widget_type_field);
 
     float middle = box.size.x / 2.0f;
-    float out_port_x = middle;
+    // float out_port_x = middle;
+    float out_port_x = 60.0f;
 
     y_baseline = box.size.y - 65.0f;
+
+    addParam(ParamWidget::create<CKSSThree>(Vec(19, box.size.y - 120.0f), module,
+                                       HoveredValue::HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f));
+
     Port *value_out_port = Port::create<PJ301MPort>(
         Vec(out_port_x, y_baseline),
         Port::OUTPUT,
@@ -155,7 +170,17 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 void HoveredValueWidget::step() {
     ModuleWidget::step();
 
+    bool shift_pressed = windowIsShiftPressed();
+
     if (!gHoveredWidget) {
+        return;
+    }
+
+    if (module->params[HoveredValue::HOVER_ENABLED_PARAM].value == HoveredValue::OFF) {
+        return;
+    }
+
+    if (module->params[HoveredValue::HOVER_ENABLED_PARAM].value == HoveredValue::WITH_SHIFT &&!shift_pressed) {
         return;
     }
 

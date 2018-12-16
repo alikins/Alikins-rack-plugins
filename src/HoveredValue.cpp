@@ -1,20 +1,5 @@
-#include <stdio.h>
-#include <string>
-#include <vector>
-#include <cstddef>
-#include <array>
-#include <map>
-#include <math.h>
-#include <float.h>
-#include <sys/time.h>
-
-#include "window.hpp"
-#include <GLFW/glfw3.h>
-
 #include "alikins.hpp"
 #include "ui.hpp"
-
-// #include "specificValueWidgets.hpp"
 
 struct HoveredValue : Module
 {
@@ -50,13 +35,6 @@ void HoveredValue::step()
 {
     outputs[PARAM_VALUE_OUTPUT].value = param_value;
 }
-
-enum AdjustKey
-{
-    UP,
-    DOWN,
-    INITIAL
-};
 
 // TODO/FIXME: This is more or less adhoc TextField mixed with QuantityWidget
 //             just inherit from both?

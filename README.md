@@ -7,7 +7,7 @@ Plugins for use with VCV Rack virtual module synthesizer (https://github.com/VCV
 
 ## Modules
 
-### SpecificValue
+### Specific Value
 
 ![specific_value](./screenshots/specific_value.png)
 
@@ -104,8 +104,49 @@ is being used.
 | Note            | 1 step   | 1 octave    | 1 cent         |
 | Cents           | 0.1 cent | 1.0 cent    | .01 cent       |
 
+### Hovered Value
 
+![hovered_value](./screenshots/HoveredValue.png)
 
+#### What
+
+Hovered Value detects the widget or port that your cursor
+is hovered over and displays and outputs that value.
+
+#### Why
+
+Use for figuring out what the range or value of an on screen
+widget. 
+
+If an LFO has multiple outputs, hover the cursor over each one
+to sample the output. 
+
+Use in combo with 'Specific Value' to quickly determine what
+note each of the outputs or controls is set to.
+
+##### Virtual circuit bending
+
+Simulate virtual circuit bending by hovering over any widget on
+screen and using it's CV output. Hook up the output to your clock
+bpm and wiggle the cursor across the screen.
+
+Think of it as the Rack equilivent of using a Radio Shack Telephone
+Pickup to listen to a Sony Discman.  
+
+Tap into the machine and read it's mind. Investigate which
+modules have real resonance.
+
+Worship the glitch.
+
+#### Cautions To Be Ignored
+
+The 'out' output is currently not clamped or limitied and may produce
+values outside of the -10/+10 V range.
+
+The values of the hovered widget are sampled at the gui display rate,
+not at the audio or sound engine rate. This is typically ~60hz, so
+audio signals that are tapped will be reproduced with 'character'.
+  
 ### IdleSwitch
 
 ![idle_switch](./screenshots/idle_switch.png)

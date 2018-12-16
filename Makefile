@@ -1,5 +1,5 @@
 SLUG = Alikins
-VERSION = 0.6.3
+VERSION = 0.6.5
 
 RACK_DIR ?= ../..
 

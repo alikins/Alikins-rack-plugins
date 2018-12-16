@@ -85,10 +85,9 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 {
     setPanel(SVG::load(assetPlugin(plugin, "res/HoveredValue.svg")));
 
-    // TODO: widget with these children?
     float y_baseline = 45.0f;
 
-    Vec param_value_field_size = Vec(70.0f, 22.0f);
+    Vec text_field_size = Vec(70.0f, 22.0f);
 
     float x_pos = 10.0f;
 
@@ -96,37 +95,35 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 
     param_value_field = new ParamFloatField(module);
     param_value_field->box.pos = Vec(x_pos, y_baseline);
-    param_value_field->box.size = param_value_field_size;
+    param_value_field->box.size = text_field_size;
 
     addChild(param_value_field);
-
-    Vec min_field_size = Vec(70.0f, 22.0f);
 
     y_baseline = 78.0f;
     min_field = new TextField();
     min_field->box.pos = Vec(x_pos, y_baseline);
-    min_field->box.size = min_field_size;
+    min_field->box.size = text_field_size;
 
     addChild(min_field);
 
     y_baseline = 118.0f;
     max_field = new TextField();
     max_field->box.pos = Vec(x_pos, y_baseline);
-    max_field->box.size = min_field_size;
+    max_field->box.size = text_field_size;
 
     addChild(max_field);
 
     y_baseline = 158.0f;
     default_field = new TextField();
     default_field->box.pos = Vec(x_pos, y_baseline);
-    default_field->box.size = min_field_size;
+    default_field->box.size = text_field_size;
 
     addChild(default_field);
 
     y_baseline = 198.0f;
     widget_type_field = new TextField();
     widget_type_field->box.pos = Vec(x_pos, y_baseline);
-    widget_type_field->box.size = min_field_size;
+    widget_type_field->box.size = text_field_size;
 
     addChild(widget_type_field);
 

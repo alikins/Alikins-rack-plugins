@@ -155,42 +155,45 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 void HoveredValueWidget::step() {
     ModuleWidget::step();
 
-    if (gHoveredWidget) {
-
-        // TODO/FIXME: I assume there is a better way to check type?
-        ParamWidget *pwidget = dynamic_cast<ParamWidget*>(gHoveredWidget);
-        if (pwidget) {
-            param_value_field->setValue(pwidget->value);
-            min_field->setText(stringf("%#.4g", pwidget->minValue));
-            max_field->setText(stringf("%#.4g", pwidget->maxValue));
-            default_field->setText(stringf("%#.4g", pwidget->defaultValue));
-            widget_type_field->setText("Param");
-        }
-
-        Port *port = dynamic_cast<Port*>(gHoveredWidget);
-        if (port) {
-            if (port->type == port->INPUT) {
-                param_value_field->setValue(port->module->inputs[port->portId].value);
-                widget_type_field->setText("Input");
-            }
-            if (port->type == port->OUTPUT) {
-                param_value_field->setValue(port->module->outputs[port->portId].value);
-                widget_type_field->setText("Output");
-            }
-
-            // inputs/outputs dont have variable min/max, so just use the -10/+10 and
-            // 0 for the default to get the point across.
-            min_field->setText(stringf("%#.4g", -10.0f));
-            max_field->setText(stringf("%#.4g", 10.0f));
-            default_field->setText(stringf("%#.4g", 0.0f));
-
-        }
-
-        // TODO: if a WireWidget, can we figure out it's in/out and current value? That would be cool,
-        //       though it doesn't look like WireWidgets are ever hovered (or gHoveredWidget never // //       seems to be a WireWidget).
-
+    if (!gHoveredWidget) {
+        return;
     }
 
+    // TODO/FIXME: I assume there is a better way to check type?
+    ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
+    if (pwidget)
+    {
+        param_value_field->setValue(pwidget->value);
+        min_field->setText(stringf("%#.4g", pwidget->minValue));
+        max_field->setText(stringf("%#.4g", pwidget->maxValue));
+        default_field->setText(stringf("%#.4g", pwidget->defaultValue));
+        widget_type_field->setText("Param");
+    }
+
+    Port *port = dynamic_cast<Port *>(gHoveredWidget);
+    if (port)
+    {
+        if (port->type == port->INPUT)
+        {
+            param_value_field->setValue(port->module->inputs[port->portId].value);
+            widget_type_field->setText("Input");
+        }
+        if (port->type == port->OUTPUT)
+        {
+            param_value_field->setValue(port->module->outputs[port->portId].value);
+            widget_type_field->setText("Output");
+        }
+
+        // inputs/outputs dont have variable min/max, so just use the -10/+10 and
+        // 0 for the default to get the point across.
+        min_field->setText(stringf("%#.4g", -10.0f));
+        max_field->setText(stringf("%#.4g", 10.0f));
+        default_field->setText(stringf("%#.4g", 0.0f));
+    }
+
+    // TODO: if a WireWidget, can we figure out it's in/out and current value? That would be cool,
+    //       though it doesn't look like WireWidgets are ever hovered (or gHoveredWidget never
+    //       seems to be a WireWidget).
 }
 
 void HoveredValueWidget::onChange(EventChange &e) {

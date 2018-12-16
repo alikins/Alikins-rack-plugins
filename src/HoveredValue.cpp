@@ -202,4 +202,4 @@ void HoveredValueWidget::onChange(EventChange &e) {
 }
 
 Model *modelHoveredValue = Model::create<HoveredValue, HoveredValueWidget>(
-    "Alikins", "HoveredValue", "Show Value Of Hovered Widget", UTILITY_TAG);
+    "Alikins", "HoveredValue", "Hovered Value - get value under cursor", UTILITY_TAG, CONTROLLER_TAG);

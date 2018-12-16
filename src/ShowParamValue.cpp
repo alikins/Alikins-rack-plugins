@@ -60,10 +60,12 @@ enum AdjustKey
     INITIAL
 };
 
+// TODO/FIXME: This is more or less adhoc TextField mixed with QuantityWidget
+//             just inherit from both?
 struct ParamFloatField : TextField
 {
     ShowParamValue *module;
-    float hovered_param_value;
+    float hovered_value;
 
     ParamFloatField(ShowParamValue *module);
 
@@ -84,7 +86,7 @@ std::string ParamFloatField::paramValueToText(float param_value){
 }
 
 void ParamFloatField::setValue(float value) {
-	this->hovered_param_value = value;
+	this->hovered_value = value;
     this->module->param_value = value;
 	EventChange e;
 	onChange(e);
@@ -94,7 +96,7 @@ void ParamFloatField::setValue(float value) {
 void ParamFloatField::onChange(EventChange &e) {
     // debug("ParamFloatField onChange  text=%s param=%f", text.c_str(),
     //    module->params[ShowParamValue::VALUE1_PARAM].value);
-    std::string new_text = paramValueToText(hovered_param_value);
+    std::string new_text = paramValueToText(hovered_value);
     setText(new_text);
 }
 
@@ -160,9 +162,9 @@ ShowParamValueWidget::ShowParamValueWidget(ShowParamValue *module) : ModuleWidge
 
     // defaultValue
     float middle = box.size.x / 2.0f;
-    float out_port_x = middle + 24.0f;
+    float out_port_x = middle;
 
-    y_baseline = 275.0f;
+    y_baseline = box.size.y - 65.0f;
     Port *value_out_port = Port::create<PJ301MPort>(
         Vec(out_port_x, y_baseline),
         Port::OUTPUT,
@@ -170,9 +172,14 @@ ShowParamValueWidget::ShowParamValueWidget(ShowParamValue *module) : ModuleWidge
         ShowParamValue::PARAM_VALUE_OUTPUT);
 
     outputs.push_back(value_out_port);
-    value_out_port->box.pos = Vec(box.size.x - value_out_port->box.size.x - 2.0f, y_baseline);
+    value_out_port->box.pos = Vec(middle - value_out_port->box.size.x/2, y_baseline);
 
     addChild(value_out_port);
+
+    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
+    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 365.0f)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
 
     // fire off an event to refresh all the widgets
     EventChange e;
@@ -198,9 +205,9 @@ void ShowParamValueWidget::step() {
 
     if (gHoveredWidget) {
 
-        realname = abi::__cxa_demangle(typeid(*gHoveredWidget).name(), 0, 0, &status);
-        debug("gHoveredWidget type %s", realname);
-        free(realname);
+        //realname = abi::__cxa_demangle(typeid(*gHoveredWidget).name(), 0, 0, &status);
+        //debug("gHoveredWidget type %s", realname);
+        //free(realname);
 
 
         // TODO: if widget is an input/output, read it's value?
@@ -238,6 +245,10 @@ void ShowParamValueWidget::step() {
             // port->module->inputs[0].
         }
         // TODO: if a WireWidget, can we figure out it's in/out and current value? That would be cool.
+        WireWidget *wire_widget = dynamic_cast<WireWidget*>(gHoveredWidget);
+        if (wire_widget) {
+
+        }
         //Widget *p = dynamic_cast<Widget*>(gHoveredWidget);
         // ModuleWidget *m = getAncestorOfType<ModuleWidget>();
 
@@ -251,4 +262,4 @@ void ShowParamValueWidget::onChange(EventChange &e) {
 }
 
 Model *modelShowParamValue = Model::create<ShowParamValue, ShowParamValueWidget>(
-    "Alikins", "ShowParamValue", "Show Param", UTILITY_TAG);
+    "Alikins", "HoveredValue", "Show Value Of Hovered Widget", UTILITY_TAG);

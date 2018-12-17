@@ -11,7 +11,7 @@ struct InjectValue : Module
 {
     enum ParamIds
     {
-        HOVER_ENABLED_PARAM,
+        INJECT_ENABLED_PARAM,
         NUM_PARAMS
     };
     enum InputIds
@@ -120,7 +120,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
     y_baseline = box.size.y - 65.0f;
 
     addParam(ParamWidget::create<CKSSThree>(Vec(19, box.size.y - 120.0f), module,
-                                       InjectValue::HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f));
+                                       InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f));
 
     Port *value_in_port = Port::create<PJ301MPort>(
         Vec(20, y_baseline),
@@ -163,11 +163,11 @@ void InjectValueWidget::step() {
         return;
     }
 
-    if (module->params[InjectValue::HOVER_ENABLED_PARAM].value == InjectValue::OFF) {
+    if (module->params[InjectValue::INJECT_ENABLED_PARAM].value == InjectValue::OFF) {
         return;
     }
 
-    if (module->params[InjectValue::HOVER_ENABLED_PARAM].value == InjectValue::WITH_SHIFT &&!shift_pressed) {
+    if (module->params[InjectValue::INJECT_ENABLED_PARAM].value == InjectValue::WITH_SHIFT &&!shift_pressed) {
         return;
     }
 
@@ -175,20 +175,45 @@ void InjectValueWidget::step() {
     ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
     if (pwidget)
     {
-        engineSetParam(pwidget->module, pwidget->paramId, module->inputs[InjectValue::VALUE_INPUT].value);
+        // rescale the input CV (-10/+10V) to whatever the range of the param widget is
+        float scaled_value = rescale(module->inputs[InjectValue::VALUE_INPUT].value, -10.0f, 10.0f, pwidget->minValue, pwidget->maxValue);
+
+        debug("input: %f scaled_value: %f", module->inputs[InjectValue::VALUE_INPUT].value, scaled_value);
+
+        pwidget->setValue(scaled_value);
+        /*
+         if (pwidget->module){
+            engineSetParam(pwidget->module, pwidget->paramId, scaled_value);
+        }
+        */
+
         // pwidget->setValue();
         //EventChange e;
         // onChange(e);
 
         //param_value_field->setValue(pwidget->value);
-        param_value_field->setValue(module->inputs[InjectValue::VALUE_INPUT].value);
+        // Show the value that will be injected
+        // TODO: show the original input value and scaled output?
+        param_value_field->setValue(scaled_value);
 
         min_field->setText(stringf("%#.4g", pwidget->minValue));
         max_field->setText(stringf("%#.4g", pwidget->maxValue));
         default_field->setText(stringf("%#.4g", pwidget->defaultValue));
         widget_type_field->setText("Param");
+
+        // TODO:
     }
 
+    // TODO: assuming engineStep()/wireStep() wants to handle updating the input.value
+    //       not sure there is (or should be) a reasonable way to inject into an input.
+    //       Suppose could just temporarily wire it in.
+
+    // TODO: if we check/assert there is no wire connected to an input, would it be reasonable
+    //       to set it's value directly at that point? Though I guess that is a race condition
+    //       between between gui/engine and a wire could be connected between the
+    //       activecheck in ui step() and when gui would change its value directly.
+    //
+    /*
     Port *port = dynamic_cast<Port *>(gHoveredWidget);
     if (port)
     {
@@ -211,6 +236,7 @@ void InjectValueWidget::step() {
         max_field->setText(stringf("%#.4g", 10.0f));
         default_field->setText(stringf("%#.4g", 0.0f));
     }
+    */
 
     // TODO: if a WireWidget, can we figure out it's in/out and current value? That would be cool,
     //       though it doesn't look like WireWidgets are ever hovered (or gHoveredWidget never

@@ -20,3 +20,4 @@ extern Model *modelGateLength;
 extern Model *modelSpecificValue;
 extern Model *modelReference;
 extern Model *modelHoveredValue;
+extern Model *modelInjectValue;

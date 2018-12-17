@@ -60,6 +60,10 @@ struct InjectValueWidget : ModuleWidget
     void step() override;
     void onChange(EventChange &e) override;
 
+    // TODO: enum/params/ui for input range
+    float min_input = -5.0f;
+    float max_input = 5.0f;
+
     ParamFloatField *param_value_field;
     TextField *min_field;
     TextField *max_field;
@@ -176,26 +180,16 @@ void InjectValueWidget::step() {
     if (pwidget)
     {
         // rescale the input CV (-10/+10V) to whatever the range of the param widget is
-        float scaled_value = rescale(module->inputs[InjectValue::VALUE_INPUT].value, -10.0f, 10.0f, pwidget->minValue, pwidget->maxValue);
+        float scaled_value = rescale(module->inputs[InjectValue::VALUE_INPUT].value, min_input, max_input, pwidget->minValue, pwidget->maxValue);
 
         debug("input: %f scaled_value: %f", module->inputs[InjectValue::VALUE_INPUT].value, scaled_value);
 
-
-        bool dummy = false;
-        if (pwidget->module) {
-            dummy = false;
-        }
-
-
-        // pwidget->setValue(scaled_value);
-
-        // ((Widget *) pwidget)->onChange(e);
-
+        // ParamWidgets are-a QuantityWidget, so change it's value
         pwidget->setValue(scaled_value);
+
         // force a step of the param widget to get it to 'animate'
         pwidget->step();
 
-        //param_value_field->setValue(pwidget->value);
         // Show the value that will be injected
         // TODO: show the original input value and scaled output?
         param_value_field->setValue(scaled_value);

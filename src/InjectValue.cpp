@@ -155,7 +155,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 }
 
 void InjectValueWidget::step() {
-    ModuleWidget::step();
+
 
     bool shift_pressed = windowIsShiftPressed();
 
@@ -180,16 +180,20 @@ void InjectValueWidget::step() {
 
         debug("input: %f scaled_value: %f", module->inputs[InjectValue::VALUE_INPUT].value, scaled_value);
 
-        pwidget->setValue(scaled_value);
-        /*
-         if (pwidget->module){
-            engineSetParam(pwidget->module, pwidget->paramId, scaled_value);
-        }
-        */
 
-        // pwidget->setValue();
-        //EventChange e;
-        // onChange(e);
+        bool dummy = false;
+        if (pwidget->module) {
+            dummy = false;
+        }
+
+
+        // pwidget->setValue(scaled_value);
+
+        // ((Widget *) pwidget)->onChange(e);
+
+        pwidget->setValue(scaled_value);
+        // force a step of the param widget to get it to 'animate'
+        pwidget->step();
 
         //param_value_field->setValue(pwidget->value);
         // Show the value that will be injected
@@ -201,8 +205,11 @@ void InjectValueWidget::step() {
         default_field->setText(stringf("%#.4g", pwidget->defaultValue));
         widget_type_field->setText("Param");
 
+        //EventChange e;
+        //onChange(e);
         // TODO:
     }
+    ModuleWidget::step();
 
     // TODO: assuming engineStep()/wireStep() wants to handle updating the input.value
     //       not sure there is (or should be) a reasonable way to inject into an input.

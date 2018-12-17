@@ -5,11 +5,10 @@
 #include "dsp/digital.hpp"
 
 
-struct HoveredValue : Module
+struct InjectValue : Module
 {
     enum ParamIds
     {
-        HOVERED_PARAM_VALUE_PARAM,
         HOVER_ENABLED_PARAM,
         NUM_PARAMS
     };
@@ -20,7 +19,7 @@ struct HoveredValue : Module
     };
     enum OutputIds
     {
-        PARAM_VALUE_OUTPUT,
+        DEBUG1_OUTPUT,
         NUM_OUTPUTS
     };
     enum LightIds
@@ -30,7 +29,7 @@ struct HoveredValue : Module
 
     enum HoverEnabled {OFF, WITH_SHIFT, ALWAYS};
 
-    HoveredValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    InjectValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 
     void step() override;
 
@@ -39,36 +38,33 @@ struct HoveredValue : Module
 
     HoverEnabled enabled = WITH_SHIFT;
 
-    SchmittTrigger hoverArmedTrigger;
+    // SchmittTrigger hoverArmedTrigger;
 
 };
 
-void HoveredValue::step()
+void InjectValue::step()
 {
     if (inputs[VALUE_INPUT].active) {
         input_param_value = inputs[VALUE_INPUT].value;
         param_value = input_param_value;
     }
-    // HoverEnabled enabled = static_cast<HoverEnabled>(roundf(params[HOVER_ENABLED_PARAM].value));
-    outputs[PARAM_VALUE_OUTPUT].value = param_value;
-    // input_param_value = inputs[PARAM_VALUE_INPUT].value;
 }
 
 // TODO/FIXME: This is more or less adhoc TextField mixed with QuantityWidget
 //             just inherit from both?
 struct ParamFloatField : TextField
 {
-    HoveredValue *module;
+    InjectValue *module;
     float hovered_value;
 
-    ParamFloatField(HoveredValue *module);
+    ParamFloatField(InjectValue *module);
 
     void setValue(float value);
     void onChange(EventChange &e) override;
 
 };
 
-ParamFloatField::ParamFloatField(HoveredValue *_module)
+ParamFloatField::ParamFloatField(InjectValue *_module)
 {
     module = _module;
 }
@@ -85,9 +81,9 @@ void ParamFloatField::onChange(EventChange &e) {
     setText(new_text);
 }
 
-struct HoveredValueWidget : ModuleWidget
+struct InjectValueWidget : ModuleWidget
 {
-    HoveredValueWidget(HoveredValue *module);
+    InjectValueWidget(InjectValue *module);
 
     void step() override;
     void onChange(EventChange &e) override;
@@ -99,9 +95,9 @@ struct HoveredValueWidget : ModuleWidget
     TextField *widget_type_field;
 };
 
-HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(module)
+InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 {
-    setPanel(SVG::load(assetPlugin(plugin, "res/HoveredValue.svg")));
+    setPanel(SVG::load(assetPlugin(plugin, "res/InjectValue.svg")));
 
     float y_baseline = 45.0f;
 
@@ -152,23 +148,24 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     y_baseline = box.size.y - 65.0f;
 
     addParam(ParamWidget::create<CKSSThree>(Vec(19, box.size.y - 120.0f), module,
-                                       HoveredValue::HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f));
+                                       InjectValue::HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f));
 
     Port *value_in_port = Port::create<PJ301MPort>(
         Vec(20, y_baseline),
         Port::INPUT,
         module,
-        HoveredValue::VALUE_INPUT);
+        InjectValue::VALUE_INPUT);
 
     inputs.push_back(value_in_port);
     value_in_port->box.pos = Vec(5, y_baseline);
     addChild(value_in_port);
 
+
     Port *value_out_port = Port::create<PJ301MPort>(
         Vec(out_port_x, y_baseline),
         Port::OUTPUT,
         module,
-        HoveredValue::PARAM_VALUE_OUTPUT);
+        InjectValue::DEBUG1_OUTPUT);
 
     outputs.push_back(value_out_port);
     value_out_port->box.pos = Vec(middle - value_out_port->box.size.x/2, y_baseline);
@@ -185,7 +182,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     onChange(e);
 }
 
-void HoveredValueWidget::step() {
+void InjectValueWidget::step() {
     ModuleWidget::step();
 
     bool shift_pressed = windowIsShiftPressed();
@@ -194,11 +191,11 @@ void HoveredValueWidget::step() {
         return;
     }
 
-    if (module->params[HoveredValue::HOVER_ENABLED_PARAM].value == HoveredValue::OFF) {
+    if (module->params[InjectValue::HOVER_ENABLED_PARAM].value == InjectValue::OFF) {
         return;
     }
 
-    if (module->params[HoveredValue::HOVER_ENABLED_PARAM].value == HoveredValue::WITH_SHIFT &&!shift_pressed) {
+    if (module->params[InjectValue::HOVER_ENABLED_PARAM].value == InjectValue::WITH_SHIFT &&!shift_pressed) {
         return;
     }
 
@@ -206,12 +203,13 @@ void HoveredValueWidget::step() {
     ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
     if (pwidget)
     {
-        pwidget->setValue(module->inputs[HoveredValue::VALUE_INPUT].value);
+        engineSetParam(pwidget->module, pwidget->paramId, module->inputs[InjectValue::VALUE_INPUT].value);
+        // pwidget->setValue();
         //EventChange e;
         // onChange(e);
 
         //param_value_field->setValue(pwidget->value);
-        param_value_field->setValue(module->inputs[HoveredValue::VALUE_INPUT].value);
+        param_value_field->setValue(module->inputs[InjectValue::VALUE_INPUT].value);
 
         min_field->setText(stringf("%#.4g", pwidget->minValue));
         max_field->setText(stringf("%#.4g", pwidget->maxValue));
@@ -222,7 +220,7 @@ void HoveredValueWidget::step() {
     Port *port = dynamic_cast<Port *>(gHoveredWidget);
     if (port)
     {
-        // port->module->inputs[port->portId].value = module->inputs[HoveredValue::VALUE_INPUT].value;
+        // port->module->inputs[port->portId].value = module->inputs[InjectValue::VALUE_INPUT].value;
 
         if (port->type == port->INPUT)
         {
@@ -247,10 +245,10 @@ void HoveredValueWidget::step() {
     //       seems to be a WireWidget).
 }
 
-void HoveredValueWidget::onChange(EventChange &e) {
+void InjectValueWidget::onChange(EventChange &e) {
     ModuleWidget::onChange(e);
     param_value_field->onChange(e);
 }
 
-Model *modelHoveredValue = Model::create<HoveredValue, HoveredValueWidget>(
-    "Alikins", "HoveredValue", "Hovered Value - get value under cursor", UTILITY_TAG, CONTROLLER_TAG);
+Model *modelInjectValue = Model::create<InjectValue, InjectValueWidget>(
+    "Alikins", "InjectValue", "Inject Value - inject value into param under cursor", UTILITY_TAG, CONTROLLER_TAG);

@@ -40,8 +40,6 @@ struct InjectValue : Module
 
     HoverEnabled enabled = WITH_SHIFT;
 
-    // SchmittTrigger hoverArmedTrigger;
-
 };
 
 void InjectValue::step()
@@ -182,7 +180,7 @@ void InjectValueWidget::step() {
         // rescale the input CV (-10/+10V) to whatever the range of the param widget is
         float scaled_value = rescale(module->inputs[InjectValue::VALUE_INPUT].value, min_input, max_input, pwidget->minValue, pwidget->maxValue);
 
-        debug("input: %f scaled_value: %f", module->inputs[InjectValue::VALUE_INPUT].value, scaled_value);
+        // debug("input: %f scaled_value: %f", module->inputs[InjectValue::VALUE_INPUT].value, scaled_value);
 
         // ParamWidgets are-a QuantityWidget, so change it's value
         pwidget->setValue(scaled_value);
@@ -205,43 +203,6 @@ void InjectValueWidget::step() {
     }
     ModuleWidget::step();
 
-    // TODO: assuming engineStep()/wireStep() wants to handle updating the input.value
-    //       not sure there is (or should be) a reasonable way to inject into an input.
-    //       Suppose could just temporarily wire it in.
-
-    // TODO: if we check/assert there is no wire connected to an input, would it be reasonable
-    //       to set it's value directly at that point? Though I guess that is a race condition
-    //       between between gui/engine and a wire could be connected between the
-    //       activecheck in ui step() and when gui would change its value directly.
-    //
-    /*
-    Port *port = dynamic_cast<Port *>(gHoveredWidget);
-    if (port)
-    {
-        // port->module->inputs[port->portId].value = module->inputs[InjectValue::VALUE_INPUT].value;
-
-        if (port->type == port->INPUT)
-        {
-            param_value_field->setValue(port->module->inputs[port->portId].value);
-            widget_type_field->setText("Input");
-        }
-        if (port->type == port->OUTPUT)
-        {
-            param_value_field->setValue(port->module->outputs[port->portId].value);
-            widget_type_field->setText("Output");
-        }
-
-        // inputs/outputs dont have variable min/max, so just use the -10/+10 and
-        // 0 for the default to get the point across.
-        min_field->setText(stringf("%#.4g", -10.0f));
-        max_field->setText(stringf("%#.4g", 10.0f));
-        default_field->setText(stringf("%#.4g", 0.0f));
-    }
-    */
-
-    // TODO: if a WireWidget, can we figure out it's in/out and current value? That would be cool,
-    //       though it doesn't look like WireWidgets are ever hovered (or gHoveredWidget never
-    //       seems to be a WireWidget).
 }
 
 void InjectValueWidget::onChange(EventChange &e) {

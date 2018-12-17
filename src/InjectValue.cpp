@@ -4,6 +4,8 @@
 #include "window.hpp"
 #include "dsp/digital.hpp"
 
+#include "ParamFloatField.hpp"
+
 
 struct InjectValue : Module
 {
@@ -50,36 +52,6 @@ void InjectValue::step()
     }
 }
 
-// TODO/FIXME: This is more or less adhoc TextField mixed with QuantityWidget
-//             just inherit from both?
-struct ParamFloatField : TextField
-{
-    InjectValue *module;
-    float hovered_value;
-
-    ParamFloatField(InjectValue *module);
-
-    void setValue(float value);
-    void onChange(EventChange &e) override;
-
-};
-
-ParamFloatField::ParamFloatField(InjectValue *_module)
-{
-    module = _module;
-}
-
-void ParamFloatField::setValue(float value) {
-    this->hovered_value = value;
-    this->module->param_value = value;
-    EventChange e;
-    onChange(e);
-}
-
-void ParamFloatField::onChange(EventChange &e) {
-    std::string new_text = stringf("%#.4g", hovered_value);
-    setText(new_text);
-}
 
 struct InjectValueWidget : ModuleWidget
 {

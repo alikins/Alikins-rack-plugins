@@ -1,4 +1,6 @@
 #include "alikins.hpp"
+#include "ParamFloatField.hpp"
+
 #include <math.h>
 #include "ui.hpp"
 #include "window.hpp"
@@ -33,7 +35,7 @@ struct HoveredValue : Module
 
     void step() override;
 
-    float param_value;
+    // float param_value;
     HoverEnabled enabled = WITH_SHIFT;
 
     SchmittTrigger hoverArmedTrigger;
@@ -42,40 +44,12 @@ struct HoveredValue : Module
 
 void HoveredValue::step()
 {
-    HoverEnabled enabled = static_cast<HoverEnabled>(roundf(params[HOVER_ENABLED_PARAM].value));
-    outputs[PARAM_VALUE_OUTPUT].value = param_value;
+    // HoverEnabled enabled = static_cast<HoverEnabled>(roundf(params[HOVER_ENABLED_PARAM].value));
+    // outputs[PARAM_VALUE_OUTPUT].value = param_value;
+    outputs[PARAM_VALUE_OUTPUT].value = params[HOVERED_PARAM_VALUE_PARAM].value;
+
 }
 
-// TODO/FIXME: This is more or less adhoc TextField mixed with QuantityWidget
-//             just inherit from both?
-struct ParamFloatField : TextField
-{
-    HoveredValue *module;
-    float hovered_value;
-
-    ParamFloatField(HoveredValue *module);
-
-    void setValue(float value);
-    void onChange(EventChange &e) override;
-
-};
-
-ParamFloatField::ParamFloatField(HoveredValue *_module)
-{
-    module = _module;
-}
-
-void ParamFloatField::setValue(float value) {
-    this->hovered_value = value;
-    this->module->param_value = value;
-    EventChange e;
-    onChange(e);
-}
-
-void ParamFloatField::onChange(EventChange &e) {
-    std::string new_text = stringf("%#.4g", hovered_value);
-    setText(new_text);
-}
 
 struct HoveredValueWidget : ModuleWidget
 {
@@ -189,6 +163,11 @@ void HoveredValueWidget::step() {
     if (pwidget)
     {
         param_value_field->setValue(pwidget->value);
+        // rescale(float x, float a, float b, float yMin, float yMax)
+        float scaled_value = rescale(pwidget->value, pwidget->minValue, pwidget->maxValue, -10.0f, 10.0f);
+        debug("pwidget->value: %f scaled_value: %f", pwidget->value, scaled_value);
+        engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, pwidget->value);
+
         min_field->setText(stringf("%#.4g", pwidget->minValue));
         max_field->setText(stringf("%#.4g", pwidget->maxValue));
         default_field->setText(stringf("%#.4g", pwidget->defaultValue));

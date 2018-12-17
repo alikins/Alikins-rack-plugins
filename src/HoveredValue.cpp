@@ -164,6 +164,8 @@ void HoveredValueWidget::step() {
     {
         param_value_field->setValue(pwidget->value);
         // rescale(float x, float a, float b, float yMin, float yMax)
+
+        // TODO: option for selecting the output range? (uni/bi/original)
         float scaled_value = rescale(pwidget->value, pwidget->minValue, pwidget->maxValue, -10.0f, 10.0f);
         debug("pwidget->value: %f scaled_value: %f", pwidget->value, scaled_value);
         engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, pwidget->value);
@@ -172,6 +174,11 @@ void HoveredValueWidget::step() {
         max_field->setText(stringf("%#.4g", pwidget->maxValue));
         default_field->setText(stringf("%#.4g", pwidget->defaultValue));
         widget_type_field->setText("Param");
+
+        // TODO: if we use type name detection stuff (cxxabi/typeinfo/etc) we could possibly
+        //       also show the name of the hovered widget as a hint on mystery meat params
+        // TODO: anyway to get the orig literal name of an enum value (ie, LFO_VC_OUTPUT etc)
+        //       at runtime? might also be hint
     }
 
     Port *port = dynamic_cast<Port *>(gHoveredWidget);

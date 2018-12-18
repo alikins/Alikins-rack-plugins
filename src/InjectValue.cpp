@@ -144,34 +144,34 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 	some_param->setDefaultValue(defaultValue);
     */
 
-    enableInjectSwitch = ParamWidget::create<CKSSThree>(Vec(10, box.size.y - 120.0f), module,
+    enableInjectSwitch = ParamWidget::create<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
         InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(enableInjectSwitch);
 
-    inputVoltageSwitch = ParamWidget::create<CKSSThree>(Vec(60, box.size.y - 120.0f ), module,
+    inputVoltageSwitch = ParamWidget::create<CKSSThree>(Vec(5, box.size.y - 120.0f ), module,
         InjectValue::INPUT_VOLTAGE_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(inputVoltageSwitch);
 
     Port *value_in_port = Port::create<PJ301MPort>(
-        Vec(20, y_baseline),
+        Vec(60.0f, box.size.y - 122.0f),
         Port::INPUT,
         module,
         InjectValue::VALUE_INPUT);
 
     inputs.push_back(value_in_port);
-    value_in_port->box.pos = Vec(5, y_baseline);
+    //value_in_port->box.pos = Vec(56.0f, box.size.y - 133.0f);
     addChild(value_in_port);
 
     Port *value_out_port = Port::create<PJ301MPort>(
-        Vec(out_port_x, y_baseline),
+        Vec(60.0f, box.size.y - 67.0f),
         Port::OUTPUT,
         module,
         InjectValue::DEBUG1_OUTPUT);
 
     outputs.push_back(value_out_port);
-    value_out_port->box.pos = Vec(box.size.x - value_out_port->box.size.x, y_baseline);
+    // value_out_port->box.pos = Vec(box.size.x - value_out_port->box.size.x, y_baseline);
 
     addChild(value_out_port);
 

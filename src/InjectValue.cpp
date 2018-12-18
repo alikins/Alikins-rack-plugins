@@ -12,6 +12,7 @@ struct InjectValue : Module
     enum ParamIds
     {
         INJECT_ENABLED_PARAM,
+        INPUT_VOLTAGE_RANGE_PARAM,
         NUM_PARAMS
     };
     enum InputIds
@@ -99,6 +100,7 @@ struct InjectValueWidget : ModuleWidget
     float max_input = 5.0f;
 
     ParamWidget *enableInjectSwitch;
+    ParamWidget *inputVoltageSwitch;
 
     ParamFloatField *param_value_field;
     TextField *min_field;
@@ -167,13 +169,18 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 	some_param->setDefaultValue(defaultValue);
     */
 
-    enableInjectSwitch = ParamWidget::create<CKSSThree>(Vec(19, box.size.y - 120.0f), module,
+    enableInjectSwitch = ParamWidget::create<CKSSThree>(Vec(10, box.size.y - 120.0f), module,
         InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(enableInjectSwitch);
-    // addParam(ParamWidget::create<CKSSThree>(Vec(19, box.size.y - 120.0f), module,
-    //                                    InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f));
 
+    inputVoltageSwitch = ParamWidget::create<CKSSThree>(Vec(60, box.size.y - 120.0f ), module,
+        InjectValue::INPUT_VOLTAGE_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
+
+    addParam(inputVoltageSwitch);
+
+
+    inputVoltageSwitch = CKSSThree()
     Port *value_in_port = Port::create<PJ301MPort>(
         Vec(20, y_baseline),
         Port::INPUT,

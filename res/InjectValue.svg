@@ -612,7 +612,8 @@
     <g
        aria-label="Inject Value"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
-       id="text12223">
+       id="text12223"
+       transform="translate(0,12)">
       <path
          d="M 15.518227,16.262194 V 8.6319851 h 1.354167 v 7.6302089 z"
          id="path12225"

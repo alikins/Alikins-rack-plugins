@@ -29,16 +29,28 @@ struct InjectValue : Module
         NUM_LIGHTS
     };
 
-    enum HoverEnabled {OFF, WITH_SHIFT, ALWAYS};
+    enum HoverEnabled
+    {
+        OFF,
+        WITH_SHIFT,
+        ALWAYS
+    };
 
     InjectValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 
     void step() override;
 
+    json_t *toJson() override;
+    void fromJson(json_t *rootJ) override;
+
     float param_value = 0.0f;
     float input_param_value = 0.0f;
 
     HoverEnabled enabled = WITH_SHIFT;
+    VoltageRange inputRange = MINUS_PLUS_FIVE;
+
+    float minInputVoltage = -5.0f;
+    float maxInputVoltage = 5.0f;
 
 };
 
@@ -47,6 +59,30 @@ void InjectValue::step()
     if (inputs[VALUE_INPUT].active) {
         input_param_value = inputs[VALUE_INPUT].value;
         param_value = input_param_value;
+    }
+}
+
+
+json_t* InjectValue::toJson() {
+    json_t *rootJ = json_object();
+
+    json_t *inputRangeJ = json_object();
+    // float v = (isfinite(minInputVoltage) && isfinite(maxValue)) ? value : 0.f;
+	json_object_set_new(inputRangeJ, "minInputVoltage", json_real(minInputVoltage));
+    json_object_set_new(inputRangeJ, "maxInputVoltage", json_real(maxInputVoltage));
+    json_object_set_new(rootJ, "inputRange", inputRangeJ);
+
+    return rootJ;
+}
+
+void InjectValue::fromJson(json_t *rootJ) {
+    json_t *inputRangeJ = json_object_get(rootJ, "inputRange");
+    if (inputRangeJ) {
+        json_t *minVoltageJ = json_object_get(inputRangeJ, "minInputVoltage");
+        json_t *maxVoltageJ = json_object_get(inputRangeJ, "maxInputVoltage");
+
+        minInputVoltage = json_number_value(minVoltageJ);
+        maxInputVoltage = json_number_value(maxVoltageJ);
     }
 }
 
@@ -62,11 +98,14 @@ struct InjectValueWidget : ModuleWidget
     float min_input = -5.0f;
     float max_input = 5.0f;
 
+    ParamWidget *enableInjectSwitch;
+
     ParamFloatField *param_value_field;
     TextField *min_field;
     TextField *max_field;
     TextField *default_field;
     TextField *widget_type_field;
+
 };
 
 InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
@@ -121,8 +160,19 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     y_baseline = box.size.y - 65.0f;
 
-    addParam(ParamWidget::create<CKSSThree>(Vec(19, box.size.y - 120.0f), module,
-                                       InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f));
+    /*
+    ParamWidget *some_param = Component::create<ParamWidget>(Vec(60, 150), module);
+    some_param->paramId = paramId;
+	some_param->setLimits(minValue, maxValue);
+	some_param->setDefaultValue(defaultValue);
+    */
+
+    enableInjectSwitch = ParamWidget::create<CKSSThree>(Vec(19, box.size.y - 120.0f), module,
+        InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
+
+    addParam(enableInjectSwitch);
+    // addParam(ParamWidget::create<CKSSThree>(Vec(19, box.size.y - 120.0f), module,
+    //                                    InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f));
 
     Port *value_in_port = Port::create<PJ301MPort>(
         Vec(20, y_baseline),
@@ -175,10 +225,15 @@ void InjectValueWidget::step() {
 
     // TODO/FIXME: I assume there is a better way to check type?
     ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
-    if (pwidget)
+
+    // Don't inject values into the switch that turns inject on/off
+    if (pwidget && (pwidget != enableInjectSwitch))
     {
+
+        InjectValue *injectValueModule = dynamic_cast<InjectValue *>(module);
+
         // rescale the input CV (-10/+10V) to whatever the range of the param widget is
-        float scaled_value = rescale(module->inputs[InjectValue::VALUE_INPUT].value, min_input, max_input, pwidget->minValue, pwidget->maxValue);
+        float scaled_value = rescale(module->inputs[InjectValue::VALUE_INPUT].value, injectValueModule->minInputVoltage, injectValueModule->maxInputVoltage, pwidget->minValue, pwidget->maxValue);
 
         // debug("input: %f scaled_value: %f", module->inputs[InjectValue::VALUE_INPUT].value, scaled_value);
 
@@ -187,6 +242,9 @@ void InjectValueWidget::step() {
 
         // force a step of the param widget to get it to 'animate'
         pwidget->step();
+
+        // EventChange e;
+        // pwidget->onChange(e);
 
         // Show the value that will be injected
         // TODO: show the original input value and scaled output?

@@ -167,8 +167,8 @@ void HoveredValueWidget::step() {
 
         // TODO: option for selecting the output range? (uni/bi/original)
         float scaled_value = rescale(pwidget->value, pwidget->minValue, pwidget->maxValue, -10.0f, 10.0f);
-        debug("pwidget->value: %f scaled_value: %f", pwidget->value, scaled_value);
-        engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, pwidget->value);
+        // debug("pwidget->value: %f scaled_value: %f", pwidget->value, scaled_value);
+        engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, scaled_value);
 
         min_field->setText(stringf("%#.4g", pwidget->minValue));
         max_field->setText(stringf("%#.4g", pwidget->maxValue));

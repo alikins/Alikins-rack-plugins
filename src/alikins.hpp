@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "rack.hpp"
 
 const int MOMENTARY_BUTTONS = 13;

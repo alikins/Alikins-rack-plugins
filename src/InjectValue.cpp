@@ -41,52 +41,27 @@ struct InjectValue : Module
 
     void step() override;
 
-    json_t *toJson() override;
-    void fromJson(json_t *rootJ) override;
-
     float param_value = 0.0f;
     float input_param_value = 0.0f;
 
     HoverEnabled enabled = WITH_SHIFT;
     VoltageRange inputRange = MINUS_PLUS_FIVE;
 
-    float minInputVoltage = -5.0f;
-    float maxInputVoltage = 5.0f;
-
 };
 
 void InjectValue::step()
 {
-    if (inputs[VALUE_INPUT].active) {
-        input_param_value = inputs[VALUE_INPUT].value;
-        param_value = input_param_value;
+    if (!inputs[VALUE_INPUT].active) {
+        return;
     }
+
+    input_param_value = inputs[VALUE_INPUT].value;
+    param_value = input_param_value;
+
+    enabled = (HoverEnabled) clamp((int) roundf(params[INJECT_ENABLED_PARAM].value), 0, 2);
+
+    inputRange  = (VoltageRange) clamp((int) roundf(params[INPUT_VOLTAGE_RANGE_PARAM].value), 0, 2);
 }
-
-
-json_t* InjectValue::toJson() {
-    json_t *rootJ = json_object();
-
-    json_t *inputRangeJ = json_object();
-    // float v = (isfinite(minInputVoltage) && isfinite(maxValue)) ? value : 0.f;
-	json_object_set_new(inputRangeJ, "minInputVoltage", json_real(minInputVoltage));
-    json_object_set_new(inputRangeJ, "maxInputVoltage", json_real(maxInputVoltage));
-    json_object_set_new(rootJ, "inputRange", inputRangeJ);
-
-    return rootJ;
-}
-
-void InjectValue::fromJson(json_t *rootJ) {
-    json_t *inputRangeJ = json_object_get(rootJ, "inputRange");
-    if (inputRangeJ) {
-        json_t *minVoltageJ = json_object_get(inputRangeJ, "minInputVoltage");
-        json_t *maxVoltageJ = json_object_get(inputRangeJ, "maxInputVoltage");
-
-        minInputVoltage = json_number_value(minVoltageJ);
-        maxInputVoltage = json_number_value(maxVoltageJ);
-    }
-}
-
 
 struct InjectValueWidget : ModuleWidget
 {
@@ -96,8 +71,8 @@ struct InjectValueWidget : ModuleWidget
     void onChange(EventChange &e) override;
 
     // TODO: enum/params/ui for input range
-    float min_input = -5.0f;
-    float max_input = 5.0f;
+    // float min_input = -5.0f;
+    //float max_input = 5.0f;
 
     ParamWidget *enableInjectSwitch;
     ParamWidget *inputVoltageSwitch;
@@ -179,8 +154,6 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     addParam(inputVoltageSwitch);
 
-
-    inputVoltageSwitch = CKSSThree()
     Port *value_in_port = Port::create<PJ301MPort>(
         Vec(20, y_baseline),
         Port::INPUT,
@@ -191,7 +164,6 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
     value_in_port->box.pos = Vec(5, y_baseline);
     addChild(value_in_port);
 
-
     Port *value_out_port = Port::create<PJ301MPort>(
         Vec(out_port_x, y_baseline),
         Port::OUTPUT,
@@ -199,7 +171,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
         InjectValue::DEBUG1_OUTPUT);
 
     outputs.push_back(value_out_port);
-    value_out_port->box.pos = Vec(middle - value_out_port->box.size.x/2, y_baseline);
+    value_out_port->box.pos = Vec(box.size.x - value_out_port->box.size.x, y_baseline);
 
     addChild(value_out_port);
 
@@ -222,11 +194,17 @@ void InjectValueWidget::step() {
         return;
     }
 
-    if (module->params[InjectValue::INJECT_ENABLED_PARAM].value == InjectValue::OFF) {
+    InjectValue *injectValueModule = dynamic_cast<InjectValue *>(module);
+
+    if (!injectValueModule) {
         return;
     }
 
-    if (module->params[InjectValue::INJECT_ENABLED_PARAM].value == InjectValue::WITH_SHIFT &&!shift_pressed) {
+    if (injectValueModule->enabled == InjectValue::OFF) {
+        return;
+    }
+
+    if (injectValueModule->enabled == InjectValue::WITH_SHIFT && !shift_pressed) {
         return;
     }
 
@@ -237,12 +215,30 @@ void InjectValueWidget::step() {
     if (pwidget && (pwidget != enableInjectSwitch))
     {
 
-        InjectValue *injectValueModule = dynamic_cast<InjectValue *>(module);
+        float input = module->inputs[InjectValue::VALUE_INPUT].value;
+        float clamped_input = clamp(input,
+                                    voltage_min[injectValueModule->inputRange],
+                                    voltage_max[injectValueModule->inputRange]);
+        // float scaled_value = clamp(module->inputs[InjectValue::VALUE_INPUT].value,
+        //                            voltage_min[injectValueModule->inputRange],
+         //                           voltage_max[injectValueModule->inputRange]);
 
         // rescale the input CV (-10/+10V) to whatever the range of the param widget is
-        float scaled_value = rescale(module->inputs[InjectValue::VALUE_INPUT].value, injectValueModule->minInputVoltage, injectValueModule->maxInputVoltage, pwidget->minValue, pwidget->maxValue);
+        float scaled_value = rescale(clamped_input,
+            voltage_min[injectValueModule->inputRange],
+            voltage_max[injectValueModule->inputRange],
+            // injectValueModule->minInputVoltage,
+            //injectValueModule->maxInputVoltage,
+            pwidget->minValue, pwidget->maxValue);
 
-        // debug("input: %f scaled_value: %f", module->inputs[InjectValue::VALUE_INPUT].value, scaled_value);
+        debug("input: %f (in_min: %f, in_max:%f) clamped_in: %f out_min: %f, out_max: %f) scaled_value: %f",
+            input,
+            voltage_min[injectValueModule->inputRange],
+            voltage_max[injectValueModule->inputRange],
+            clamped_input,
+            pwidget->minValue,
+            pwidget->maxValue,
+            scaled_value);
 
         // ParamWidgets are-a QuantityWidget, so change it's value
         pwidget->setValue(scaled_value);

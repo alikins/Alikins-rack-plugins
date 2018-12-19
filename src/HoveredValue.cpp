@@ -58,6 +58,8 @@ struct HoveredValueWidget : ModuleWidget
     void step() override;
     void onChange(EventChange &e) override;
 
+    ParamWidget *enableHoverSwitch;
+
     ParamFloatField *param_value_field;
     TextField *min_field;
     TextField *max_field;
@@ -112,22 +114,25 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     addChild(widget_type_field);
 
     float middle = box.size.x / 2.0f;
-    // float out_port_x = middle;
-    float out_port_x = 60.0f;
 
     y_baseline = box.size.y - 65.0f;
 
-    addParam(ParamWidget::create<CKSSThree>(Vec(19, box.size.y - 120.0f), module,
-                                       HoveredValue::HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f));
+    // addParam(ParamWidget::create<CKSSThree>(Vec(19, box.size.y - 120.0f), module,
+    //                                   HoveredValue::HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f));
+
+    enableHoverSwitch = ParamWidget::create<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
+        HoveredValue::HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
+
+    addParam(enableHoverSwitch);
 
     Port *value_out_port = Port::create<PJ301MPort>(
-        Vec(out_port_x, y_baseline),
+        Vec(60.0f, box.size.y - 67.0f),
         Port::OUTPUT,
         module,
         HoveredValue::PARAM_VALUE_OUTPUT);
 
     outputs.push_back(value_out_port);
-    value_out_port->box.pos = Vec(middle - value_out_port->box.size.x/2, y_baseline);
+    // value_out_port->box.pos = Vec(middle - value_out_port->box.size.x/2, y_baseline);
 
     addChild(value_out_port);
 
@@ -184,16 +189,22 @@ void HoveredValueWidget::step() {
     Port *port = dynamic_cast<Port *>(gHoveredWidget);
     if (port)
     {
+        float tapped_value = 0.0f;
         if (port->type == port->INPUT)
         {
-            param_value_field->setValue(port->module->inputs[port->portId].value);
+            tapped_value = port->module->inputs[port->portId].value;
+            // param_value_field->setValue(port->module->inputs[port->portId].value);
+            param_value_field->setValue(tapped_value);
             widget_type_field->setText("Input");
         }
         if (port->type == port->OUTPUT)
         {
-            param_value_field->setValue(port->module->outputs[port->portId].value);
+            tapped_value = port->module->outputs[port->portId].value;
+            param_value_field->setValue(tapped_value);
             widget_type_field->setText("Output");
         }
+
+        engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, tapped_value);
 
         // inputs/outputs dont have variable min/max, so just use the -10/+10 and
         // 0 for the default to get the point across.

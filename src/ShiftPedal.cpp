@@ -49,16 +49,23 @@ void ShiftPedal::step() {
 
     outputs[LEFT_SHIFT_GATE_OUTPUT].value = params[LEFT_SHIFT_PARAM].value;
     outputs[RIGHT_SHIFT_GATE_OUTPUT].value = params[RIGHT_SHIFT_PARAM].value;
-    outputs[EITHER_SHIFT_GATE_OUTPUT].value = params[LEFT_SHIFT_PARAM].value + params[RIGHT_SHIFT_PARAM].value >= 10.0f ? 10.0f : 0.0f;
+    outputs[EITHER_SHIFT_GATE_OUTPUT].value = params[LEFT_SHIFT_PARAM].value +
+        params[RIGHT_SHIFT_PARAM].value >= 10.0f ? 10.0f : 0.0f;
 
     outputs[LEFT_CTRL_GATE_OUTPUT].value = params[LEFT_CTRL_PARAM].value;
     outputs[RIGHT_CTRL_GATE_OUTPUT].value = params[RIGHT_CTRL_PARAM].value;
+    outputs[EITHER_CTRL_GATE_OUTPUT].value = params[LEFT_CTRL_PARAM].value +
+        params[RIGHT_CTRL_PARAM].value >= 10.0f ? 10.0f : 0.0f;
 
     outputs[LEFT_ALT_GATE_OUTPUT].value = params[LEFT_ALT_PARAM].value;
     outputs[RIGHT_ALT_GATE_OUTPUT].value = params[RIGHT_ALT_PARAM].value;
+    outputs[EITHER_ALT_GATE_OUTPUT].value = params[LEFT_ALT_PARAM].value +
+        params[RIGHT_ALT_PARAM].value >= 10.0f ? 10.0f : 0.0f;
 
     outputs[LEFT_SUPER_GATE_OUTPUT].value = params[LEFT_SUPER_PARAM].value;
     outputs[RIGHT_SUPER_GATE_OUTPUT].value = params[RIGHT_SUPER_PARAM].value;
+    outputs[EITHER_SUPER_GATE_OUTPUT].value = params[LEFT_SUPER_PARAM].value +
+        params[RIGHT_SUPER_PARAM].value >= 10.0f ? 10.0f : 0.0f;
 }
 
 bool windowIsCtrlPressed() {
@@ -155,10 +162,11 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     float buttonWidth = 30.0f;
     float shiftButtonHeight = 55.5f;
     float ctrlButtonHeight = 55.0f;
-    float y_start = 15.0f;
-    float y_spacing = 0.5f;
+    float y_start = 25.0f;
+    float y_spacing = 1.5f;
+    float y_row_spacing = 6.5f;
     float y_baseline = y_start;
-    float port_x_start = 2.0f;
+    float port_x_start = 3.0f;
     float middle = box.size.x / 2.0f;
 
     // first row, shift
@@ -204,7 +212,7 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
                 ShiftPedal::RIGHT_SHIFT_GATE_OUTPUT));
 
     // next row
-    y_baseline = y_baseline + shiftButtonHeight + y_spacing + portHeight + y_spacing;
+    y_baseline = y_baseline + shiftButtonHeight + y_spacing + portHeight + y_row_spacing;
 
     leftCtrlButtonSwitch = ParamWidget::create<CtrlSwitch>(Vec(0.0f, y_baseline),
                 module,
@@ -240,7 +248,7 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
                 ShiftPedal::RIGHT_CTRL_GATE_OUTPUT));
 
     // third row Alt
-    y_baseline = y_baseline + ctrlButtonHeight + y_spacing + portHeight + y_spacing;
+    y_baseline = y_baseline + ctrlButtonHeight + y_spacing + portHeight + y_row_spacing;
 
     leftAltButtonSwitch = ParamWidget::create<AltSwitch>(Vec(0.0f, y_baseline),
                 module,
@@ -275,7 +283,7 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
                 ShiftPedal::RIGHT_ALT_GATE_OUTPUT));
 
     // fourth row, super
-    y_baseline = y_baseline + altButtonHeight + y_spacing + portHeight + y_spacing;
+    y_baseline = y_baseline + altButtonHeight + y_spacing + portHeight + y_row_spacing;
 
     leftSuperButtonSwitch = ParamWidget::create<SuperSwitch>(Vec(0.0f, y_baseline),
                 module,

@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="30"
+   width="60"
    height="380"
-   viewBox="0 0 30 380"
+   viewBox="0 0 60 380"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 5c3e80d, 2017-08-06"
@@ -31,7 +31,7 @@
      inkscape:current-layer="layer7"
      showgrid="false"
      units="px"
-     inkscape:snap-bbox="false"
+     inkscape:snap-bbox="true"
      inkscape:snap-page="true"
      inkscape:bbox-nodes="false"
      inkscape:snap-bbox-edge-midpoints="true"
@@ -50,7 +50,7 @@
      inkscape:guide-bbox="true"
      inkscape:snap-to-guides="false"
      inkscape:object-nodes="true"
-     inkscape:snap-global="false">
+     inkscape:snap-global="true">
     <inkscape:grid
        empspacing="5"
        units="px"
@@ -276,10 +276,10 @@
      id="layer6"
      inkscape:label="background">
     <rect
-       y="-1.1912225"
-       x="-1.1912225"
-       height="382.97806"
-       width="31.793621"
+       y="0.30000001"
+       x="0.30000001"
+       height="379.39999"
+       width="59.400002"
        id="rect12512"
        style="display:inline;opacity:1;fill:#e6e6e6;fill-opacity:1;fill-rule:evenodd;stroke:#909290;stroke-width:0.60000002;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709;enable-background:new" />
   </g>

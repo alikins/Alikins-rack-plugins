@@ -62,34 +62,35 @@ struct ShiftPedalWidget : ModuleWidget {
 
 ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
 
-    box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+    box.size = Vec(2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     setPanel(SVG::load(assetPlugin(plugin, "res/ShiftPedal.svg")));
 
-    shiftButtonSwitch = ParamWidget::create<ShiftSwitch>(Vec(0.0f, 40.0f),
+    shiftButtonSwitch = ParamWidget::create<ShiftSwitch>(Vec(0.0f, 20.0f),
                 module,
                 ShiftPedal::SHIFT_BUTTON_PARAM,
                 0.0f, 10.0f, 0.0f);
     addParam(shiftButtonSwitch);
 
-    modButtonSwitch = ParamWidget::create<ModSwitch>(Vec(0.0f, 90.0f),
+    addOutput(Port::create<PJ301MPort>(Vec(2.0f, 80.0f),
+                Port::OUTPUT,
+                module,
+                ShiftPedal::SHIFT_GATE_OUTPUT));
+
+    modButtonSwitch = ParamWidget::create<ModSwitch>(Vec(0.0f, 135.0f),
                 module,
                 ShiftPedal::MOD_BUTTON_PARAM,
                 0.0f, 10.0f, 0.0f);
     addParam(modButtonSwitch);
 
-    addOutput(Port::create<PJ301MPort>(Vec(60.0f, 302.0f),
-                Port::OUTPUT,
-                module,
-                ShiftPedal::SHIFT_GATE_OUTPUT));
-
-    addOutput(Port::create<PJ301MPort>(Vec(60.0f, 330.0f),
+    addOutput(Port::create<PJ301MPort>(Vec(2.0f, 195.0f),
                 Port::OUTPUT,
                 module,
                 ShiftPedal::MOD_GATE_OUTPUT));
 
     addChild(Widget::create<ScrewSilver>(Vec(0.0, 0)));
     addChild(Widget::create<ScrewSilver>(Vec(box.size.x-15, 0)));
-    addChild(Widget::create<ScrewSilver>(Vec(30, 365)));
+    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 365.0f)));
+    addChild(Widget::create<ScrewSilver>(Vec(box.size.x-15, 365.0f)));
 
 }
 

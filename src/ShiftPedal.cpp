@@ -158,7 +158,7 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     float y_start = 15.0f;
     float y_spacing = 0.5f;
     float y_baseline = y_start;
-    float port_x_start = 1.0f;
+    float port_x_start = 2.0f;
     float middle = box.size.x / 2.0f;
 
     // first row, shift

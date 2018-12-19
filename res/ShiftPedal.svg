@@ -26,7 +26,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.6711071"
      inkscape:cx="44.668051"
-     inkscape:cy="189.70219"
+     inkscape:cy="167.04"
      inkscape:document-units="px"
      inkscape:current-layer="layer7"
      showgrid="false"
@@ -292,7 +292,7 @@
        aria-label="Alikins"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;display:inline;opacity:0.60365852;fill:#808080;fill-opacity:1;stroke:none"
        id="text17569"
-       transform="rotate(90,35.535135,335.8106)">
+       transform="translate(-6.000001,7.129701)">
       <path
          d="m 32.985402,369.17804 -0.557292,-1.54688 h -2.614583 l -0.53125,1.54688 h -1.505208 l 3.041666,-7.73438 h 0.59375 l 3.067709,7.73438 z m -1.869792,-5.40104 -0.916666,2.81771 h 1.833333 z"
          id="path17571"
@@ -340,7 +340,7 @@
        aria-label="Shift Pedal"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;display:inline;fill:#0088aa;fill-opacity:1;stroke:none"
        id="text12535"
-       transform="rotate(90,-124.75251,164.15336)">
+       transform="rotate(90,-110.75251,180.15336)">
       <path
          d="m 18.740417,21.852514 0.5,-1.213541 q 0.802083,0.5625 1.578125,0.5625 1.192708,0 1.192708,-0.833334 0,-0.390625 -0.28125,-0.744791 -0.28125,-0.354167 -1.161458,-0.791667 -0.875,-0.442709 -1.182292,-0.723959 -0.302083,-0.286458 -0.46875,-0.677083 -0.161458,-0.390625 -0.161458,-0.864583 0,-0.885417 0.645833,-1.46875 0.651042,-0.583334 1.666667,-0.583334 1.322916,0 1.942708,0.494792 l -0.411458,1.166667 q -0.713542,-0.510417 -1.505209,-0.510417 -0.46875,0 -0.729166,0.25 -0.255209,0.244792 -0.255209,0.640625 0,0.65625 1.453125,1.364583 0.765625,0.375 1.104167,0.692709 0.338542,0.3125 0.515625,0.734375 0.177083,0.416667 0.177083,0.932292 0,0.927083 -0.734375,1.526041 -0.729166,0.598959 -1.958333,0.598959 -1.067708,0 -1.927083,-0.552084 z"
          id="path14915"

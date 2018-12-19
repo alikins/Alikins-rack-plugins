@@ -115,28 +115,10 @@ struct PurplePort : SVGPort {
 	}
 };
 
-// FIXME: maybe? vector and an enum likely better
-/*
-struct Modifiers {
-    bool left_shift = false;
-    bool right_shift = false;
-    bool shift = false;
-    bool left_ctrl = false;
-    bool right_strl = false;
-    bool ctrl = false;
-    bool left_alt = false;
-    bool right_alt = false;
-    bool alt = false;
-    bool left_super = false;
-    bool right_super = false;
-    bool super = false;
-};
-*/
 
 struct ShiftPedalWidget : ModuleWidget {
     ShiftPedalWidget(ShiftPedal *module);
 
-    // ParamWidget *shiftButtonSwitch;
     ParamWidget *leftShiftButtonSwitch;
     ParamWidget *rightShiftButtonSwitch;
     ParamWidget *leftCtrlButtonSwitch;
@@ -147,11 +129,7 @@ struct ShiftPedalWidget : ModuleWidget {
     ParamWidget *rightSuperButtonSwitch;
 
     void step() override;
-    void onKey(EventKey &e) override;
-    void onHoverKey(EventHoverKey &e) override;
 
-    // left shift, right shift, left ctrl, right ctrl
-    // std::vector<bool> modifiers = {false, false, false, false};
 };
 
 
@@ -159,9 +137,9 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     setPanel(SVG::load(assetPlugin(plugin, "res/ShiftPedal.svg")));
 
+    // FIXME: change to #defines
     float buttonWidth = 30.0f;
-    float shiftButtonHeight = 55.5f;
-    float ctrlButtonHeight = 55.0f;
+    float buttonHeight = 55.5f;
     float y_start = 25.0f;
     float y_spacing = 1.5f;
     float y_row_spacing = 6.5f;
@@ -176,25 +154,26 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
                 0.0f, 10.0f, 0.0f);
     addParam(leftShiftButtonSwitch);
 
-    debug("leftShiftButtonSwitch height %f", leftShiftButtonSwitch->box.size.y);
-    shiftButtonHeight = leftShiftButtonSwitch->box.size.y;
+    // debug("leftShiftButtonSwitch height %f", leftShiftButtonSwitch->box.size.y);
+    buttonHeight = leftShiftButtonSwitch->box.size.y;
 
     Port *leftShiftButtonPort =
-        Port::create<PurplePort>(Vec(port_x_start, y_baseline + shiftButtonHeight + y_spacing),
+        Port::create<PurplePort>(Vec(port_x_start, y_baseline + buttonHeight + y_spacing),
                                 Port::OUTPUT,
                                 module,
                                 ShiftPedal::LEFT_SHIFT_GATE_OUTPUT);
-    // leftShiftButtonPort->box.pos.x =
+
     addOutput(leftShiftButtonPort);
 
     float portHeight = leftShiftButtonPort->box.size.y;
     float portWidth = leftShiftButtonPort->box.size.x;
-    debug("leftShiftButtonPort width(x): %f height(y): %f", portWidth, portHeight);
+
+    // debug("leftShiftButtonPort width(x): %f height(y): %f", portWidth, portHeight);
 
     // Add the 'either' port
 
     Port *eitherShiftPort =
-        Port::create<PurplePort>(Vec(middle - (portWidth/2.0f), y_baseline + shiftButtonHeight + y_spacing),
+        Port::create<PurplePort>(Vec(middle - (portWidth/2.0f), y_baseline + buttonHeight + y_spacing),
                                 Port::OUTPUT,
                                 module,
                                 ShiftPedal::EITHER_SHIFT_GATE_OUTPUT);
@@ -206,13 +185,13 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
                 0.0f, 10.0f, 0.0f);
     addParam(rightShiftButtonSwitch);
 
-    addOutput(Port::create<PurplePort>(Vec(box.size.x - portWidth - port_x_start, y_start + shiftButtonHeight + y_spacing),
+    addOutput(Port::create<PurplePort>(Vec(box.size.x - portWidth - port_x_start, y_start + buttonHeight + y_spacing),
                 Port::OUTPUT,
                 module,
                 ShiftPedal::RIGHT_SHIFT_GATE_OUTPUT));
 
     // next row
-    y_baseline = y_baseline + shiftButtonHeight + y_spacing + portHeight + y_row_spacing;
+    y_baseline = y_baseline + buttonHeight + y_spacing + portHeight + y_row_spacing;
 
     leftCtrlButtonSwitch = ParamWidget::create<CtrlSwitch>(Vec(0.0f, y_baseline),
                 module,
@@ -220,16 +199,17 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
                 0.0f, 10.0f, 0.0f);
     addParam(leftCtrlButtonSwitch);
 
-    ctrlButtonHeight = leftCtrlButtonSwitch->box.size.y;
+    // update for this row, although ended up making all the buttons the same size for now
+    buttonHeight = leftCtrlButtonSwitch->box.size.y;
 
-    addOutput(Port::create<PurplePort>(Vec(port_x_start, y_baseline + ctrlButtonHeight + y_spacing),
+    addOutput(Port::create<PurplePort>(Vec(port_x_start, y_baseline + buttonHeight + y_spacing),
                 Port::OUTPUT,
                 module,
                 ShiftPedal::LEFT_CTRL_GATE_OUTPUT));
 
     //either
     Port *eitherCtrlPort =
-        Port::create<PurplePort>(Vec(middle - (portWidth / 2.0f), y_baseline + ctrlButtonHeight + y_spacing),
+        Port::create<PurplePort>(Vec(middle - (portWidth / 2.0f), y_baseline + buttonHeight + y_spacing),
                                  Port::OUTPUT,
                                  module,
                                  ShiftPedal::EITHER_CTRL_GATE_OUTPUT);
@@ -242,13 +222,13 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     addParam(rightCtrlButtonSwitch);
 
     addOutput(Port::create<PurplePort>(Vec(box.size.x - portWidth - port_x_start,
-        y_baseline + ctrlButtonHeight + y_spacing),
+        y_baseline + buttonHeight + y_spacing),
                 Port::OUTPUT,
                 module,
                 ShiftPedal::RIGHT_CTRL_GATE_OUTPUT));
 
     // third row Alt
-    y_baseline = y_baseline + ctrlButtonHeight + y_spacing + portHeight + y_row_spacing;
+    y_baseline = y_baseline + buttonHeight + y_spacing + portHeight + y_row_spacing;
 
     leftAltButtonSwitch = ParamWidget::create<AltSwitch>(Vec(0.0f, y_baseline),
                 module,
@@ -325,15 +305,6 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
 }
 
 void ShiftPedalWidget::step() {
-    // TODO: just return a list of bools for all of them
-    // bool shift_pressed = windowIsShiftPressed();
-    // bool mod_pressed = windowIsModPressed();
-    // bool ctrl_pressed = windowIsCtrlPressed();
-    // bool left_shift_pressed = windowIsLeftShiftPressed();
-    // bool right_shift_pressed = windowIsRightShiftPressed();
-
-    // shiftButtonSwitch->setValue(shift_pressed ? 10.0f : 0.0f);
-    // modButtonSwitch->setValue(mod_pressed ? 10.0f : 0.0f);
 
     leftShiftButtonSwitch->setValue(glfwGetKey(gWindow, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 10.0f : 0.0f);
     rightShiftButtonSwitch->setValue(glfwGetKey(gWindow, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS ? 10.0f : 0.0f);
@@ -347,29 +318,7 @@ void ShiftPedalWidget::step() {
     leftSuperButtonSwitch->setValue(glfwGetKey(gWindow, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ? 10.0f : 0.0f);
     rightSuperButtonSwitch->setValue(glfwGetKey(gWindow, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS ? 10.0f : 0.0f);
 
-    /*
-    if (left_shift_pressed) {
-        debug("left shift pressed");
-    }
-
-    if (right_shift_pressed) {
-        debug("right shift pressed");
-    }
-
-    if (ctrl_pressed) {
-        debug("ctrl pressed");
-    }
-    */
-
     ModuleWidget::step();
-}
-
-void ShiftPedalWidget::onKey(EventKey &e) {
-    debug("ShiftPedalWidget::onKey e.key=%d", e.key);
-}
-
-void ShiftPedalWidget::onHoverKey(EventHoverKey &e) {
-    debug("ShiftPedalWidget::onHoverKey e.key=%d", e.key);
 }
 
 Model *modelShiftPedal = Model::create<ShiftPedal, ShiftPedalWidget>(

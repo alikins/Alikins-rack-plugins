@@ -166,6 +166,14 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 }
 
 void HoveredValueWidget::step() {
+    float display_min = -5.0f;
+    float display_max = 5.0f;
+    float display_value = 0.0f;
+    float display_default = 0.0f;
+
+    float raw_value = 0.0f;
+    std::string display_type = "";
+
     ModuleWidget::step();
 
     bool shift_pressed = windowIsShiftPressed();
@@ -188,26 +196,26 @@ void HoveredValueWidget::step() {
     ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
     if (pwidget)
     {
-        param_value_field->setValue(pwidget->value);
 
         // TODO: option for selecting the output range? (uni/bi/original)
         // TODO: outputs for 'raw/original' value and scaled
         // TODO: show value of original and scaled?
         // int output_index = round(params[OUTPUT_RANGE_PARAM].value);
         // float min_out = voltage_min[output_index];
-        float tapped_value = pwidget->value;
+        raw_value = pwidget->value;
 
-        float scaled_value = rescale(pwidget->value, pwidget->minValue, pwidget->maxValue,
-                                     voltage_min[outputRange],
-                                     voltage_max[outputRange]);
+        // display_value = raw_value;
+        display_min = pwidget->minValue;
+        display_max = pwidget->maxValue;
+        display_default = pwidget->defaultValue;
+        display_type= "param";
 
-        engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, tapped_value);
-        engineSetParam(module, HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM, scaled_value);
-
+        /*
         min_field->setText(stringf("%#.4g", pwidget->minValue));
         max_field->setText(stringf("%#.4g", pwidget->maxValue));
         default_field->setText(stringf("%#.4g", pwidget->defaultValue));
         widget_type_field->setText("Param");
+        */
 
         // TODO: if we use type name detection stuff (cxxabi/typeinfo/etc) we could possibly
         //       also show the name of the hovered widget as a hint on mystery meat params
@@ -218,28 +226,50 @@ void HoveredValueWidget::step() {
     Port *port = dynamic_cast<Port *>(gHoveredWidget);
     if (port)
     {
-        float tapped_value = 0.0f;
+
         if (port->type == port->INPUT)
         {
-            tapped_value = port->module->inputs[port->portId].value;
-            param_value_field->setValue(tapped_value);
-            widget_type_field->setText("Input");
+            raw_value = port->module->inputs[port->portId].value;
+            // param_value_field->setValue(tapped_value);
+            display_type = "input";
         }
         if (port->type == port->OUTPUT)
         {
-            tapped_value = port->module->outputs[port->portId].value;
-            param_value_field->setValue(tapped_value);
-            widget_type_field->setText("Output");
+            raw_value = port->module->outputs[port->portId].value;
+            // param_value_field->setValue(tapped_value);
+            display_type = "output";
         }
 
-        engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, tapped_value);
-
+        // engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, tapped_value);
+        //engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, tapped_value);
+        // engineSetParam(module, HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM, scaled_value);
         // inputs/outputs dont have variable min/max, so just use the -10/+10 and
         // 0 for the default to get the point across.
+        /*
         min_field->setText(stringf("%#.4g", -10.0f));
         max_field->setText(stringf("%#.4g", 10.0f));
         default_field->setText(stringf("%#.4g", 0.0f));
+        */
+
+        // display_value = raw_value;
+        display_min = -10.0f;
+        display_max = 10.0f;
+        display_default = 0.0f;
     }
+
+    // display_value = raw_value;
+    float scaled_value = rescale(raw_value, display_min, display_max,
+                                 voltage_min[outputRange],
+                                 voltage_max[outputRange]);
+
+    engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, raw_value);
+    engineSetParam(module, HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM, scaled_value);
+
+    param_value_field->setValue(raw_value);
+    min_field->setText(stringf("%#.4g", display_min));
+    max_field->setText(stringf("%#.4g", display_max));
+    default_field->setText(stringf("%#.4g", display_default));
+    widget_type_field->setText(display_type);
 
     // TODO: if a WireWidget, can we figure out it's in/out and current value? That would be cool,
     //       though it doesn't look like WireWidgets are ever hovered (or gHoveredWidget never

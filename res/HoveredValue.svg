@@ -24,21 +24,21 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.663286"
-     inkscape:cx="56.088593"
-     inkscape:cy="189.70219"
+     inkscape:zoom="4.7044832"
+     inkscape:cx="35.808757"
+     inkscape:cy="327.1685"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      units="px"
-     inkscape:snap-bbox="false"
-     inkscape:snap-page="true"
-     inkscape:bbox-nodes="false"
+     inkscape:snap-bbox="true"
+     inkscape:snap-page="false"
+     inkscape:bbox-nodes="true"
      inkscape:snap-bbox-edge-midpoints="true"
-     inkscape:window-width="1021"
+     inkscape:window-width="1359"
      inkscape:window-height="854"
-     inkscape:window-x="357"
-     inkscape:window-y="35"
+     inkscape:window-x="27"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:measure-start="0,0"
      inkscape:measure-end="0,0"
@@ -46,11 +46,11 @@
      inkscape:snap-nodes="true"
      inkscape:snap-others="false"
      inkscape:snap-grids="false"
-     showguides="false"
+     showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:snap-to-guides="false"
+     inkscape:snap-to-guides="true"
      inkscape:object-nodes="true"
-     inkscape:snap-global="false">
+     inkscape:snap-global="true">
     <inkscape:grid
        empspacing="5"
        units="px"
@@ -476,7 +476,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -647,7 +647,7 @@
   <g
      inkscape:groupmode="layer"
      id="layer8"
-     inkscape:label="text"
+     inkscape:label="min"
      style="display:inline">
     <g
        aria-label="max"
@@ -703,7 +703,7 @@
     </g>
     <g
        aria-label="value"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;display:inline;opacity:0.8;fill:#000000;fill-opacity:1;stroke:none;enable-background:new"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;display:none;opacity:0.8;fill:#000000;fill-opacity:1;stroke:none;enable-background:new"
        id="text2027"
        transform="translate(0,2)">
       <path
@@ -752,8 +752,9 @@
     <g
        aria-label="min"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;display:inline;fill:#000000;fill-opacity:1;stroke:none;enable-background:new"
-       id="text2015"
-       transform="translate(0,2)">
+       id="min"
+       transform="translate(0,2)"
+       inkscape:label="#text2015">
       <path
          d="m 43.104998,106.85 v -3.49479 q 0,-1.09896 -0.984375,-1.09896 -0.291666,0 -0.5625,0.17187 -0.270833,0.17188 -0.380208,0.39584 V 106.85 h -1.302084 v -3.69792 q 0,-0.41146 -0.255208,-0.65104 -0.255208,-0.24479 -0.71875,-0.24479 -0.244792,0 -0.536458,0.18229 -0.286459,0.18229 -0.416667,0.40104 V 106.85 h -1.302083 v -5.57813 h 0.895833 l 0.265625,0.48959 q 0.541667,-0.59375 1.401042,-0.59375 1.109375,0 1.671875,0.60416 0.244791,-0.27604 0.682291,-0.4375 0.437501,-0.16666 0.875001,-0.16666 0.932291,0 1.447916,0.53645 0.520834,0.53126 0.520834,1.46355 V 106.85 Z"
          id="path2040"
@@ -959,5 +960,32 @@
      inkscape:groupmode="layer"
      id="layer1"
      inkscape:label="text3"
-     style="display:inline" />
+     style="display:inline">
+    <g
+       aria-label="VALUE"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
+       id="text19392"
+       transform="translate(0,1)">
+      <path
+         d="m 32.536457,69.064868 h -0.744792 l -2.854167,-7.734376 h 1.489584 l 1.765625,5.156251 1.864583,-5.156251 h 1.458333 z"
+         id="path19394"
+         inkscape:connector-curvature="0" />
+      <path
+         d="M 40.770832,68.960701 40.21354,67.413826 h -2.614583 l -0.53125,1.546875 h -1.505209 l 3.041667,-7.734375 h 0.59375 l 3.067708,7.734375 z m -1.869792,-5.401042 -0.916667,2.817709 h 1.833334 z"
+         id="path19396"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 43.067707,68.960701 v -7.630209 h 1.354166 v 6.427084 h 3.447917 v 1.203125 z"
+         id="path19398"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 48.963541,61.330492 h 1.354166 v 5.171876 q 0,0.614583 0.375,1 0.375,0.385416 1.03125,0.385416 0.734375,0 1.140625,-0.375 0.411459,-0.380208 0.411459,-1.036458 v -5.145834 h 1.354166 v 5.250001 q 0,1.177083 -0.791666,1.84375 -0.786459,0.666666 -2.104167,0.666666 -1.328125,0 -2.052083,-0.651041 -0.71875,-0.651042 -0.71875,-1.864584 z"
+         id="path19400"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 57.546873,62.533617 v 1.786459 h 2.520834 v 1.151042 h -2.520834 v 2.286458 h 3.458334 v 1.203125 h -4.8125 v -7.630209 h 4.869791 v 1.203125 z"
+         id="path19402"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
 </svg>

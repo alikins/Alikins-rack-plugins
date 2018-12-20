@@ -119,7 +119,8 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     addChild(widget_type_field);
 
     // Scaled output and scaled output range
-    y_baseline = y_baseline + 25.0f;
+    // y_baseline = y_baseline + 25.0f;
+    y_baseline = box.size.y - 118.0f;
 
     outputRangeSwitch = ParamWidget::create<CKSSThree>(Vec(5, y_baseline ), module,
         HoveredValue::OUTPUT_RANGE_PARAM, 0.0f, 2.0f, 0.0f);

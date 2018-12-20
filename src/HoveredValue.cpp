@@ -168,11 +168,11 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 void HoveredValueWidget::step() {
     float display_min = -5.0f;
     float display_max = 5.0f;
-    float display_value = 0.0f;
     float display_default = 0.0f;
 
-    float raw_value = 0.0f;
     std::string display_type = "";
+
+    float raw_value = 0.0f;
 
     ModuleWidget::step();
 
@@ -196,26 +196,13 @@ void HoveredValueWidget::step() {
     ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
     if (pwidget)
     {
-
-        // TODO: option for selecting the output range? (uni/bi/original)
-        // TODO: outputs for 'raw/original' value and scaled
         // TODO: show value of original and scaled?
-        // int output_index = round(params[OUTPUT_RANGE_PARAM].value);
-        // float min_out = voltage_min[output_index];
-        raw_value = pwidget->value;
 
-        // display_value = raw_value;
+        raw_value = pwidget->value;
         display_min = pwidget->minValue;
         display_max = pwidget->maxValue;
         display_default = pwidget->defaultValue;
         display_type= "param";
-
-        /*
-        min_field->setText(stringf("%#.4g", pwidget->minValue));
-        max_field->setText(stringf("%#.4g", pwidget->maxValue));
-        default_field->setText(stringf("%#.4g", pwidget->defaultValue));
-        widget_type_field->setText("Param");
-        */
 
         // TODO: if we use type name detection stuff (cxxabi/typeinfo/etc) we could possibly
         //       also show the name of the hovered widget as a hint on mystery meat params
@@ -226,32 +213,19 @@ void HoveredValueWidget::step() {
     Port *port = dynamic_cast<Port *>(gHoveredWidget);
     if (port)
     {
-
         if (port->type == port->INPUT)
         {
             raw_value = port->module->inputs[port->portId].value;
-            // param_value_field->setValue(tapped_value);
             display_type = "input";
         }
         if (port->type == port->OUTPUT)
         {
             raw_value = port->module->outputs[port->portId].value;
-            // param_value_field->setValue(tapped_value);
             display_type = "output";
         }
 
-        // engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, tapped_value);
-        //engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, tapped_value);
-        // engineSetParam(module, HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM, scaled_value);
         // inputs/outputs dont have variable min/max, so just use the -10/+10 and
         // 0 for the default to get the point across.
-        /*
-        min_field->setText(stringf("%#.4g", -10.0f));
-        max_field->setText(stringf("%#.4g", 10.0f));
-        default_field->setText(stringf("%#.4g", 0.0f));
-        */
-
-        // display_value = raw_value;
         display_min = -10.0f;
         display_max = 10.0f;
         display_default = 0.0f;

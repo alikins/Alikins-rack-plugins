@@ -102,7 +102,6 @@ struct PurplePort : SVGPort {
 	}
 };
 
-
 struct ShiftPedalWidget : ModuleWidget {
     ShiftPedalWidget(ShiftPedal *module);
 
@@ -118,7 +117,6 @@ struct ShiftPedalWidget : ModuleWidget {
     void step() override;
 
 };
-
 
 ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
@@ -141,7 +139,6 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
                 0.0f, 10.0f, 0.0f);
     addParam(leftShiftButtonSwitch);
 
-    // debug("leftShiftButtonSwitch height %f", leftShiftButtonSwitch->box.size.y);
     buttonHeight = leftShiftButtonSwitch->box.size.y;
 
     Port *leftShiftButtonPort =
@@ -154,8 +151,6 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
 
     float portHeight = leftShiftButtonPort->box.size.y;
     float portWidth = leftShiftButtonPort->box.size.x;
-
-    // debug("leftShiftButtonPort width(x): %f height(y): %f", portWidth, portHeight);
 
     // Add the 'either' port
 
@@ -287,7 +282,6 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     addChild(Widget::create<ScrewSilver>(Vec(0.0, 0)));
     addChild(Widget::create<ScrewSilver>(Vec(box.size.x-15, 0)));
     addChild(Widget::create<ScrewSilver>(Vec(0.0f, 365.0f)));
-    // addChild(Widget::create<ScrewSilver>(Vec(box.size.x-15, 365.0f)));
 
 }
 
@@ -309,4 +303,4 @@ void ShiftPedalWidget::step() {
 }
 
 Model *modelShiftPedal = Model::create<ShiftPedal, ShiftPedalWidget>(
-        "Alikins", "ShiftPedal", "Shift Pedal - Send gate when shift is pressed", UTILITY_TAG);
+        "Alikins", "ShiftPedal", "Shift Pedal - Gen gates on mod key presses", UTILITY_TAG);

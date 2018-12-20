@@ -13,6 +13,8 @@ struct HoveredValue : Module
     {
         HOVERED_PARAM_VALUE_PARAM,
         HOVER_ENABLED_PARAM,
+        OUTPUT_RANGE_PARAM,
+        HOVERED_SCALED_PARAM_VALUE_PARAM,
         NUM_PARAMS
     };
     enum InputIds
@@ -22,6 +24,7 @@ struct HoveredValue : Module
     enum OutputIds
     {
         PARAM_VALUE_OUTPUT,
+        SCALED_PARAM_VALUE_OUTPUT,
         NUM_OUTPUTS
     };
     enum LightIds
@@ -37,13 +40,18 @@ struct HoveredValue : Module
 
     HoverEnabled enabled = WITH_SHIFT;
 
+    VoltageRange outputRange = MINUS_PLUS_FIVE;
+
     SchmittTrigger hoverArmedTrigger;
 
 };
 
 void HoveredValue::step()
 {
+
     outputs[PARAM_VALUE_OUTPUT].value = params[HOVERED_PARAM_VALUE_PARAM].value;
+    outputs[SCALED_PARAM_VALUE_OUTPUT].value = params[HOVERED_SCALED_PARAM_VALUE_PARAM].value;
+
 }
 
 
@@ -55,6 +63,7 @@ struct HoveredValueWidget : ModuleWidget
     void onChange(EventChange &e) override;
 
     ParamWidget *enableHoverSwitch;
+    ParamWidget *outputRangeSwitch;
 
     ParamFloatField *param_value_field;
     TextField *min_field;
@@ -109,6 +118,26 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 
     addChild(widget_type_field);
 
+    // Scaled output and scaled output range
+    y_baseline = y_baseline + 25.0f;
+
+    outputRangeSwitch = ParamWidget::create<CKSSThree>(Vec(5, y_baseline ), module,
+        HoveredValue::OUTPUT_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
+
+    addParam(outputRangeSwitch);
+
+    // Scaled output port
+    Port *scaled_value_out_port = Port::create<PJ301MPort>(
+        Vec(60.0f, y_baseline),
+        Port::OUTPUT,
+        module,
+        HoveredValue::SCALED_PARAM_VALUE_OUTPUT);
+
+    outputs.push_back(scaled_value_out_port);
+
+    addChild(scaled_value_out_port);
+
+    // enabled/disable switch
     y_baseline = box.size.y - 65.0f;
 
     enableHoverSwitch = ParamWidget::create<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
@@ -116,15 +145,15 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 
     addParam(enableHoverSwitch);
 
-    Port *value_out_port = Port::create<PJ301MPort>(
+    Port *raw_value_out_port = Port::create<PJ301MPort>(
         Vec(60.0f, box.size.y - 67.0f),
         Port::OUTPUT,
         module,
         HoveredValue::PARAM_VALUE_OUTPUT);
 
-    outputs.push_back(value_out_port);
+    outputs.push_back(raw_value_out_port);
 
-    addChild(value_out_port);
+    addChild(raw_value_out_port);
 
     addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));
     addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
@@ -153,6 +182,8 @@ void HoveredValueWidget::step() {
         return;
     }
 
+    VoltageRange outputRange = (VoltageRange) round(module->params[HoveredValue::OUTPUT_RANGE_PARAM].value);
+
     // TODO/FIXME: I assume there is a better way to check type?
     ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
     if (pwidget)
@@ -160,9 +191,18 @@ void HoveredValueWidget::step() {
         param_value_field->setValue(pwidget->value);
 
         // TODO: option for selecting the output range? (uni/bi/original)
-        float scaled_value = rescale(pwidget->value, pwidget->minValue, pwidget->maxValue, -10.0f, 10.0f);
+        // TODO: outputs for 'raw/original' value and scaled
+        // TODO: show value of original and scaled?
+        // int output_index = round(params[OUTPUT_RANGE_PARAM].value);
+        // float min_out = voltage_min[output_index];
+        float tapped_value = pwidget->value;
 
-        engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, scaled_value);
+        float scaled_value = rescale(pwidget->value, pwidget->minValue, pwidget->maxValue,
+                                     voltage_min[outputRange],
+                                     voltage_max[outputRange]);
+
+        engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, tapped_value);
+        engineSetParam(module, HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM, scaled_value);
 
         min_field->setText(stringf("%#.4g", pwidget->minValue));
         max_field->setText(stringf("%#.4g", pwidget->maxValue));

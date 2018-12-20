@@ -71,8 +71,6 @@ struct InjectValueWidget : ModuleWidget
     void onChange(EventChange &e) override;
 
     // TODO: enum/params/ui for input range
-    // float min_input = -5.0f;
-    //float max_input = 5.0f;
 
     ParamWidget *enableInjectSwitch;
     ParamWidget *inputVoltageSwitch;
@@ -131,18 +129,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     addChild(widget_type_field);
 
-    float middle = box.size.x / 2.0f;
-    // float out_port_x = middle;
-    float out_port_x = 60.0f;
-
     y_baseline = box.size.y - 65.0f;
-
-    /*
-    ParamWidget *some_param = Component::create<ParamWidget>(Vec(60, 150), module);
-    some_param->paramId = paramId;
-	some_param->setLimits(minValue, maxValue);
-	some_param->setDefaultValue(defaultValue);
-    */
 
     enableInjectSwitch = ParamWidget::create<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
         InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);

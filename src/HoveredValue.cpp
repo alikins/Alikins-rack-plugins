@@ -35,7 +35,6 @@ struct HoveredValue : Module
 
     void step() override;
 
-    // float param_value;
     HoverEnabled enabled = WITH_SHIFT;
 
     SchmittTrigger hoverArmedTrigger;
@@ -44,10 +43,7 @@ struct HoveredValue : Module
 
 void HoveredValue::step()
 {
-    // HoverEnabled enabled = static_cast<HoverEnabled>(roundf(params[HOVER_ENABLED_PARAM].value));
-    // outputs[PARAM_VALUE_OUTPUT].value = param_value;
     outputs[PARAM_VALUE_OUTPUT].value = params[HOVERED_PARAM_VALUE_PARAM].value;
-
 }
 
 
@@ -113,12 +109,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 
     addChild(widget_type_field);
 
-    float middle = box.size.x / 2.0f;
-
     y_baseline = box.size.y - 65.0f;
-
-    // addParam(ParamWidget::create<CKSSThree>(Vec(19, box.size.y - 120.0f), module,
-    //                                   HoveredValue::HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f));
 
     enableHoverSwitch = ParamWidget::create<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
         HoveredValue::HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
@@ -132,7 +123,6 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
         HoveredValue::PARAM_VALUE_OUTPUT);
 
     outputs.push_back(value_out_port);
-    // value_out_port->box.pos = Vec(middle - value_out_port->box.size.x/2, y_baseline);
 
     addChild(value_out_port);
 
@@ -168,11 +158,10 @@ void HoveredValueWidget::step() {
     if (pwidget)
     {
         param_value_field->setValue(pwidget->value);
-        // rescale(float x, float a, float b, float yMin, float yMax)
 
         // TODO: option for selecting the output range? (uni/bi/original)
         float scaled_value = rescale(pwidget->value, pwidget->minValue, pwidget->maxValue, -10.0f, 10.0f);
-        // debug("pwidget->value: %f scaled_value: %f", pwidget->value, scaled_value);
+
         engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, scaled_value);
 
         min_field->setText(stringf("%#.4g", pwidget->minValue));
@@ -193,7 +182,6 @@ void HoveredValueWidget::step() {
         if (port->type == port->INPUT)
         {
             tapped_value = port->module->inputs[port->portId].value;
-            // param_value_field->setValue(port->module->inputs[port->portId].value);
             param_value_field->setValue(tapped_value);
             widget_type_field->setText("Input");
         }

@@ -147,9 +147,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.1266667"
-     inkscape:cx="-166.05263"
-     inkscape:cy="132.38288"
+     inkscape:zoom="12.778722"
+     inkscape:cx="14.999999"
+     inkscape:cy="27.5"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -204,7 +204,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -215,7 +215,7 @@
      style="display:inline"
      transform="translate(-20.000003,-15.000427)">
     <rect
-       style="display:inline;opacity:1;fill:#b3b3b3;fill-opacity:0.50196081;fill-rule:evenodd;stroke:#000000;stroke-width:0.63977337;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="display:inline;opacity:1;fill:#b3b3b3;fill-opacity:0.50196078;fill-rule:evenodd;stroke:#000000;stroke-width:0.63977337;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect830"
        width="49.286972"
        height="24.360226"
@@ -232,31 +232,38 @@
      transform="translate(-20.000003,-15.000427)"
      style="display:inline">
     <g
-       aria-label="A"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
-       id="text11659">
-      <path
-         d="m 36.856773,35.210457 -0.557291,-1.546875 h -2.614584 l -0.53125,1.546875 H 31.64844 l 3.041667,-7.734375 h 0.59375 l 3.067708,7.734375 z m -1.869791,-5.401042 -0.916667,2.817708 h 1.833333 z"
-         id="path11675"
-         inkscape:connector-curvature="0" />
-    </g>
-    <g
-       aria-label="L"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
-       id="text11663">
-      <path
-         d="m 32.598962,46.376602 v -7.630208 h 1.354167 v 6.427083 h 3.447917 v 1.203125 z"
-         id="path11672"
-         inkscape:connector-curvature="0" />
-    </g>
-    <g
-       aria-label="T"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
-       id="text11667">
-      <path
-         d="m 35.622398,51.34764 v 6.427083 H 34.268232 V 51.34764 h -2.427084 v -1.203126 h 6.317709 v 1.203126 z"
-         id="path11669"
-         inkscape:connector-curvature="0" />
+       id="g15873"
+       style="display:inline;enable-background:new">
+      <g
+         transform="translate(1e-6,1.5)"
+         id="text11659-7"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;display:inline;fill:#000000;fill-opacity:1;stroke:none;enable-background:new"
+         aria-label="A">
+        <path
+           inkscape:connector-curvature="0"
+           id="path11675-4"
+           d="m 36.856773,35.210457 -0.557291,-1.546875 h -2.614584 l -0.53125,1.546875 H 31.64844 l 3.041667,-7.734375 h 0.59375 l 3.067708,7.734375 z m -1.869791,-5.401042 -0.916667,2.817708 h 1.833333 z" />
+      </g>
+      <g
+         transform="translate(0.499999,-0.061071)"
+         id="text11663-4"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;display:inline;fill:#000000;fill-opacity:1;stroke:none;enable-background:new"
+         aria-label="L">
+        <path
+           inkscape:connector-curvature="0"
+           id="path11672-1"
+           d="m 32.598962,46.376602 v -7.630208 h 1.354167 v 6.427083 h 3.447917 v 1.203125 z" />
+      </g>
+      <g
+         transform="translate(1e-6,-1.5)"
+         id="text11667-7"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;display:inline;fill:#000000;fill-opacity:1;stroke:none;enable-background:new"
+         aria-label="T">
+        <path
+           inkscape:connector-curvature="0"
+           id="path11669-8"
+           d="m 35.622398,51.34764 v 6.427083 H 34.268232 V 51.34764 h -2.427084 v -1.203126 h 6.317709 v 1.203126 z" />
+      </g>
     </g>
   </g>
 </svg>

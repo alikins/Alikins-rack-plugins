@@ -68,19 +68,6 @@ void ShiftPedal::step() {
         params[RIGHT_SUPER_PARAM].value >= 10.0f ? 10.0f : 0.0f;
 }
 
-bool windowIsCtrlPressed() {
-	return glfwGetKey(gWindow, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS || glfwGetKey(gWindow, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS;
-}
-
-
-bool windowIsLeftShiftPressed() {
-	return glfwGetKey(gWindow, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
-}
-
-bool windowIsRightShiftPressed() {
-    return glfwGetKey(gWindow, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
-}
-
 struct ShiftSwitch : SVGSwitch, ToggleSwitch {
     ShiftSwitch() {
         addFrame(SVG::load(assetPlugin(plugin, "res/ShiftIsOff.svg")));

@@ -195,6 +195,7 @@ void HoveredValueWidget::step() {
 
     // TODO/FIXME: I assume there is a better way to check type?
     ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
+
     if (pwidget)
     {
         // TODO: show value of original and scaled?

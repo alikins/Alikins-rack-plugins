@@ -6,7 +6,6 @@
 
 #include "ParamFloatField.hpp"
 
-
 struct InjectValue : Module
 {
     enum ParamIds
@@ -30,7 +29,7 @@ struct InjectValue : Module
         NUM_LIGHTS
     };
 
-    enum HoverEnabled
+    enum InjectEnabled
     {
         OFF,
         WITH_SHIFT,
@@ -44,23 +43,21 @@ struct InjectValue : Module
     float param_value = 0.0f;
     float input_param_value = 0.0f;
 
-    HoverEnabled enabled = WITH_SHIFT;
+    InjectEnabled enabled = WITH_SHIFT;
     VoltageRange inputRange = MINUS_PLUS_FIVE;
-
 };
 
 void InjectValue::step()
 {
+    enabled = (InjectEnabled) clamp((int) round(params[INJECT_ENABLED_PARAM].value), 0, 2);
+
+    inputRange  = (VoltageRange) clamp((int) round(params[INPUT_VOLTAGE_RANGE_PARAM].value), 0, 2);
+
     if (!inputs[VALUE_INPUT].active) {
         return;
     }
 
-    input_param_value = inputs[VALUE_INPUT].value;
-    param_value = input_param_value;
-
-    enabled = (HoverEnabled) clamp((int) roundf(params[INJECT_ENABLED_PARAM].value), 0, 2);
-
-    inputRange  = (VoltageRange) clamp((int) roundf(params[INPUT_VOLTAGE_RANGE_PARAM].value), 0, 2);
+    param_value = inputs[VALUE_INPUT].value;
 }
 
 struct InjectValueWidget : ModuleWidget
@@ -98,6 +95,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
     param_value_field = new ParamFloatField(module);
     param_value_field->box.pos = Vec(x_pos, y_baseline);
     param_value_field->box.size = text_field_size;
+    param_value_field->setValue(module->param_value);
 
     addChild(param_value_field);
 
@@ -131,7 +129,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     y_baseline = box.size.y - 128.0f;
 
-    inputVoltageSwitch = ParamWidget::create<CKSSThree>(Vec(5, y_baseline ), module,
+    inputVoltageSwitch = ParamWidget::create<CKSSThree>(Vec(5.0f, y_baseline ), module,
         InjectValue::INPUT_VOLTAGE_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(inputVoltageSwitch);
@@ -149,22 +147,8 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     addParam(enableInjectSwitch);
 
-
-
     inputs.push_back(value_in_port);
-    //value_in_port->box.pos = Vec(56.0f, box.size.y - 133.0f);
     addChild(value_in_port);
-
-    Port *value_out_port = Port::create<PJ301MPort>(
-        Vec(60.0f, box.size.y - 67.0f),
-        Port::OUTPUT,
-        module,
-        InjectValue::DEBUG1_OUTPUT);
-
-    outputs.push_back(value_out_port);
-    // value_out_port->box.pos = Vec(box.size.x - value_out_port->box.size.x, y_baseline);
-
-    addChild(value_out_port);
 
     addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));
     addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
@@ -177,84 +161,84 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 }
 
 void InjectValueWidget::step() {
-
-
-    bool shift_pressed = windowIsShiftPressed();
-
-    if (!gHoveredWidget) {
-        return;
-    }
-
     InjectValue *injectValueModule = dynamic_cast<InjectValue *>(module);
 
     if (!injectValueModule) {
         return;
     }
 
-    if (injectValueModule->enabled == InjectValue::OFF) {
-        return;
-    }
 
-    if (injectValueModule->enabled == InjectValue::WITH_SHIFT && !shift_pressed) {
+    if (!gHoveredWidget) {
         return;
     }
 
     // TODO/FIXME: I assume there is a better way to check type?
     ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
 
-    // Don't inject values into the switch that turns inject on/off
-    if (pwidget && (pwidget != enableInjectSwitch))
-    {
+    if (!pwidget) {
+        min_field->setText("");
+        max_field->setText("");
+        default_field->setText("");
+        widget_type_field->setText("unknown");
 
-        float input = module->inputs[InjectValue::VALUE_INPUT].value;
-        float clamped_input = clamp(input,
-                                    voltage_min[injectValueModule->inputRange],
-                                    voltage_max[injectValueModule->inputRange]);
-        // float scaled_value = clamp(module->inputs[InjectValue::VALUE_INPUT].value,
-        //                            voltage_min[injectValueModule->inputRange],
-         //                           voltage_max[injectValueModule->inputRange]);
+        ModuleWidget::step();
+        return;
+    }
 
-        // rescale the input CV (-10/+10V) to whatever the range of the param widget is
-        float scaled_value = rescale(clamped_input,
-            voltage_min[injectValueModule->inputRange],
-            voltage_max[injectValueModule->inputRange],
-            // injectValueModule->minInputVoltage,
-            //injectValueModule->maxInputVoltage,
-            pwidget->minValue, pwidget->maxValue);
+    // float input = module->inputs[InjectValue::VALUE_INPUT].value;
+    float input_value = injectValueModule->param_value;
 
-        debug("input: %f (in_min: %f, in_max:%f) clamped_in: %f out_min: %f, out_max: %f) scaled_value: %f",
-            input,
+    // clamp the input to withing input voltage range before scaling it
+    float clamped_input = clamp(input_value,
+                                voltage_min[injectValueModule->inputRange],
+                                voltage_max[injectValueModule->inputRange]);
+
+    // rescale the input CV to whatever the range of the param widget is
+    float scaled_value = rescale(clamped_input,
+                                 voltage_min[injectValueModule->inputRange],
+                                 voltage_max[injectValueModule->inputRange],
+                                 pwidget->minValue, pwidget->maxValue);
+
+    /*
+        debug("input_value: %f (in_min: %f, in_max:%f) clamped_in: %f out_min: %f, out_max: %f) scaled_value: %f",
+            input_value,
             voltage_min[injectValueModule->inputRange],
             voltage_max[injectValueModule->inputRange],
             clamped_input,
             pwidget->minValue,
             pwidget->maxValue,
             scaled_value);
+        */
 
-        // ParamWidgets are-a QuantityWidget, so change it's value
+    // Show the value that will be injected
+    // TODO: show the original input value and scaled output?
+
+    if (!injectValueModule->enabled || (injectValueModule->enabled == InjectValue::WITH_SHIFT && !windowIsShiftPressed()))
+    {
+        return;
+    }
+
+    param_value_field->setValue(scaled_value);
+
+    min_field->setText(stringf("%#.4g", pwidget->minValue));
+    max_field->setText(stringf("%#.4g", pwidget->maxValue));
+    default_field->setText(stringf("%#.4g", pwidget->defaultValue));
+    widget_type_field->setText("Param");
+
+    // ParamWidgets are-a QuantityWidget, so change it's value
+    // but don't inject values into the switch that turns inject on/off
+    if (pwidget != enableInjectSwitch)
+    {
+
+        // TODO: would be useful to have a light to indicate when values are being injected
         pwidget->setValue(scaled_value);
 
         // force a step of the param widget to get it to 'animate'
         pwidget->step();
 
-        // EventChange e;
-        // pwidget->onChange(e);
-
-        // Show the value that will be injected
-        // TODO: show the original input value and scaled output?
-        param_value_field->setValue(scaled_value);
-
-        min_field->setText(stringf("%#.4g", pwidget->minValue));
-        max_field->setText(stringf("%#.4g", pwidget->maxValue));
-        default_field->setText(stringf("%#.4g", pwidget->defaultValue));
-        widget_type_field->setText("Param");
-
-        //EventChange e;
-        //onChange(e);
-        // TODO:
     }
-    ModuleWidget::step();
 
+    ModuleWidget::step();
 }
 
 void InjectValueWidget::onChange(EventChange &e) {

@@ -120,7 +120,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 
     // Scaled output and scaled output range
     // y_baseline = y_baseline + 25.0f;
-    y_baseline = box.size.y - 118.0f;
+    y_baseline = box.size.y - 128.0f;
 
     outputRangeSwitch = ParamWidget::create<CKSSThree>(Vec(5, y_baseline ), module,
         HoveredValue::OUTPUT_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
@@ -129,7 +129,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 
     // Scaled output port
     Port *scaled_value_out_port = Port::create<PJ301MPort>(
-        Vec(60.0f, y_baseline),
+        Vec(60.0f, y_baseline - 2.0f),
         Port::OUTPUT,
         module,
         HoveredValue::SCALED_PARAM_VALUE_OUTPUT);

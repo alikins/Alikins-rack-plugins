@@ -17,6 +17,11 @@ struct GateLength : Module {
         GATE_LENGTH_PARAM3,
         GATE_LENGTH_PARAM4,
         GATE_LENGTH_PARAM5,
+        BPM_PARAM1,
+        BPM_PARAM2,
+        BPM_PARAM3,
+        BPM_PARAM4,
+        BPM_PARAM5,
         NUM_PARAMS
     };
     enum InputIds {
@@ -30,6 +35,11 @@ struct GateLength : Module {
         GATE_LENGTH_INPUT3,
         GATE_LENGTH_INPUT4,
         GATE_LENGTH_INPUT5,
+        BPM_INPUT1,
+        BPM_INPUT2,
+        BPM_INPUT3,
+        BPM_INPUT4,
+        BPM_INPUT5,
         NUM_INPUTS
     };
     enum OutputIds {
@@ -44,6 +54,7 @@ struct GateLength : Module {
         NUM_LIGHTS
     };
 
+    float bpms[GATE_LENGTH_INPUTS];
     float gate_length[GATE_LENGTH_INPUTS];
 
     SchmittTrigger inputOnTrigger[GATE_LENGTH_INPUTS];
@@ -66,6 +77,11 @@ void GateLength::step() {
 
     for (int i = 0; i < GATE_LENGTH_INPUTS; i++) {
         gate_length[i] = clamp(params[GATE_LENGTH_PARAM1 + i].value + inputs[GATE_LENGTH_INPUT1 + i].value, 0.0f, 10.0f);
+
+
+        // TODO/FIXME: just add param and input for now, but likely better to have an attenuator as well
+        //             (ie, like fundamental LFO's FM1 input + FM1 mix param + LFO freq param)
+        bpms[i] = clamp(params[BPM_PARAM1 + i].value + inputs[BPM_INPUT1 + i].value, -10.0f, 10.0f);
 
         if (inputOnTrigger[i].process(inputs[TRIGGER_INPUT1 + i].value)) {
             // debug("GL INPUT ON TRIGGER %d gate_length: %f", i, gate_length[i]);

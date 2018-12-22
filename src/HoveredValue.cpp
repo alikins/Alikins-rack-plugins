@@ -6,7 +6,19 @@
 #include "window.hpp"
 #include "dsp/digital.hpp"
 
+/* Notes:
 
+Most of this is implemented in HoveredValueWidget.step(). Each
+time the gui thread steps the scene graph, .step() is checking
+if gHoveredWidget is a ParamWidget or Port. It is more or less
+polling.
+
+Is there any way to get an event when any ParamWidget or Port is
+hovered? (onMouseMove or onMouseEnter? but for other widgets). May
+be better implemented as responding to hypothetical onHoverEnter
+or onHoverLeave instead of polling.
+
+*/
 struct HoveredValue : Module
 {
     enum ParamIds
@@ -61,6 +73,8 @@ struct HoveredValueWidget : ModuleWidget
 
     void step() override;
     void onChange(EventChange &e) override;
+    void tooltipRemove(std::string reason);
+    void tooltipAdd(std::string tooltipText, Widget *hoveredWidget);
 
     ParamWidget *enableHoverSwitch;
     ParamWidget *outputRangeSwitch;
@@ -70,6 +84,8 @@ struct HoveredValueWidget : ModuleWidget
     TextField *max_field;
     TextField *default_field;
     TextField *widget_type_field;
+
+    Tooltip *tooltip = NULL;
 };
 
 HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(module)
@@ -166,12 +182,65 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     onChange(e);
 }
 
+void HoveredValueWidget::tooltipRemove(std::string reason) {
+    // assert?
+    // debug("tooltipRemove[res=%s], tooltip == NULL?: %d", reason.c_str(), tooltip == NULL);
+
+    if (!tooltip) {
+        // debug("tooltip was null");
+        return;
+    };
+
+    debug("tooltipRemove[res=%s]: tt->text:%s", reason.c_str(), tooltip->text.c_str());
+    if (!gScene) {
+        // debug("gScene was null");
+        return;
+    }
+    // gScene->removeChild(tooltip);
+    if (tooltip->parent) {
+        gScene->removeChild(tooltip);
+    }
+	delete tooltip;
+	tooltip = NULL;
+}
+
+void HoveredValueWidget::tooltipAdd(std::string tooltipText, Widget *hoveredWidget)
+{
+    tooltip = new Tooltip();
+
+    ModuleWidget *hoveredParent = hoveredWidget->getAncestorOfType<ModuleWidget>();
+    if (!hoveredParent) {
+        debug("hoveredParent was null");
+        return;
+    }
+
+    // debug("hoveredParent pos (%f, %f)", hoveredParent->box.pos.x, hoveredParent->box.pos.y);
+
+    Vec offsetFromHovered = Vec(20.0, -20.0f);
+    Vec absHovered = hoveredParent->getAbsoluteOffset(hoveredWidget->box.pos);
+    Vec hoveredOffset = absHovered.plus(offsetFromHovered);
+
+    tooltip->box.pos = hoveredOffset;
+    debug("tooltip: (%f, %f) pos: (%f, %f)", tooltip->box.pos.x, tooltip->box.pos.y,
+        hoveredWidget->box.pos.x, hoveredWidget->box.pos.y);
+
+    tooltip->text = tooltipText;
+    gScene->addChild(tooltip);
+}
+
 void HoveredValueWidget::step() {
+    /* TODO: would be useful to be more explicit about the state here,
+        ie, states indicating if hovered widget is not injectable or not,
+        and if we are actively injecting or not. And transitions for when
+        we start hovering and stop hovering over a widget.
+    */
+
     float display_min = -5.0f;
     float display_max = 5.0f;
     float display_default = 0.0f;
 
     std::string display_type = "";
+	std::string tooltipText;
 
     float raw_value = 0.0f;
 
@@ -180,14 +249,17 @@ void HoveredValueWidget::step() {
     bool shift_pressed = windowIsShiftPressed();
 
     if (!gHoveredWidget) {
+        tooltipRemove("no gHoveredWidget");
         return;
     }
 
     if (module->params[HoveredValue::HOVER_ENABLED_PARAM].value == HoveredValue::OFF) {
+        tooltipRemove("hover_enabled is off");
         return;
     }
 
     if (module->params[HoveredValue::HOVER_ENABLED_PARAM].value == HoveredValue::WITH_SHIFT &&!shift_pressed) {
+        tooltipRemove("hover_enabled==SHIFT but shift isnt pressed");
         return;
     }
 
@@ -210,6 +282,14 @@ void HoveredValueWidget::step() {
         //       also show the name of the hovered widget as a hint on mystery meat params
         // TODO: anyway to get the orig literal name of an enum value (ie, LFO_VC_OUTPUT etc)
         //       at runtime? might also be hint
+        /*
+        if (!tooltip){
+            tooltipAdd(stringf("%#.4g", raw_value), gHoveredWidget);
+        } else {
+            tooltip->text = stringf("%#.4g", raw_value);
+        }
+        */
+
     }
 
     Port *port = dynamic_cast<Port *>(gHoveredWidget);
@@ -233,13 +313,28 @@ void HoveredValueWidget::step() {
         display_default = 0.0f;
     }
 
-    // display_value = raw_value;
+    if (!pwidget && !port) {
+        tooltipRemove("hovered widget is not a paramWidget or port");
+    }
+    else {
+        // TODO build fancier tool tip text
+        // TODO maybe just draw a widget like a tooltip, would be cool to draw a pop up 'scope'
+        if (!tooltip) {
+            tooltipAdd(stringf("%#.4g", raw_value), gHoveredWidget);
+        }
+        else {
+            tooltip->text = stringf("%#.4g", raw_value);
+        }
+    }
+
     float scaled_value = rescale(raw_value, display_min, display_max,
                                  voltage_min[outputRange],
                                  voltage_max[outputRange]);
 
     engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, raw_value);
     engineSetParam(module, HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM, scaled_value);
+
+
 
     param_value_field->setValue(raw_value);
     min_field->setText(stringf("%#.4g", display_min));

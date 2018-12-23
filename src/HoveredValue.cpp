@@ -73,7 +73,7 @@ struct HoveredValueWidget : ModuleWidget
 
     void step() override;
     void onChange(EventChange &e) override;
-    void tooltipHide(std::string reason);
+    void tooltipHide();
     void tooltipShow(std::string tooltipText, Widget *hoveredWidget);
 
     ParamWidget *enableHoverSwitch;
@@ -184,10 +184,8 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     onChange(e);
 }
 
-void HoveredValueWidget::tooltipHide(std::string reason) {
+void HoveredValueWidget::tooltipHide() {
     // assert?
-    // debug("tooltipHide[res=%s], tooltip == NULL?: %d", reason.c_str(), tooltip == NULL);
-
     if (!tooltip) {
         // debug("tooltip was null");
         return;
@@ -195,7 +193,8 @@ void HoveredValueWidget::tooltipHide(std::string reason) {
 
     if(!tooltip->parent) { return; }
 
-    debug("tooltipHide[res=%s]: tt->text:%s", reason.c_str(), tooltip->text.c_str());
+    // debug("tooltipHide[res=%s]: tt->text:%s", reason.c_str(), tooltip->text.c_str());
+
     if (!gScene) {
         // debug("gScene was null");
         return;
@@ -222,8 +221,9 @@ void HoveredValueWidget::tooltipShow(std::string tooltipText, Widget *hoveredWid
     Vec hoveredOffset = absHovered.plus(offsetFromHovered);
 
     tooltip->box.pos = hoveredOffset;
-    debug("tooltip show: (%f, %f) pos: (%f, %f)", tooltip->box.pos.x, tooltip->box.pos.y,
-        hoveredWidget->box.pos.x, hoveredWidget->box.pos.y);
+
+    // debug("tooltip show: (%f, %f) pos: (%f, %f)", tooltip->box.pos.x, tooltip->box.pos.y,
+    // hoveredWidget->box.pos.x, hoveredWidget->box.pos.y);
 
     tooltip->text = tooltipText;
     if (!tooltip->parent) {
@@ -252,17 +252,17 @@ void HoveredValueWidget::step() {
     bool shift_pressed = windowIsShiftPressed();
 
     if (!gHoveredWidget) {
-        tooltipHide("no gHoveredWidget");
+        tooltipHide();
         return;
     }
 
     if (module->params[HoveredValue::HOVER_ENABLED_PARAM].value == HoveredValue::OFF) {
-        tooltipHide("hover_enabled is off");
+        tooltipHide();
         return;
     }
 
     if (module->params[HoveredValue::HOVER_ENABLED_PARAM].value == HoveredValue::WITH_SHIFT &&!shift_pressed) {
-        tooltipHide("hover_enabled==SHIFT but shift isnt pressed");
+        tooltipHide();
         return;
     }
 
@@ -309,7 +309,7 @@ void HoveredValueWidget::step() {
     }
 
     if (!pwidget && !port) {
-        tooltipHide("hovered widget is not a paramWidget or port");
+        tooltipHide();
     }
     else {
         // TODO build fancier tool tip text

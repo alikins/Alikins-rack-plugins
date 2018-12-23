@@ -73,8 +73,8 @@ struct HoveredValueWidget : ModuleWidget
 
     void step() override;
     void onChange(EventChange &e) override;
-    void tooltipRemove(std::string reason);
-    void tooltipAdd(std::string tooltipText, Widget *hoveredWidget);
+    void tooltipHide(std::string reason);
+    void tooltipShow(std::string tooltipText, Widget *hoveredWidget);
 
     ParamWidget *enableHoverSwitch;
     ParamWidget *outputRangeSwitch;
@@ -99,6 +99,8 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     float x_pos = 10.0f;
 
     y_baseline = 38.0f;
+
+    tooltip = new Tooltip();
 
     param_value_field = new ParamFloatField(module);
     param_value_field->box.pos = Vec(x_pos, y_baseline);
@@ -182,31 +184,30 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     onChange(e);
 }
 
-void HoveredValueWidget::tooltipRemove(std::string reason) {
+void HoveredValueWidget::tooltipHide(std::string reason) {
     // assert?
-    // debug("tooltipRemove[res=%s], tooltip == NULL?: %d", reason.c_str(), tooltip == NULL);
+    // debug("tooltipHide[res=%s], tooltip == NULL?: %d", reason.c_str(), tooltip == NULL);
 
     if (!tooltip) {
         // debug("tooltip was null");
         return;
     };
 
-    debug("tooltipRemove[res=%s]: tt->text:%s", reason.c_str(), tooltip->text.c_str());
+    if(!tooltip->parent) { return; }
+
+    debug("tooltipHide[res=%s]: tt->text:%s", reason.c_str(), tooltip->text.c_str());
     if (!gScene) {
         // debug("gScene was null");
         return;
     }
-    // gScene->removeChild(tooltip);
     if (tooltip->parent) {
         gScene->removeChild(tooltip);
     }
-	delete tooltip;
-	tooltip = NULL;
+
 }
 
-void HoveredValueWidget::tooltipAdd(std::string tooltipText, Widget *hoveredWidget)
+void HoveredValueWidget::tooltipShow(std::string tooltipText, Widget *hoveredWidget)
 {
-    tooltip = new Tooltip();
 
     ModuleWidget *hoveredParent = hoveredWidget->getAncestorOfType<ModuleWidget>();
     if (!hoveredParent) {
@@ -221,11 +222,13 @@ void HoveredValueWidget::tooltipAdd(std::string tooltipText, Widget *hoveredWidg
     Vec hoveredOffset = absHovered.plus(offsetFromHovered);
 
     tooltip->box.pos = hoveredOffset;
-    debug("tooltip: (%f, %f) pos: (%f, %f)", tooltip->box.pos.x, tooltip->box.pos.y,
+    debug("tooltip show: (%f, %f) pos: (%f, %f)", tooltip->box.pos.x, tooltip->box.pos.y,
         hoveredWidget->box.pos.x, hoveredWidget->box.pos.y);
 
     tooltip->text = tooltipText;
-    gScene->addChild(tooltip);
+    if (!tooltip->parent) {
+        gScene->addChild(tooltip);
+    }
 }
 
 void HoveredValueWidget::step() {
@@ -249,23 +252,22 @@ void HoveredValueWidget::step() {
     bool shift_pressed = windowIsShiftPressed();
 
     if (!gHoveredWidget) {
-        tooltipRemove("no gHoveredWidget");
+        tooltipHide("no gHoveredWidget");
         return;
     }
 
     if (module->params[HoveredValue::HOVER_ENABLED_PARAM].value == HoveredValue::OFF) {
-        tooltipRemove("hover_enabled is off");
+        tooltipHide("hover_enabled is off");
         return;
     }
 
     if (module->params[HoveredValue::HOVER_ENABLED_PARAM].value == HoveredValue::WITH_SHIFT &&!shift_pressed) {
-        tooltipRemove("hover_enabled==SHIFT but shift isnt pressed");
+        tooltipHide("hover_enabled==SHIFT but shift isnt pressed");
         return;
     }
 
     VoltageRange outputRange = (VoltageRange) round(module->params[HoveredValue::OUTPUT_RANGE_PARAM].value);
 
-    // TODO/FIXME: I assume there is a better way to check type?
     ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
 
     if (pwidget)
@@ -282,13 +284,6 @@ void HoveredValueWidget::step() {
         //       also show the name of the hovered widget as a hint on mystery meat params
         // TODO: anyway to get the orig literal name of an enum value (ie, LFO_VC_OUTPUT etc)
         //       at runtime? might also be hint
-        /*
-        if (!tooltip){
-            tooltipAdd(stringf("%#.4g", raw_value), gHoveredWidget);
-        } else {
-            tooltip->text = stringf("%#.4g", raw_value);
-        }
-        */
 
     }
 
@@ -314,17 +309,12 @@ void HoveredValueWidget::step() {
     }
 
     if (!pwidget && !port) {
-        tooltipRemove("hovered widget is not a paramWidget or port");
+        tooltipHide("hovered widget is not a paramWidget or port");
     }
     else {
         // TODO build fancier tool tip text
-        // TODO maybe just draw a widget like a tooltip, would be cool to draw a pop up 'scope'
-        if (!tooltip) {
-            tooltipAdd(stringf("%#.4g", raw_value), gHoveredWidget);
-        }
-        else {
-            tooltip->text = stringf("%#.4g", raw_value);
-        }
+        // TODO maybe just draw a widget like a tooltip, would be cool to draw a pop up a mini 'scope'
+        tooltipShow(stringf("%#.4g", raw_value), gHoveredWidget);
     }
 
     float scaled_value = rescale(raw_value, display_min, display_max,
@@ -333,8 +323,6 @@ void HoveredValueWidget::step() {
 
     engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, raw_value);
     engineSetParam(module, HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM, scaled_value);
-
-
 
     param_value_field->setValue(raw_value);
     min_field->setText(stringf("%#.4g", display_min));

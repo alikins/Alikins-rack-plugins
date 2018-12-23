@@ -70,6 +70,8 @@ struct GateLength : Module {
     float bpms[GATE_LENGTH_INPUTS];
     float bpm_labels[GATE_LENGTH_INPUTS];
     float gate_length[GATE_LENGTH_INPUTS];
+    float beat_length[GATE_LENGTH_INPUTS];
+    // float beat_length[GATE_LENGTH_INPUTS];
 
     SchmittTrigger inputOnTrigger[GATE_LENGTH_INPUTS];
 
@@ -97,6 +99,22 @@ void GateLength::step() {
         //             (ie, like fundamental LFO's FM1 input + FM1 mix param + LFO freq param)
         bpms[i] = clamp(params[BPM_PARAM1 + i].value + inputs[BPM_INPUT1 + i].value, -10.0f, 10.0f);
         bpm_labels[i] = lfo_cv_to_bpm(bpms[i]);
+
+        if (inputs[BEAT_LENGTH_MULTIPLIER_INPUT1 + i].active) {
+            beat_length[i] = clamp(inputs[BEAT_LENGTH_MULTIPLIER_INPUT1 + i].value, -10.0f, 10.0f);
+
+            float beats_per_sec = lfo_cv_to_freq(bpms[i]);
+            float quarter_note_beat_length_secs = 1.0f / beats_per_sec;
+            gate_length[i] = quarter_note_beat_length_secs * beat_length[i];
+            /*
+            if (i == 2) {
+                debug("gate_length: %f sec, beat length: %f secs, lfo_freq: %f", gate_length[i], quarter_note_beat_length_secs, lfo_cv_to_freq(bpms[i]) );
+            }
+            */
+            // float gate_length_s =
+        }
+
+        // BEAT_LENGTH_MULTIPLIER_INPUT1
 
         if (inputOnTrigger[i].process(inputs[TRIGGER_INPUT1 + i].value)) {
             // debug("GL INPUT ON TRIGGER %d gate_length: %f", i, gate_length[i]);
@@ -184,12 +202,21 @@ GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
         bpm_display->box.pos = Vec(x_pos, y_pos);
         bpm_display->box.size = Vec(48.0f, 18.0f);
         bpm_display->precision = 2;
-        //float *bpm_label = &module->bpm_labels[i];
+        // float *bpm_label = &module->bpm_labels[i];
         bpm_display->value = &module->bpm_labels[i];
         debug("i: %d bpm: %f", i, bpm_display->value);
-
-        // display->value = &module->affichnum;
         addChild(bpm_display);
+
+        x_pos += 48.0f;
+
+        MsDisplayWidget *beat_length_display = new MsDisplayWidget();
+        beat_length_display->box.pos = Vec(x_pos, y_pos);
+        beat_length_display->box.size = Vec(48.0f, 18.0f);
+        beat_length_display->precision = 2;
+        // float *bpm_label = &module->bpm_labels[i];
+        beat_length_display->value = &module->beat_length[i];
+        debug("i: %d beat_length: %f", i, beat_length_display->value);
+        addChild(beat_length_display);
 
         y_pos += 44.0f;
     }

@@ -6,13 +6,16 @@
 struct MsDisplayWidget : TransparentWidget {
 
   float *value;
+  //float value;
   std::shared_ptr<Font> font;
+  int precision = 3;
 
   MsDisplayWidget() {
     font = Font::load(assetPlugin(plugin, "res/Segment7Standard.ttf"));
   }
 
   void draw(NVGcontext *vg) override {
+    // float rectRadius = 3.0f;
     // Background
     // these go to...
     NVGcolor backgroundColor = nvgRGB(0x11, 0x11, 0x11);
@@ -31,15 +34,17 @@ struct MsDisplayWidget : TransparentWidget {
     nvgStroke(vg);
 
     // text
-    nvgFontSize(vg, 14);
+    nvgFontSize(vg, 12);
     nvgFontFaceId(vg, font->handle);
-    nvgTextLetterSpacing(vg, 2.5);
+    // nvgTextLetterSpacing(vg, 2.5);
+    nvgTextLetterSpacing(vg, 2.0);
 
     std::stringstream to_display;
     // to_display << std::setiosflags(std::ios::fixed) << std::right  << std::setw(5) << std::setprecision(4) << *value;
-    to_display << std::setiosflags(std::ios::fixed) << std::left << std::setprecision(4) << *value;
+    to_display << std::setiosflags(std::ios::fixed) << std::left << std::setprecision(precision) << *value;
 
-    Vec textPos = Vec(1.0f, 19.0f);
+    // Vec textPos = Vec(1.0f, 19.0f);
+    Vec textPos = Vec(1.0f, 14.0f);
 
     NVGcolor textColor = nvgRGB(0x65, 0xf6, 0x78);
     nvgFillColor(vg, textColor);

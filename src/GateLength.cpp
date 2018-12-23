@@ -1,6 +1,7 @@
 #include "dsp/digital.hpp"
 
 #include "alikins.hpp"
+#include "cv_utils.hpp"
 #include "MsDisplayWidget.hpp"
 
 /*
@@ -22,6 +23,12 @@ struct GateLength : Module {
         BPM_PARAM3,
         BPM_PARAM4,
         BPM_PARAM5,
+        BEAT_LENGTH_MULTIPLIER_PARAM1,
+        BEAT_LENGTH_MULTIPLIER_PARAM2,
+        BEAT_LENGTH_MULTIPLIER_PARAM3,
+        BEAT_LENGTH_MULTIPLIER_PARAM4,
+        BEAT_LENGTH_MULTIPLIER_PARAM5,
+        // TODO: length percent/multiplier params (1.0 for quarter note, 2.0 for whole, .5 for eigth, etc)
         NUM_PARAMS
     };
     enum InputIds {
@@ -40,6 +47,12 @@ struct GateLength : Module {
         BPM_INPUT3,
         BPM_INPUT4,
         BPM_INPUT5,
+        // TODO: length percent/multiplier inputs (1.0 for quarter note, 2.0 for whole, .5 for eigth, etc)
+        BEAT_LENGTH_MULTIPLIER_INPUT1,
+        BEAT_LENGTH_MULTIPLIER_INPUT2,
+        BEAT_LENGTH_MULTIPLIER_INPUT3,
+        BEAT_LENGTH_MULTIPLIER_INPUT4,
+        BEAT_LENGTH_MULTIPLIER_INPUT5,
         NUM_INPUTS
     };
     enum OutputIds {
@@ -55,6 +68,7 @@ struct GateLength : Module {
     };
 
     float bpms[GATE_LENGTH_INPUTS];
+    float bpm_labels[GATE_LENGTH_INPUTS];
     float gate_length[GATE_LENGTH_INPUTS];
 
     SchmittTrigger inputOnTrigger[GATE_LENGTH_INPUTS];
@@ -82,6 +96,7 @@ void GateLength::step() {
         // TODO/FIXME: just add param and input for now, but likely better to have an attenuator as well
         //             (ie, like fundamental LFO's FM1 input + FM1 mix param + LFO freq param)
         bpms[i] = clamp(params[BPM_PARAM1 + i].value + inputs[BPM_INPUT1 + i].value, -10.0f, 10.0f);
+        bpm_labels[i] = lfo_cv_to_bpm(bpms[i]);
 
         if (inputOnTrigger[i].process(inputs[TRIGGER_INPUT1 + i].value)) {
             // debug("GL INPUT ON TRIGGER %d gate_length: %f", i, gate_length[i]);
@@ -92,6 +107,12 @@ void GateLength::step() {
     }
 }
 
+struct SmallPurplePort : SVGPort {
+	SmallPurplePort() {
+		setSVG(SVG::load(assetPlugin(plugin, "res/PurplePort.svg")));
+	}
+};
+
 struct GateLengthWidget : ModuleWidget {
     GateLengthWidget(GateLength *module);
 };
@@ -101,46 +122,76 @@ GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
     box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     setPanel(SVG::load(assetPlugin(plugin, "res/GateLength.svg")));
 
-    float y_pos = 2.0f;
+    float y_pos = 32.0f;
 
     for (int i = 0; i < GATE_LENGTH_INPUTS; i++) {
         float x_pos = 4.0f;
-        y_pos += 39.0f;
+        // y_pos += 39.0f;
+        //y_pos += 32.0f;
 
-        addInput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
+        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
                                           Port::INPUT,
                                           module,
                                           GateLength::TRIGGER_INPUT1 + i));
 
-        x_pos += 30.0f;
+        // x_pos += 30.0f;
+        x_pos += 19.0f;
 
         MsDisplayWidget *gate_length_display = new MsDisplayWidget();
-        gate_length_display->box.pos = Vec(x_pos, y_pos + 1.0f);
-        gate_length_display->box.size = Vec(84, 24);
+        gate_length_display->box.pos = Vec(x_pos, y_pos);
+        gate_length_display->box.size = Vec(60.0f, 18.0f);
         gate_length_display->value = &module->gate_length[i];
         addChild(gate_length_display);
 
+        addInput(Port::create<SmallPurplePort>(Vec(x_pos + 62.0f, y_pos),
+                                          Port::INPUT,
+                                          module,
+                                          GateLength::BPM_INPUT1 + i));
+
+        addInput(Port::create<SmallPurplePort>(Vec(x_pos + 80.0f, y_pos),
+                                          Port::INPUT,
+                                          module,
+                                          GateLength::BEAT_LENGTH_MULTIPLIER_INPUT1 + i));
+
         // FIXME: use new sequential box hbox/vbox thing
-        x_pos += 84.0f;
+        // x_pos += 84.0f;
+        x_pos += 72.0f;
         x_pos += 4.0f;
-        addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
+        addOutput(Port::create<SmallPurplePort>(Vec(box.size.x - 21.0f, y_pos),
                                            Port::OUTPUT,
                                            module,
                                            GateLength::GATE_OUTPUT1 + i));
 
         x_pos = 4.0f;
-        y_pos += 26.0f;
+        // y_pos += 26.0f;
+        y_pos += 22.0f;
 
-        addInput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
+        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
                                           Port::INPUT,
                                           module,
                                           GateLength::GATE_LENGTH_INPUT1 + i));
 
-        x_pos += 30.0f;
-        addParam(ParamWidget::create<Trimpot>(Vec(x_pos, y_pos + 3.0f),
+        // x_pos += 30.0f;
+        x_pos += 19.0f;
+        addParam(ParamWidget::create<Trimpot>(Vec(x_pos, y_pos),
                                               module,
                                               GateLength::GATE_LENGTH_PARAM1 + i,
                                               0.0f, 10.0f, 0.1f));
+
+        x_pos += 19.0f;
+
+        MsDisplayWidget *bpm_display = new MsDisplayWidget();
+        bpm_display->box.pos = Vec(x_pos, y_pos);
+        bpm_display->box.size = Vec(48.0f, 18.0f);
+        bpm_display->precision = 2;
+        //float *bpm_label = &module->bpm_labels[i];
+        bpm_display->value = &module->bpm_labels[i];
+        debug("i: %d bpm: %f", i, bpm_display->value);
+
+        // display->value = &module->affichnum;
+        addChild(bpm_display);
+
+        y_pos += 44.0f;
     }
 
     addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));

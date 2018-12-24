@@ -141,7 +141,7 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
 
         y_pos += 30.0f;   // next "line"
         x_pos = 4.0f;
-        addInput(Port::create<SmallPurplePort>(Vec(x_pos + 62.0f, y_pos),
+        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
                                           Port::INPUT,
                                           module,
                                           GateLengthTurbo::BPM_INPUT + i));
@@ -152,28 +152,11 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
                                               GateLengthTurbo::BPM_PARAM + i,
                                               -5.0f, 5.0f, 0.0f));
 
-        addInput(Port::create<SmallPurplePort>(Vec(x_pos + 80.0f, y_pos),
+        x_pos += 19.0f;   // size of trimpot
+        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
                                           Port::INPUT,
                                           module,
-                                          GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_INPUT + i));
-
-        // FIXME: use new sequential box hbox/vbox thing
-        // x_pos += 84.0f;
-        x_pos += 72.0f;
-
-        addOutput(Port::create<SmallPurplePort>(Vec(box.size.x - 21.0f, y_pos),
-                                           Port::OUTPUT,
-                                           module,
-                                           GateLengthTurbo::GATE_OUTPUT + i));
-
-        x_pos = 4.0f;
-        // y_pos += 26.0f;
-
-
-
-        // x_pos += 30.0f;
-        x_pos += 19.0f;
-
+                                          GateLengthTurbo::BPM_INPUT + i));
 
         x_pos += 19.0f;
 
@@ -181,21 +164,43 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
         bpm_display->box.pos = Vec(x_pos, y_pos);
         bpm_display->box.size = Vec(48.0f, 18.0f);
         bpm_display->precision = 2;
-        // float *bpm_label = &module->bpm_labels[i];
         bpm_display->value = &module->bpm_labels[i];
         debug("i: %d bpm: %f", i, bpm_display->value);
         addChild(bpm_display);
 
-        x_pos += 48.0f;
+        // x_pos += 84.0f;
+        //  x_pos += 62.0f
+        x_pos += 48.0f;  // size of bpm display
+        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
+                                          Port::INPUT,
+                                          module,
+                                          GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_INPUT + i));
+
+        x_pos += 19.0f;
+
+        addParam(ParamWidget::create<Trimpot>(Vec(x_pos, y_pos),
+                                              module,
+                                              GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i,
+                                              0.0f, 10.0f, 1.0f));
+
+        x_pos += 19.0f;  // size of beat length trimpot
 
         MsDisplayWidget *beat_length_display = new MsDisplayWidget();
         beat_length_display->box.pos = Vec(x_pos, y_pos);
         beat_length_display->box.size = Vec(48.0f, 18.0f);
         beat_length_display->precision = 2;
-        // float *bpm_label = &module->bpm_labels[i];
         beat_length_display->value = &module->beat_length[i];
         debug("i: %d beat_length: %f", i, beat_length_display->value);
         addChild(beat_length_display);
+
+        addOutput(Port::create<SmallPurplePort>(Vec(box.size.x - 21.0f, y_pos),
+                                           Port::OUTPUT,
+                                           module,
+                                           GateLengthTurbo::GATE_OUTPUT + i));
+
+        // y_pos += 26.0f;
+        // x_pos += 30.0f;
+        // x_pos += 48.0f;
 
         y_pos += 50.0f;
     }

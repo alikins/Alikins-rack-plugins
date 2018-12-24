@@ -105,6 +105,7 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
     box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     setPanel(SVG::load(assetPlugin(plugin, "res/GateLengthTurbo.svg")));
 
+    float font_size = 12.0f;
     float y_pos = 32.0f;
 
     for (int i = 0; i < TURBO_COUNT; i++) {
@@ -112,34 +113,36 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
         // y_pos += 39.0f;
         //y_pos += 32.0f;
 
-        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
-                                          Port::INPUT,
-                                          module,
-                                          GateLengthTurbo::TRIGGER_INPUT + i));
-
         // x_pos += 30.0f;
-        x_pos += 19.0f;    // size of input port
-        addParam(ParamWidget::create<Trimpot>(Vec(x_pos, y_pos),
-                                            module,
-                                            GateLengthTurbo::GATE_LENGTH_PARAM + i,
-                                            0.0f, 10.0f, 0.1f));
-
-        x_pos += 19.0f;  // size of trimpot
+        // x_pos += 19.0f;    // size of input port
         addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
                                           Port::INPUT,
                                           module,
                                           GateLengthTurbo::GATE_LENGTH_INPUT + i));
 
         x_pos += 19.0f;
+        addParam(ParamWidget::create<Trimpot>(Vec(x_pos, y_pos),
+                                            module,
+                                            GateLengthTurbo::GATE_LENGTH_PARAM + i,
+                                            0.0f, 10.0f, 0.1f));
+
+        x_pos += 19.0f;  // size of trimpot
 
         MsDisplayWidget *gate_length_display = new MsDisplayWidget();
         gate_length_display->box.pos = Vec(x_pos, y_pos);
         gate_length_display->box.size = Vec(60.0f, 18.0f);
         gate_length_display->value = &module->gate_length[i];
         gate_length_display->precision = 4;
+        gate_length_display->font_size = font_size;
         addChild(gate_length_display);
 
-        y_pos += 30.0f;   // next "line"
+        x_pos += 64.0f;
+        addOutput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
+                                                Port::OUTPUT,
+                                                module,
+                                                GateLengthTurbo::GATE_OUTPUT + i));
+
+        y_pos += 22.0f;   // next "line"
         x_pos = 4.0f;
         addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
                                           Port::INPUT,
@@ -153,24 +156,22 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
                                               -5.0f, 5.0f, 0.0f));
 
         x_pos += 19.0f;   // size of trimpot
-        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
-                                          Port::INPUT,
-                                          module,
-                                          GateLengthTurbo::BPM_INPUT + i));
-
-        x_pos += 19.0f;
 
         MsDisplayWidget *bpm_display = new MsDisplayWidget();
         bpm_display->box.pos = Vec(x_pos, y_pos);
         bpm_display->box.size = Vec(48.0f, 18.0f);
         bpm_display->precision = 2;
+        bpm_display->font_size = font_size;
         bpm_display->value = &module->bpm_labels[i];
         debug("i: %d bpm: %f", i, bpm_display->value);
         addChild(bpm_display);
 
         // x_pos += 84.0f;
         //  x_pos += 62.0f
-        x_pos += 48.0f;  // size of bpm display
+        // x_pos += 48.0f;  // size of bpm display
+        x_pos = 4.0f;
+        y_pos += 22.0f;   // next "line"
+
         addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
                                           Port::INPUT,
                                           module,
@@ -189,20 +190,22 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
         beat_length_display->box.pos = Vec(x_pos, y_pos);
         beat_length_display->box.size = Vec(48.0f, 18.0f);
         beat_length_display->precision = 2;
+        beat_length_display->font_size = font_size;
         beat_length_display->value = &module->beat_length[i];
         debug("i: %d beat_length: %f", i, beat_length_display->value);
         addChild(beat_length_display);
 
-        addOutput(Port::create<SmallPurplePort>(Vec(box.size.x - 21.0f, y_pos),
-                                           Port::OUTPUT,
-                                           module,
-                                           GateLengthTurbo::GATE_OUTPUT + i));
-
         // y_pos += 26.0f;
         // x_pos += 30.0f;
-        // x_pos += 48.0f;
+        x_pos += 52.0f;
 
-        y_pos += 50.0f;
+        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
+                                          Port::INPUT,
+                                          module,
+                                          GateLengthTurbo::TRIGGER_INPUT + i));
+
+        //y_pos += 35.0f;
+        y_pos += 30.0f;
     }
 
     addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));

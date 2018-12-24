@@ -8,7 +8,13 @@ struct MsDisplayWidget : TransparentWidget {
   float *value;
   //float value;
   std::shared_ptr<Font> font;
+
   int precision = 3;
+  float lcd_radius = 3.0f;
+  float lcd_letter_spacing = 2.0f;
+  float text_pos_x = 1.0f;
+  float text_pos_y = 14.0f;
+  float font_size = 12.0f;
 
   MsDisplayWidget() {
     font = Font::load(assetPlugin(plugin, "res/Segment7Standard.ttf"));
@@ -24,7 +30,7 @@ struct MsDisplayWidget : TransparentWidget {
 
     nvgBeginPath(vg);
 
-    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 3.0);
+    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, lcd_radius);
     nvgFillColor(vg, backgroundColor);
     nvgFill(vg);
 
@@ -34,17 +40,17 @@ struct MsDisplayWidget : TransparentWidget {
     nvgStroke(vg);
 
     // text
-    nvgFontSize(vg, 12);
+    nvgFontSize(vg, font_size);
     nvgFontFaceId(vg, font->handle);
     // nvgTextLetterSpacing(vg, 2.5);
-    nvgTextLetterSpacing(vg, 2.0);
+    nvgTextLetterSpacing(vg, lcd_letter_spacing);
 
     std::stringstream to_display;
     // to_display << std::setiosflags(std::ios::fixed) << std::right  << std::setw(5) << std::setprecision(4) << *value;
     to_display << std::setiosflags(std::ios::fixed) << std::left << std::setprecision(precision) << *value;
 
     // Vec textPos = Vec(1.0f, 19.0f);
-    Vec textPos = Vec(1.0f, 14.0f);
+    Vec textPos = Vec(text_pos_x, text_pos_y);
 
     NVGcolor textColor = nvgRGB(0x65, 0xf6, 0x78);
     nvgFillColor(vg, textColor);

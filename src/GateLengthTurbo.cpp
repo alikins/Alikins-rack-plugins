@@ -96,6 +96,15 @@ struct SmallPurplePort : SVGPort {
 	}
 };
 
+struct SmallPurpleTrimpot : Trimpot {
+	SmallPurpleTrimpot() {
+		// minAngle = -0.75 * M_PI;
+		// maxAngle = 0.75 * M_PI;
+		setSVG(SVG::load(assetPlugin(plugin, "res/SmallPurpleTrimpot.svg")));
+	}
+};
+
+
 struct GateLengthTurboWidget : ModuleWidget {
     GateLengthTurboWidget(GateLengthTurbo *module);
 };
@@ -113,15 +122,16 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
         // y_pos += 39.0f;
         //y_pos += 32.0f;
 
+        // float y_middle = 22.0f / 2.0f;
         // x_pos += 30.0f;
         // x_pos += 19.0f;    // size of input port
-        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
+        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos + 1.0f),
                                           Port::INPUT,
                                           module,
                                           GateLengthTurbo::GATE_LENGTH_INPUT + i));
 
         x_pos += 19.0f;
-        addParam(ParamWidget::create<Trimpot>(Vec(x_pos, y_pos),
+        addParam(ParamWidget::create<SmallPurpleTrimpot>(Vec(x_pos, y_pos),
                                             module,
                                             GateLengthTurbo::GATE_LENGTH_PARAM + i,
                                             0.0f, 10.0f, 0.1f));
@@ -129,15 +139,20 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
         x_pos += 19.0f;  // size of trimpot
 
         MsDisplayWidget *gate_length_display = new MsDisplayWidget();
-        gate_length_display->box.pos = Vec(x_pos, y_pos);
-        gate_length_display->box.size = Vec(60.0f, 18.0f);
+        gate_length_display->box.pos = Vec(x_pos, y_pos + 1.0f);
+        gate_length_display->box.size = Vec(60.0f, 15.0f);
         gate_length_display->value = &module->gate_length[i];
         gate_length_display->precision = 4;
-        gate_length_display->font_size = font_size;
+        // gate_length_display->font_size = font_size;
+        gate_length_display->font_size = 11.0f;
+        gate_length_display->text_pos_x = 2.0f;
+        gate_length_display->text_pos_y = 12.0f;
+        gate_length_display->lcd_letter_spacing = 1.0f;
+
         addChild(gate_length_display);
 
         x_pos += 64.0f;
-        addOutput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
+        addOutput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos + 1.0f),
                                                 Port::OUTPUT,
                                                 module,
                                                 GateLengthTurbo::GATE_OUTPUT + i));
@@ -150,7 +165,7 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
                                           GateLengthTurbo::BPM_INPUT + i));
 
         x_pos += 19.0f;
-        addParam(ParamWidget::create<Trimpot>(Vec(x_pos, y_pos),
+        addParam(ParamWidget::create<SmallPurpleTrimpot>(Vec(x_pos, y_pos),
                                               module,
                                               GateLengthTurbo::BPM_PARAM + i,
                                               -5.0f, 5.0f, 0.0f));

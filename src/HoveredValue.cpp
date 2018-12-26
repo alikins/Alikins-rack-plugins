@@ -1,7 +1,6 @@
+#include <math.h>
 #include "alikins.hpp"
 #include "ParamFloatField.hpp"
-
-#include <math.h>
 #include "ui.hpp"
 #include "window.hpp"
 #include "dsp/digital.hpp"
@@ -19,28 +18,23 @@ be better implemented as responding to hypothetical onHoverEnter
 or onHoverLeave instead of polling.
 
 */
-struct HoveredValue : Module
-{
-    enum ParamIds
-    {
+struct HoveredValue : Module {
+    enum ParamIds {
         HOVERED_PARAM_VALUE_PARAM,
         HOVER_ENABLED_PARAM,
         OUTPUT_RANGE_PARAM,
         HOVERED_SCALED_PARAM_VALUE_PARAM,
         NUM_PARAMS
     };
-    enum InputIds
-    {
+    enum InputIds {
         NUM_INPUTS
     };
-    enum OutputIds
-    {
+    enum OutputIds {
         PARAM_VALUE_OUTPUT,
         SCALED_PARAM_VALUE_OUTPUT,
         NUM_OUTPUTS
     };
-    enum LightIds
-    {
+    enum LightIds {
         NUM_LIGHTS
     };
 
@@ -50,31 +44,44 @@ struct HoveredValue : Module
 
     void step() override;
 
+    json_t* toJson() override;
+    void fromJson(json_t *rootJ) override;
+
     HoverEnabled enabled = WITH_SHIFT;
 
     VoltageRange outputRange = MINUS_PLUS_FIVE;
 
-    SchmittTrigger hoverArmedTrigger;
+    bool useTooltip = true;
 
 };
 
-void HoveredValue::step()
-{
-
+void HoveredValue::step() {
     outputs[PARAM_VALUE_OUTPUT].value = params[HOVERED_PARAM_VALUE_PARAM].value;
     outputs[SCALED_PARAM_VALUE_OUTPUT].value = params[HOVERED_SCALED_PARAM_VALUE_PARAM].value;
-
 }
 
+json_t* HoveredValue::toJson() {
+    json_t *rootJ = json_object();
+    json_object_set_new(rootJ, "useTooltip", json_boolean(useTooltip));
+    return rootJ;
+}
 
-struct HoveredValueWidget : ModuleWidget
-{
+void HoveredValue::fromJson(json_t *rootJ) {
+    json_t *useTooltipJ = json_object_get(rootJ, "useTooltip");
+    if (useTooltipJ) {
+        useTooltip = json_boolean_value(useTooltipJ);
+    }
+}
+
+struct HoveredValueWidget : ModuleWidget {
     HoveredValueWidget(HoveredValue *module);
 
     void step() override;
     void onChange(EventChange &e) override;
     void tooltipHide();
     void tooltipShow(std::string tooltipText, Widget *hoveredWidget);
+
+    Menu *createContextMenu() override;
 
     ParamWidget *enableHoverSwitch;
     ParamWidget *outputRangeSwitch;
@@ -88,8 +95,7 @@ struct HoveredValueWidget : ModuleWidget
     Tooltip *tooltip = NULL;
 };
 
-HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(module)
-{
+HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(module) {
     setPanel(SVG::load(assetPlugin(plugin, "res/HoveredValue.svg")));
 
     float y_baseline = 45.0f;
@@ -140,7 +146,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     // y_baseline = y_baseline + 25.0f;
     y_baseline = box.size.y - 128.0f;
 
-    outputRangeSwitch = ParamWidget::create<CKSSThree>(Vec(5, y_baseline ), module,
+    outputRangeSwitch = ParamWidget::create<CKSSThree>(Vec(5, y_baseline), module,
         HoveredValue::OUTPUT_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(outputRangeSwitch);
@@ -189,9 +195,9 @@ void HoveredValueWidget::tooltipHide() {
     if (!tooltip) {
         // debug("tooltip was null");
         return;
-    };
+    }
 
-    if(!tooltip->parent) { return; }
+    if (!tooltip->parent) { return; }
 
     // debug("tooltipHide[res=%s]: tt->text:%s", reason.c_str(), tooltip->text.c_str());
 
@@ -205,12 +211,14 @@ void HoveredValueWidget::tooltipHide() {
 
 }
 
-void HoveredValueWidget::tooltipShow(std::string tooltipText, Widget *hoveredWidget)
-{
+void HoveredValueWidget::tooltipShow(std::string tooltipText, Widget *hoveredWidget) {
 
     ModuleWidget *hoveredParent = hoveredWidget->getAncestorOfType<ModuleWidget>();
     if (!hoveredParent) {
-        debug("hoveredParent was null");
+        return;
+    }
+
+    if (!reinterpret_cast<HoveredValue *>(module)->useTooltip) {
         return;
     }
 
@@ -243,7 +251,7 @@ void HoveredValueWidget::step() {
     float display_default = 0.0f;
 
     std::string display_type = "";
-	std::string tooltipText;
+    std::string tooltipText;
 
     float raw_value = 0.0f;
 
@@ -270,15 +278,14 @@ void HoveredValueWidget::step() {
 
     ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
 
-    if (pwidget)
-    {
+    if (pwidget) {
         // TODO: show value of original and scaled?
 
         raw_value = pwidget->value;
         display_min = pwidget->minValue;
         display_max = pwidget->maxValue;
         display_default = pwidget->defaultValue;
-        display_type= "param";
+        display_type = "param";
 
         // TODO: if we use type name detection stuff (cxxabi/typeinfo/etc) we could possibly
         //       also show the name of the hovered widget as a hint on mystery meat params
@@ -288,15 +295,12 @@ void HoveredValueWidget::step() {
     }
 
     Port *port = dynamic_cast<Port *>(gHoveredWidget);
-    if (port)
-    {
-        if (port->type == port->INPUT)
-        {
+    if (port) {
+        if (port->type == port->INPUT) {
             raw_value = port->module->inputs[port->portId].value;
             display_type = "input";
         }
-        if (port->type == port->OUTPUT)
-        {
+        if (port->type == port->OUTPUT) {
             raw_value = port->module->outputs[port->portId].value;
             display_type = "output";
         }
@@ -310,8 +314,7 @@ void HoveredValueWidget::step() {
 
     if (!pwidget && !port) {
         tooltipHide();
-    }
-    else {
+    } else {
         // TODO build fancier tool tip text
         // TODO maybe just draw a widget like a tooltip, would be cool to draw a pop up a mini 'scope'
         tooltipShow(stringf("%#.4g", raw_value), gHoveredWidget);
@@ -339,6 +342,43 @@ void HoveredValueWidget::onChange(EventChange &e) {
     ModuleWidget::onChange(e);
     param_value_field->onChange(e);
 }
+
+struct UseTooltipMenuItem : MenuItem {
+    HoveredValue *module;
+
+    void onAction(EventAction &e) override {
+        if (module->useTooltip) {
+            module->useTooltip = false;
+        } else {
+            module->useTooltip = true;
+        }
+    }
+
+    void step() override {
+        rightText = CHECKMARK(module->useTooltip);
+    }
+};
+
+
+Menu *HoveredValueWidget::createContextMenu() {
+    Menu *menu = ModuleWidget::createContextMenu();
+
+    MenuLabel *spacerLabel = new MenuLabel();
+    menu->addChild(spacerLabel);
+
+    HoveredValue *hoveredValue = dynamic_cast<HoveredValue*>(module);
+    assert(hoveredValue);
+
+    UseTooltipMenuItem *useTooltipMenuItem =
+        MenuItem::create<UseTooltipMenuItem>("Show Tooltip",
+                                             CHECKMARK(hoveredValue->useTooltip > 2.0f));
+
+    useTooltipMenuItem->module = hoveredValue;
+    menu->addChild(useTooltipMenuItem);
+
+    return menu;
+}
+
 
 Model *modelHoveredValue = Model::create<HoveredValue, HoveredValueWidget>(
     "Alikins", "HoveredValue", "Hovered Value - get value under cursor", UTILITY_TAG, CONTROLLER_TAG);

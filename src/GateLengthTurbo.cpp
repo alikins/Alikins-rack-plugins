@@ -78,9 +78,9 @@ void GateLengthTurbo::step() {
             // if we increase the max of the param, need to rescale this back to the input range
             // rescale(param, 0.0f, 128.0f, 0.0f, 10.0f);
             // beat_length[i] = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 128.0f);
-            float clamped_beat_length = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 80.0f);
-            beat_length[i] = rescale(clamped_beat_length, 0.0f, 80.0f, 0.0f, 10.0f);
-            debug("beat_length[%d]: %f param: %f clamped: %f", i, beat_length[i], inputs[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, clamped_beat_length);
+            float clamped_beat_length = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 160.0f);
+            beat_length[i] = rescale(clamped_beat_length, 0.0f, 160.0f, 0.0f, 10.0f);
+            // debug("beat_length[%d]: %f param: %f clamped: %f", i, beat_length[i], inputs[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, clamped_beat_length);
         }
 
         float beats_per_sec = lfo_cv_to_freq(bpms[i]);
@@ -219,7 +219,7 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
                                               module,
                                               GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i,
                                               // 16.0f = 16x sixteenth note == one quarter note? ??
-                                              0.0f, 80.0f, 8.0f);
+                                              0.0f, 160.0f, 16.0f);
         ((Trimpot *) beatLengthParam)->snap = true;
         addParam(beatLengthParam);
         // module->params[GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i];

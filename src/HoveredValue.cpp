@@ -1,6 +1,8 @@
 #include <math.h>
+
 #include "alikins.hpp"
 #include "ParamFloatField.hpp"
+
 #include "ui.hpp"
 #include "window.hpp"
 #include "dsp/digital.hpp"
@@ -317,7 +319,7 @@ void HoveredValueWidget::step() {
     } else {
         // TODO build fancier tool tip text
         // TODO maybe just draw a widget like a tooltip, would be cool to draw a pop up a mini 'scope'
-        tooltipShow(stringf("%#.4g", raw_value), gHoveredWidget);
+        tooltipShow(stringf("%s\n%#.4g", display_type.c_str(), raw_value), gHoveredWidget);
     }
 
     float scaled_value = rescale(raw_value, display_min, display_max,

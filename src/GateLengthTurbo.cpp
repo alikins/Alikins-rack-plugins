@@ -65,10 +65,13 @@ void GateLengthTurbo::step() {
 
         if (inputs[BEAT_LENGTH_MULTIPLIER_INPUT + i].active) {
             beat_length[i] = clamp(inputs[BEAT_LENGTH_MULTIPLIER_INPUT + i].value, 0.0f, 10.0f);
+        } else {
+            beat_length[i] = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 10.0f);
+        }
 
-            float beats_per_sec = lfo_cv_to_freq(bpms[i]);
-            float quarter_note_beat_length_secs = 1.0f / beats_per_sec;
-            gate_length[i] = quarter_note_beat_length_secs * beat_length[i];
+        float beats_per_sec = lfo_cv_to_freq(bpms[i]);
+        float quarter_note_beat_length_secs = 1.0f / beats_per_sec;
+        gate_length[i] = quarter_note_beat_length_secs * beat_length[i];
 
             /*
             if (i == 2) {
@@ -77,7 +80,6 @@ void GateLengthTurbo::step() {
             */
 
             // float gate_length_s =
-        }
 
         // BEAT_LENGTH_MULTIPLIER_INPUT
 

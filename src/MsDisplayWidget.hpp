@@ -20,6 +20,14 @@ struct MsDisplayWidget : TransparentWidget {
     font = Font::load(assetPlugin(plugin, "res/Segment7Standard.ttf"));
   }
 
+  std::string getText() {
+    std::stringstream to_display;
+    // to_display << std::setiosflags(std::ios::fixed) << std::right  << std::setw(5) << std::setprecision(4) << *value;
+    to_display << std::setiosflags(std::ios::fixed) << std::left << std::setprecision(precision) << *value;
+
+    return to_display.str();
+  }
+
   void draw(NVGcontext *vg) override {
     // float rectRadius = 3.0f;
     // Background
@@ -45,16 +53,14 @@ struct MsDisplayWidget : TransparentWidget {
     // nvgTextLetterSpacing(vg, 2.5);
     nvgTextLetterSpacing(vg, lcd_letter_spacing);
 
-    std::stringstream to_display;
-    // to_display << std::setiosflags(std::ios::fixed) << std::right  << std::setw(5) << std::setprecision(4) << *value;
-    to_display << std::setiosflags(std::ios::fixed) << std::left << std::setprecision(precision) << *value;
+    std::string text = getText();
 
     // Vec textPos = Vec(1.0f, 19.0f);
     Vec textPos = Vec(text_pos_x, text_pos_y);
 
     NVGcolor textColor = nvgRGB(0x65, 0xf6, 0x78);
     nvgFillColor(vg, textColor);
-    nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
+    nvgText(vg, textPos.x, textPos.y, text.c_str(), NULL);
   }
 };
 

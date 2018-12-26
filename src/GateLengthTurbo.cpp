@@ -6,6 +6,13 @@
 
 #define TURBO_COUNT 4
 
+/* Notes:
+   dotted note = 1.5x orig value
+   double dotted = 1.75x orig value
+   triple dottect = 1.875x orig value
+
+   triplet quarter = 2/3 quarter note (.6666x orig value)
+*/
 struct GateLengthTurbo : Module {
     enum ParamIds {
         ENUMS(GATE_LENGTH_PARAM, TURBO_COUNT),
@@ -65,8 +72,15 @@ void GateLengthTurbo::step() {
 
         if (inputs[BEAT_LENGTH_MULTIPLIER_INPUT + i].active) {
             beat_length[i] = clamp(inputs[BEAT_LENGTH_MULTIPLIER_INPUT + i].value, 0.0f, 10.0f);
+            // beat_length[i] = rescale(clamp(inputs[BEAT_LENGTH_MULTIPLIER_INPUT + i].value, 0.0f, 10.0f),
+            // 0.0f, 128.0f, 0.0f, 10.0f);
         } else {
-            beat_length[i] = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 10.0f);
+            // if we increase the max of the param, need to rescale this back to the input range
+            // rescale(param, 0.0f, 128.0f, 0.0f, 10.0f);
+            // beat_length[i] = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 128.0f);
+            float clamped_beat_length = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 80.0f);
+            beat_length[i] = rescale(clamped_beat_length, 0.0f, 80.0f, 0.0f, 10.0f);
+            debug("beat_length[%d]: %f param: %f clamped: %f", i, beat_length[i], inputs[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, clamped_beat_length);
         }
 
         float beats_per_sec = lfo_cv_to_freq(bpms[i]);
@@ -201,11 +215,18 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
         //       for that case though, which would be nice to have.
         //
         // TODO: alternatively, maybe a custom Knob with it's own snap behavior?
-        addParam(ParamWidget::create<Trimpot>(Vec(x_pos, y_pos),
+        ParamWidget *beatLengthParam = ParamWidget::create<Trimpot>(Vec(x_pos, y_pos),
                                               module,
                                               GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i,
-                                              0.0f, 10.0f, 1.0f));
+                                              // 16.0f = 16x sixteenth note == one quarter note? ??
+                                              0.0f, 80.0f, 8.0f);
+        ((Trimpot *) beatLengthParam)->snap = true;
+        addParam(beatLengthParam);
+        // module->params[GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i];
+        // beatLengthParam)->snap = true;
+        //addParam(beatLengthParam);
 
+        // module->params[GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i]->
         x_pos += 19.0f;  // size of beat length trimpot
 
         MsDisplayWidget *beat_length_display = new MsDisplayWidget();

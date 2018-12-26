@@ -196,6 +196,11 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
 
         x_pos += 19.0f;
 
+        // TODO: if we assume the 'snapped' values are say, a 32nd up to a whole note, we could make
+        //       the param value be the number of 32nd's. Not sure how to support dotted or tuplets
+        //       for that case though, which would be nice to have.
+        //
+        // TODO: alternatively, maybe a custom Knob with it's own snap behavior?
         addParam(ParamWidget::create<Trimpot>(Vec(x_pos, y_pos),
                                               module,
                                               GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i,

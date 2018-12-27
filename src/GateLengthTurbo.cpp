@@ -12,7 +12,31 @@
    triple dottect = 1.875x orig value
 
    triplet quarter = 2/3 quarter note (.6666x orig value)
+
+   # note length name in 'quarter notes' -> common name -> decimal mult of quarter note
+   quarter note / 1  = quarter note ->    1.0
+              double dotted 8th note ->   0.875
+                     dotted 8th note ->   0.75
+                single quarter triplet -> 0.66
+   quarter note / 2 = 8th note ->         0.5
+               double dotted 16th note -> 0.4375
+                      dotted 16th note -> 0.375
+                   single triple quart -> 0.33333
+   quarter note / 4 = 16th note ->        0.25
+               double dotted 32nd note -> 0.21875
+                      dotted 32nd note -> 0.1875
+                   single 16th triplet -> 0.16666
+   quarter note / 8 = 32nd note ->        0.125
+                      dotted 64th note -> 0.09375
+   quarter note / 16  = 64th note ->      0.0625
 */
+
+// Map the nearest int of the note length param value to it's string name
+// For ex, the param value range may be 0 -> 160.0f, so nearest int of param
+// value 80.0f -> 80 should map to say
+// std::map<int, std::string> note_length_param_map = gen_note_length_param_map();
+
+
 struct GateLengthTurbo : Module {
     enum ParamIds {
         ENUMS(GATE_LENGTH_PARAM, TURBO_COUNT),
@@ -71,15 +95,35 @@ void GateLengthTurbo::step() {
         bpm_labels[i] = lfo_cv_to_bpm(bpms[i]);
 
         if (inputs[BEAT_LENGTH_MULTIPLIER_INPUT + i].active) {
-            beat_length[i] = clamp(inputs[BEAT_LENGTH_MULTIPLIER_INPUT + i].value, 0.0f, 10.0f);
-            // beat_length[i] = rescale(clamp(inputs[BEAT_LENGTH_MULTIPLIER_INPUT + i].value, 0.0f, 10.0f),
-            // 0.0f, 128.0f, 0.0f, 10.0f);
+            /*
+            float bli = clamp(inputs[BEAT_LENGTH_MULTIPLIER_INPUT + i].value, 0.0f, 10.0f);
+            float baseline_bl = 0.0f;
+            float bl_ratio = 1.23456;
+            //float baseline_bl = inputs[BPM_INPUT + i].value;
+            // float bl_ratio = bli / baseline_bl;
+
+            // frew_to_cv log2f(lfo_freq / LFO_BASELINE_FREQ * powf(2.0f, LFO_BASELINE_VOLTAGE));
+            //  log2f(lfo_freq / 120.0f * powf(2.0f, 0.0f))
+            // cv_to_freq LFO_BASELINE_FREQ / powf(2.0f, LFO_BASELINE_VOLTAGE) * powf(2.0f, volts);
+
+            // float bl_ratio_freq = lfo_cv_to_freq(bli) / lfo_cv_to_freq(baseline_bl);
+            float bl_ratio_freq = lfo_cv_to_freq(bli) / powf(2.0f, 0.0f) * powf(2.0f, bli);
+            // float bl_ratio_freq  = lfo_cv_to_freq(bl_ratio);
+            if ( i == 2 ) {
+                debug("i: %d, bli: %f, baseline_bl: %f, bl_ratio: %f, bl_ratio_freq: %f", i, bli, baseline_bl, bl_ratio, bl_ratio_freq);
+            }
+            beat_length[i] = bl_ratio_freq;
+            */
+
+            // beat_length[i] = clamp(inputs[BEAT_LENGTH_MULTIPLIER_INPUT + i].value, 0.0f, 10.0f);
+            beat_length[i] = rescale(clamp(inputs[BEAT_LENGTH_MULTIPLIER_INPUT + i].value, 0.0f, 10.0f),  0.0f, 10.0f, 0.0f, 10.0f);
         } else {
             // if we increase the max of the param, need to rescale this back to the input range
             // rescale(param, 0.0f, 128.0f, 0.0f, 10.0f);
             // beat_length[i] = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 128.0f);
             float clamped_beat_length = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 160.0f);
             beat_length[i] = rescale(clamped_beat_length, 0.0f, 160.0f, 0.0f, 10.0f);
+
             // debug("beat_length[%d]: %f param: %f clamped: %f", i, beat_length[i], inputs[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, clamped_beat_length);
         }
 

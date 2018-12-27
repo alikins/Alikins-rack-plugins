@@ -15,20 +15,29 @@
 
    # note length name in 'quarter notes' -> common name -> decimal mult of quarter note
    quarter note / 1  = quarter note ->    1.0
-              double dotted 8th note ->   0.875
-                     dotted 8th note ->   0.75
+                                          0.9375    15 x (1.0 / 16)
+              double dotted 8th note ->   0.875     14 x (1.0 / 16)
+                                          0.8125    13 x (1.0 / 16)
+                     dotted 8th note ->   0.75      12 x (1.0 / 16)
+                                          0.6875    11 x (1.0 / 16)
                 single quarter triplet -> 0.66
-   quarter note / 2 = 8th note ->         0.5
-               double dotted 16th note -> 0.4375
-                      dotted 16th note -> 0.375
-                   single triple quart -> 0.33333
-   quarter note / 4 = 16th note ->        0.25
+                                          0.625     10 x (1.0 / 16)
+                                          0.5625    9 x (1.0 / 16)
+   quarter note / 2 = 8th note ->         0.5       8 x (1.0 / 16)
+               double dotted 16th note -> 0.4375    7 x (1.0 / 16)
+               0.0416666625
+                      dotted 16th note -> 0.375     6 x (1.0 / 16)
+                   single 8th triplet  -> 0.33333
+                                          0.3125    5 x ( 1.0 / 16)
+   quarter note / 4 = 16th note ->        0.25      4 x (1.0 / 16)
                double dotted 32nd note -> 0.21875
-                      dotted 32nd note -> 0.1875
+                      dotted 32nd note -> 0.1875    3 x (1.0 / 16)
                    single 16th triplet -> 0.16666
-   quarter note / 8 = 32nd note ->        0.125
-                      dotted 64th note -> 0.09375
-   quarter note / 16  = 64th note ->      0.0625
+   quarter note / 8 = 32nd note ->        0.125     2 x (1.0 / 16)
+              double dotted 64th note ->  0.109375
+                      dotted 64th note -> 0.09375                  3 x (1.0 / 32)
+                   single 32nd triplet -> 0.0833333
+   quarter note / 16  = 64th note ->      0.0625    1 x (1.0 / 16)
 */
 
 // Map the nearest int of the note length param value to it's string name

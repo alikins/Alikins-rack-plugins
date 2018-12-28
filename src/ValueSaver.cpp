@@ -45,6 +45,7 @@ struct ValueSaver : Module {
 
 void ValueSaver::step()
 {
+    bool changeDetected;
     // states:
     //  - active inputs, meaningful current input -> output
     //  - active inputs,
@@ -55,25 +56,40 @@ void ValueSaver::step()
         // Just output the "saved" value if NO ACTIVE input
         if (!inputs[VALUE_INPUT + i].active) {
             outputs[VALUE_OUTPUT + i].value = prevInputs[i];
-
+            continue;
         } else {
             // ACTIVE INPUTS
-            if (!isNear(inputs[VALUE_INPUT + i].value, 0.0f)) {
+            // process(rescale(in, low, high, 0.f, 1.f))
+            float down = rescale(inputs[VALUE_INPUT + i].value, 0.0f, -CLOSE_ENOUGH, 0.f, 1.f);
+            float up = rescale(inputs[VALUE_INPUT + i].value, 0.0f, CLOSE_ENOUGH, 0.f, 1.f);
+            if (valueUpTrigger[i].process(up)) {
+                debug("valueUpTrigger[%d] triggered value: %f %f", i, values[i], up);
+                changingInputs[i] = true;
+            }
+            if (valueDownTrigger[i].process(down)) {
+                debug("valueDownTrigger[%d] triggered value: %f %f", i, values[i], down);
                 changingInputs[i] = true;
             }
 
+            /*
+            if (!isNear(inputs[VALUE_INPUT + i].value, 0.0f)) {
+                changingInputs[i] = true;
+            }
+            */
+
             if (!changingInputs[i]) {
                 // active input put it is 0.0f, like a midi-1 on startup that hasn't sent any signal yet
-                debug("[%d] ACTIVE but input is ~0.0f, prevInputs[%d]=%f", i, i, prevInputs[i]);
+                // debug("[%d] ACTIVE but input is ~0.0f, prevInputs[%d]=%f", i, i, prevInputs[i]);
                 values[i] = prevInputs[i];
                 outputs[VALUE_OUTPUT + i].value = values[i];
             } else {
                 // input value copied to output value and stored in values[]
                 values[i] = inputs[VALUE_INPUT + i].value;
                 outputs[VALUE_OUTPUT + i].value = values[i];
-                // debug("[%d] copying input %f to output, prevInput: %f", i, values[i], prevInputs[i]);
                 prevInputs[i] = values[i];
-                // We are getting meaningful input values (ie, not just 0.0f)
+
+                // We are getting meaningful input values (ie, not just 0.0f), we can
+                // pay attention to the inputs now
                 changingInputs[i] = true;
                 continue;
             }
@@ -133,7 +149,8 @@ ValueSaverWidget::ValueSaverWidget(ValueSaver *module) : ModuleWidget(module) {
     box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     setPanel(SVG::load(assetPlugin(plugin, "res/ValueSaverPanel.svg")));
 
-    float y_pos = 2.0f;
+    float y_baseline = 25.0f;
+    float y_pos = y_baseline;
 
     for (int i = 0; i < VALUE_COUNT; i++) {
         float x_pos = 4.0f;
@@ -150,7 +167,7 @@ ValueSaverWidget::ValueSaverWidget(ValueSaver *module) : ModuleWidget(module) {
                                            module,
                                            ValueSaver::VALUE_OUTPUT + i));
 
-        y_pos += 35.0f;
+        y_pos += 40.0f;
     }
 
     addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));

@@ -136,7 +136,7 @@ void ValueSaver::fromJson(json_t *rootJ) {
 struct LabelTextField : LedDisplayTextField {
     LabelTextField() {
         color = COLOR_CYAN;
-        textOffset = Vec(-3.0f, -3.0f);
+        textOffset = Vec(-2.0f, -3.0f);
         multiline = true;
         text = "";
     }

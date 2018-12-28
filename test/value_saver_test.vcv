@@ -1,0 +1,294 @@
+{
+  "version": "0.6.2b",
+  "modules": [
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
+      "model": "ValueSaver",
+      "params": [],
+      "data": {
+        "values": [
+          -0.322059393,
+          -4.39999723,
+          1.33333337,
+          0.0
+        ]
+      },
+      "labels": [
+        "some lfo",
+        "A now disconnected input",
+        "from midi CV sending 0 on startup",
+        "Nothing hooked up here"
+      ],
+      "pos": [
+        8,
+        0
+      ]
+    },
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
+      "model": "SpecificValue",
+      "params": [
+        {
+          "paramId": 0,
+          "value": 1.33333337
+        }
+      ],
+      "pos": [
+        14,
+        0
+      ]
+    },
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
+      "model": "SpecificValue",
+      "params": [
+        {
+          "paramId": 0,
+          "value": -1.7675662
+        }
+      ],
+      "pos": [
+        26,
+        0
+      ]
+    },
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
+      "model": "SpecificValue",
+      "params": [
+        {
+          "paramId": 0,
+          "value": -4.39999723
+        }
+      ],
+      "pos": [
+        20,
+        0
+      ]
+    },
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
+      "model": "SpecificValue",
+      "params": [
+        {
+          "paramId": 0,
+          "value": 3.33636189
+        }
+      ],
+      "pos": [
+        0,
+        1
+      ]
+    },
+    {
+      "plugin": "FrozenWasteland",
+      "version": "0.6.7",
+      "model": "SeriouslySlowLFO",
+      "params": [
+        {
+          "paramId": 0,
+          "value": 0.0
+        },
+        {
+          "paramId": 1,
+          "value": 1.0
+        },
+        {
+          "paramId": 2,
+          "value": 0.0
+        }
+      ],
+      "data": {
+        "timeBase": 0
+      },
+      "pos": [
+        26,
+        1
+      ]
+    },
+    {
+      "plugin": "Core",
+      "version": "0.6.2b",
+      "model": "MIDIToCVInterface",
+      "params": [],
+      "data": {
+        "divisions": [
+          24,
+          6
+        ],
+        "midi": {
+          "driver": -11,
+          "deviceName": "QWERTY keyboard (US)",
+          "channel": -1
+        }
+      },
+      "pos": [
+        0,
+        0
+      ]
+    },
+    {
+      "plugin": "SubmarineFree",
+      "version": "0.6.8",
+      "model": "LA-108",
+      "params": [
+        {
+          "paramId": 0,
+          "value": 2.75213289
+        },
+        {
+          "paramId": 1,
+          "value": 0.344524562
+        },
+        {
+          "paramId": 5,
+          "value": 0.0
+        },
+        {
+          "paramId": 6,
+          "value": 0.0
+        },
+        {
+          "paramId": 2,
+          "value": -12.4130116
+        },
+        {
+          "paramId": 3,
+          "value": 0.0
+        },
+        {
+          "paramId": 4,
+          "value": 1.0
+        },
+        {
+          "paramId": 7,
+          "value": 0.0
+        }
+      ],
+      "data": {
+        "voltage0": -10.0,
+        "voltage1": 10.0
+      },
+      "pos": [
+        6,
+        1
+      ]
+    },
+    {
+      "plugin": "ML_modules",
+      "version": "0.6.3",
+      "model": "VoltMeter",
+      "params": [],
+      "pos": [
+        36,
+        1
+      ]
+    },
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
+      "model": "HoveredValue",
+      "params": [
+        {
+          "paramId": 2,
+          "value": 0.0
+        },
+        {
+          "paramId": 1,
+          "value": 2.0
+        }
+      ],
+      "data": {
+        "useTooltip": true
+      },
+      "pos": [
+        32,
+        0
+      ]
+    }
+  ],
+  "wires": [
+    {
+      "color": "#0c8e15",
+      "outputModuleId": 0,
+      "outputId": 0,
+      "inputModuleId": 2,
+      "inputId": 0
+    },
+    {
+      "color": "#0986ad",
+      "outputModuleId": 0,
+      "outputId": 1,
+      "inputModuleId": 3,
+      "inputId": 0
+    },
+    {
+      "color": "#0986ad",
+      "outputModuleId": 5,
+      "outputId": 2,
+      "inputModuleId": 0,
+      "inputId": 0
+    },
+    {
+      "color": "#c9b70e",
+      "outputModuleId": 5,
+      "outputId": 2,
+      "inputModuleId": 7,
+      "inputId": 0
+    },
+    {
+      "color": "#0c8e15",
+      "outputModuleId": 4,
+      "outputId": 0,
+      "inputModuleId": 7,
+      "inputId": 2
+    },
+    {
+      "color": "#0986ad",
+      "outputModuleId": 6,
+      "outputId": 0,
+      "inputModuleId": 0,
+      "inputId": 2
+    },
+    {
+      "color": "#0986ad",
+      "outputModuleId": 0,
+      "outputId": 2,
+      "inputModuleId": 1,
+      "inputId": 0
+    },
+    {
+      "color": "#c9b70e",
+      "outputModuleId": 0,
+      "outputId": 0,
+      "inputModuleId": 8,
+      "inputId": 0
+    },
+    {
+      "color": "#c91847",
+      "outputModuleId": 0,
+      "outputId": 1,
+      "inputModuleId": 8,
+      "inputId": 1
+    },
+    {
+      "color": "#0c8e15",
+      "outputModuleId": 0,
+      "outputId": 2,
+      "inputModuleId": 8,
+      "inputId": 2
+    },
+    {
+      "color": "#0986ad",
+      "outputModuleId": 0,
+      "outputId": 3,
+      "inputModuleId": 8,
+      "inputId": 3
+    }
+  ]
+}

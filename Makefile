@@ -4,7 +4,7 @@ VERSION = 0.6.6
 RACK_DIR ?= ../..
 
 # FLAGS will be passed to both the C and C++ compiler
-FLAGS += -g -O0
+FLAGS +=
 CFLAGS +=
 CXXFLAGS +=
 

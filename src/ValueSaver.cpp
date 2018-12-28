@@ -57,44 +57,37 @@ void ValueSaver::step()
         if (!inputs[VALUE_INPUT + i].active) {
             outputs[VALUE_OUTPUT + i].value = prevInputs[i];
             continue;
-        } else {
-            // ACTIVE INPUTS
-            // process(rescale(in, low, high, 0.f, 1.f))
+        }
+
+        // ACTIVE INPUTS
+        // process(rescale(in, low, high, 0.f, 1.f))
+        // if we haven't already figured out this is a useful changing input, check
+        if (!changingInputs[i]) {
             float down = rescale(inputs[VALUE_INPUT + i].value, 0.0f, -CLOSE_ENOUGH, 0.f, 1.f);
             float up = rescale(inputs[VALUE_INPUT + i].value, 0.0f, CLOSE_ENOUGH, 0.f, 1.f);
-            if (valueUpTrigger[i].process(up)) {
-                debug("valueUpTrigger[%d] triggered value: %f %f", i, values[i], up);
+            if (valueUpTrigger[i].process(up) || valueDownTrigger[i].process(down)) {
+                // debug("value*Trigger[%d] triggered value: %f %f", i, values[i], up);
                 changingInputs[i] = true;
-            }
-            if (valueDownTrigger[i].process(down)) {
-                debug("valueDownTrigger[%d] triggered value: %f %f", i, values[i], down);
-                changingInputs[i] = true;
-            }
-
-            /*
-            if (!isNear(inputs[VALUE_INPUT + i].value, 0.0f)) {
-                changingInputs[i] = true;
-            }
-            */
-
-            if (!changingInputs[i]) {
-                // active input put it is 0.0f, like a midi-1 on startup that hasn't sent any signal yet
-                // debug("[%d] ACTIVE but input is ~0.0f, prevInputs[%d]=%f", i, i, prevInputs[i]);
-                values[i] = prevInputs[i];
-                outputs[VALUE_OUTPUT + i].value = values[i];
-            } else {
-                // input value copied to output value and stored in values[]
-                values[i] = inputs[VALUE_INPUT + i].value;
-                outputs[VALUE_OUTPUT + i].value = values[i];
-                prevInputs[i] = values[i];
-
-                // We are getting meaningful input values (ie, not just 0.0f), we can
-                // pay attention to the inputs now
-                changingInputs[i] = true;
-                continue;
             }
         }
 
+        if (!changingInputs[i]) {
+            // active input put it is 0.0f, like a midi-1 on startup that hasn't sent any signal yet
+            // debug("[%d] ACTIVE but input is ~0.0f, prevInputs[%d]=%f", i, i, prevInputs[i]);
+            values[i] = prevInputs[i];
+            outputs[VALUE_OUTPUT + i].value = values[i];
+        }
+        else {
+            // input value copied to output value and stored in values[]
+            values[i] = inputs[VALUE_INPUT + i].value;
+            outputs[VALUE_OUTPUT + i].value = values[i];
+            prevInputs[i] = values[i];
+
+            // We are getting meaningful input values (ie, not just 0.0f), we can
+            // pay attention to the inputs now
+            changingInputs[i] = true;
+            continue;
+        }
     }
 }
 

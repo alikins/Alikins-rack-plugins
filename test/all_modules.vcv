@@ -1,9 +1,9 @@
 {
-  "version": "0.6.1",
+  "version": "0.6.2b",
   "modules": [
     {
       "plugin": "Alikins",
-      "version": "0.6.1",
+      "version": "0.6.5",
       "model": "ColorPanel",
       "params": [],
       "data": {
@@ -12,13 +12,13 @@
       },
       "width": 90.0,
       "pos": [
-        0,
+        56,
         1
       ]
     },
     {
       "plugin": "Alikins",
-      "version": "0.6.1",
+      "version": "0.6.5",
       "model": "ColorPanel",
       "params": [],
       "data": {
@@ -27,13 +27,13 @@
       },
       "width": 90.0,
       "pos": [
-        6,
+        62,
         1
       ]
     },
     {
       "plugin": "Fundamental",
-      "version": "0.6.1",
+      "version": "0.6.0",
       "model": "LFO",
       "params": [
         {
@@ -54,7 +54,7 @@
         },
         {
           "paramId": 5,
-          "value": 0.5
+          "value": 0.266386122
         },
         {
           "paramId": 4,
@@ -66,13 +66,13 @@
         }
       ],
       "pos": [
-        18,
+        74,
         1
       ]
     },
     {
       "plugin": "Alikins",
-      "version": "0.6.1",
+      "version": "0.6.5",
       "model": "ColorPanel",
       "params": [],
       "data": {
@@ -81,13 +81,13 @@
       },
       "width": 90.0,
       "pos": [
-        12,
+        68,
         1
       ]
     },
     {
       "plugin": "Alikins",
-      "version": "0.6.1",
+      "version": "0.6.5",
       "model": "MomentaryOnButtons",
       "params": [
         {
@@ -150,7 +150,7 @@
     },
     {
       "plugin": "Alikins",
-      "version": "0.6.1",
+      "version": "0.6.5",
       "model": "IdleSwitch",
       "params": [
         {
@@ -165,7 +165,7 @@
     },
     {
       "plugin": "Alikins",
-      "version": "0.6.1",
+      "version": "0.6.5",
       "model": "BigMuteButton",
       "params": [
         {
@@ -180,7 +180,7 @@
     },
     {
       "plugin": "Alikins",
-      "version": "0.6.1",
+      "version": "0.6.5",
       "model": "ColorPanel",
       "params": [],
       "data": {
@@ -195,7 +195,7 @@
     },
     {
       "plugin": "Alikins",
-      "version": "0.6.1",
+      "version": "0.6.5",
       "model": "GateLength",
       "params": [
         {
@@ -220,13 +220,13 @@
         }
       ],
       "pos": [
-        44,
-        0
+        22,
+        1
       ]
     },
     {
       "plugin": "Alikins",
-      "version": "0.6.1",
+      "version": "0.6.5",
       "model": "SpecificValue",
       "params": [
         {
@@ -241,7 +241,7 @@
     },
     {
       "plugin": "Alikins",
-      "version": "0.6.1",
+      "version": "0.6.5",
       "model": "ColorPanel",
       "params": [],
       "data": {
@@ -250,32 +250,170 @@
       },
       "width": 90.0,
       "pos": [
-        38,
-        0
-      ]
-    },
-    {
-      "plugin": "Alikins",
-      "version": "0.6.1",
-      "model": "SpecificValue",
-      "params": [
-        {
-          "paramId": 0,
-          "value": -0.250002444
-        }
-      ],
-      "pos": [
         30,
         0
       ]
     },
     {
       "plugin": "Alikins",
-      "version": "0.6.1",
+      "version": "0.6.5",
+      "model": "SpecificValue",
+      "params": [
+        {
+          "paramId": 0,
+          "value": 1.46000361
+        }
+      ],
+      "pos": [
+        32,
+        1
+      ]
+    },
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
       "model": "Reference",
       "params": [],
       "pos": [
         36,
+        0
+      ]
+    },
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
+      "model": "HoveredValue",
+      "params": [
+        {
+          "paramId": 2,
+          "value": 0.0
+        },
+        {
+          "paramId": 1,
+          "value": 2.0
+        }
+      ],
+      "data": {
+        "useTooltip": true
+      },
+      "pos": [
+        0,
+        1
+      ]
+    },
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
+      "model": "InjectValue",
+      "params": [
+        {
+          "paramId": 1,
+          "value": 0.0
+        },
+        {
+          "paramId": 0,
+          "value": 1.0
+        }
+      ],
+      "pos": [
+        6,
+        1
+      ]
+    },
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
+      "model": "ShiftPedal",
+      "params": [
+        {
+          "paramId": 0,
+          "value": 0.0
+        },
+        {
+          "paramId": 1,
+          "value": 0.0
+        },
+        {
+          "paramId": 2,
+          "value": 0.0
+        },
+        {
+          "paramId": 3,
+          "value": 0.0
+        },
+        {
+          "paramId": 4,
+          "value": 0.0
+        },
+        {
+          "paramId": 5,
+          "value": 0.0
+        },
+        {
+          "paramId": 6,
+          "value": 0.0
+        },
+        {
+          "paramId": 7,
+          "value": 0.0
+        }
+      ],
+      "pos": [
+        12,
+        1
+      ]
+    },
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
+      "model": "ValueSaver",
+      "params": [],
+      "data": {
+        "values": [
+          2.67999959,
+          0.0,
+          4.02730179,
+          0.0
+        ]
+      },
+      "labels": [
+        "should be 2.68, no input",
+        "",
+        "lfo",
+        ""
+      ],
+      "pos": [
+        16,
+        1
+      ]
+    },
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
+      "model": "SpecificValue",
+      "params": [
+        {
+          "paramId": 0,
+          "value": 0.0
+        }
+      ],
+      "pos": [
+        84,
+        1
+      ]
+    },
+    {
+      "plugin": "Alikins",
+      "version": "0.6.5",
+      "model": "SpecificValue",
+      "params": [
+        {
+          "paramId": 0,
+          "value": 2.67999959
+        }
+      ],
+      "pos": [
+        76,
         0
       ]
     }
@@ -419,6 +557,48 @@
       "outputModuleId": 12,
       "outputId": 6,
       "inputModuleId": 10,
+      "inputId": 1
+    },
+    {
+      "color": "#0986ad",
+      "outputModuleId": 15,
+      "outputId": 2,
+      "inputModuleId": 17,
+      "inputId": 0
+    },
+    {
+      "color": "#c9b70e",
+      "outputModuleId": 15,
+      "outputId": 5,
+      "inputModuleId": 16,
+      "inputId": 1
+    },
+    {
+      "color": "#c91847",
+      "outputModuleId": 2,
+      "outputId": 0,
+      "inputModuleId": 14,
+      "inputId": 0
+    },
+    {
+      "color": "#0986ad",
+      "outputModuleId": 16,
+      "outputId": 0,
+      "inputModuleId": 18,
+      "inputId": 0
+    },
+    {
+      "color": "#c9b70e",
+      "outputModuleId": 2,
+      "outputId": 0,
+      "inputModuleId": 16,
+      "inputId": 2
+    },
+    {
+      "color": "#c91847",
+      "outputModuleId": 12,
+      "outputId": 4,
+      "inputModuleId": 8,
       "inputId": 1
     }
   ]

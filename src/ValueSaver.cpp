@@ -58,18 +58,22 @@ void ValueSaver::step()
 
         } else {
             // ACTIVE INPUTS
-            if (!changingInputs[i] && isNear(inputs[VALUE_INPUT + i].value, 0.0f)) {
+            if (!isNear(inputs[VALUE_INPUT + i].value, 0.0f)) {
+                changingInputs[i] = true;
+            }
+
+            if (!changingInputs[i]) {
                 // active input put it is 0.0f, like a midi-1 on startup that hasn't sent any signal yet
                 debug("[%d] ACTIVE but input is ~0.0f, prevInputs[%d]=%f", i, i, prevInputs[i]);
                 values[i] = prevInputs[i];
                 outputs[VALUE_OUTPUT + i].value = values[i];
             } else {
-                // prevInputs[i] = inputs[i].value;
                 // input value copied to output value and stored in values[]
                 values[i] = inputs[VALUE_INPUT + i].value;
                 outputs[VALUE_OUTPUT + i].value = values[i];
                 // debug("[%d] copying input %f to output, prevInput: %f", i, values[i], prevInputs[i]);
                 prevInputs[i] = values[i];
+                // We are getting meaningful input values (ie, not just 0.0f)
                 changingInputs[i] = true;
                 continue;
             }

@@ -106,7 +106,7 @@ is being used.
 
 ### Hovered Value
 
-![hovered_value](./screenshots/HoveredValue.png)
+![hovered_value](./screenshots/hovered_value.png)
 
 #### What
 

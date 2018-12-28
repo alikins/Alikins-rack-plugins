@@ -116,10 +116,10 @@ is hovered over and displays and outputs that value.
 #### Why
 
 Use for figuring out what the range or value of an on screen
-widget. 
+widget.
 
 If an LFO has multiple outputs, hover the cursor over each one
-to sample the output. 
+to sample the output.
 
 Use in combo with 'Specific Value' to quickly determine what
 note each of the outputs or controls is set to.
@@ -131,12 +131,41 @@ screen and using it's CV output. Hook up the output to your clock
 bpm and wiggle the cursor across the screen.
 
 Think of it as the Rack equilivent of using a Radio Shack Telephone
-Pickup to listen to a Sony Discman.  
+Pickup to listen to a Sony Discman.
 
 Tap into the machine and read it's mind. Investigate which
 modules have real resonance.
 
 Worship the glitch.
+
+#### Outputs
+
+There are two outputs. The lower purple 'OUT' output
+will send the raw param widget value. Note that this
+output may send values outside the normal -10V/+10V
+range.
+
+The second output (light blue in 'Scaled Output' section')
+scales the output signal to one of three voltage ranges:
+-5V/+5V (BI), 0V/+10V (UNI), or -10V/+10V.
+
+#### Tooltips
+
+By default, 'Hovered Value' will how a tooltip showing the value
+above the hovered widget.
+
+On the right click context menu, there is an option to disable
+this.
+
+#### The On Switch
+
+The bottom left 3way switch determines when the module runs.
+
+The default is 'w/shift'. To read the value from a param,
+hold down 'Shift' key while hovering.
+
+The 'On' option always reads the value from the currently
+hovered widget.
 
 #### Cautions To Be Ignored
 
@@ -146,7 +175,105 @@ values outside of the -10/+10 V range.
 The values of the hovered widget are sampled at the gui display rate,
 not at the audio or sound engine rate. This is typically ~60hz, so
 audio signals that are tapped will be reproduced with 'character'.
-  
+
+### Inject Value
+
+![inject_value](./screenshots/inject_value.png)
+
+#### What
+
+Inject Value is used to control the currently hovered widget with CV.
+Where 'Hovered Value' can read a param vaule, 'Inject Value' can write/change it.
+
+The 'IN' port accepts a CV input and that value is sent to the currently hovered
+widget. This allows CV control of param widgets, even if the hovered module doesn't
+provide a CV input.
+
+#### Use
+
+Hook up a CV source (like the output of a LFO) to the 'IN'
+and set 'INPUT RANGE' approriately (0/+10V for a 'UNI' LFO).
+
+Select how/when 'Inject Value' is enabled. For example, choosing
+'W/ SHIFT' on the bottom 3way switch.
+
+Then move the cursor over any paramater widget like a knob,
+slider, or switch and hold down 'Shift'. The hovered widget
+will move to match the 'IN' value.
+
+The input values are automatically mapped to the range of
+values supported by the hovered widget.
+
+Note this can control widgets that normall don't have
+CV control. For example, the 'X SCL' knob on a Fundamental
+Scope module.
+
+#### Cautions To Be Ignored
+
+For widgets that normally expect a subset of possible values
+(like switch widgets for example), 'Inject Value' can end up
+setting the params to unexpected values. For a switch, this could
+be a float between 0.0 and 1.0, 1.512 for example. Some modules
+get a little confused if a param value is not exactly an
+expected value, so be cautious changing switch values with
+continuously variable inputs.
+
+The values of the hovered widget are sampled at the gui display rate,
+not at the audio or sound engine rate. This is typically ~60hz, so
+audio signals that are tapped will be reproduced with 'character'.
+
+### Shift Pedal
+
+![shift_pedal](./screenshots/shift_pedal.png)
+
+#### What
+
+'Shift Pedal' allows the 'Shift', 'Ctrl', 'Alt/Option',
+or 'Super/Windows/Command' keys to be used to generate gates.
+
+For example, using the 'Shift' key to send a gate to control
+the sustain pedal param of a VST in Host.
+
+#### How
+
+For each modifier key supported, either the 'left', 'right'
+or 'either' can be used to control the gate output.
+
+The 'left' modifier key will send a gate to the 'left' output port under
+each key in the ui.
+
+The 'right' modifier key will send a gate to the 'right' output port under
+each key in the ui.
+
+Pressing either the 'right' or 'left' version of the modifier keys will
+also send a gate from the middle 'either' output port.
+
+#### Notes
+
+The interaction with using the Core 'Midi-1' with the 'Computer Keyboard'
+drive is not great. The 'Computer Keyboard' driver ignores keyboard input
+if a modifier key is held, so using QWERTY midi input and then holding
+shift doesn't work as may be expected.
+
+### Value Saver
+
+![value_saver](./screenshots/value_saver.png)
+
+#### What
+
+The last know value of a signal sent through 'Value Saver' will
+be remembered.
+
+If you patch an input through it, it will remember and output the last value
+read from the input, even after the input is disconnected. Or on patch open,
+if the input value is a steady 0.0f it will output the value it was saved with.
+
+Intended to help with cases like a Midi-1 CV output after module load but before
+anything is sent.
+
+A label field is provided for each input for labeling what those
+inputs are used for.
+
 ### IdleSwitch
 
 ![idle_switch](./screenshots/idle_switch.png)

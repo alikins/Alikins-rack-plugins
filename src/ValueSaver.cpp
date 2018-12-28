@@ -37,7 +37,7 @@ struct ValueSaver : Module {
     bool initialized = false;
 
     bool changingInputs[VALUE_COUNT] = {};
-    // bool initializedInputs[VALUE_COUNT] = {};
+
     SchmittTrigger valueUpTrigger[VALUE_COUNT];
     SchmittTrigger valueDownTrigger[VALUE_COUNT];
 
@@ -114,22 +114,16 @@ void ValueSaver::fromJson(json_t *rootJ) {
 
     if (valuesJ) {
         for (int i = 0; i < VALUE_COUNT; i++) {
-            // debug("fromJson i: %d", i);
-            debug("current values[%d]: %f", i, values[i]);
             json_t *valueJ = json_array_get(valuesJ, i);
             if (valueJ) {
-                debug("fromJson values[%d] value: %f", i, json_number_value(valueJ));
                 savedInput = json_number_value(valueJ);
                 prevInputs[i] = savedInput;
-                // initializedInputs[i] = savedInput;
-                //inputs[i].value = savedInput;
                 values[i] = savedInput;
                 changingInputs[i] = false;
             }
         }
     }
 
-    debug("INITIALIZED!");
     initialized = true;
 }
 

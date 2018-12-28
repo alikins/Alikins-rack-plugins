@@ -37,7 +37,7 @@ struct ValueSaver : Module {
     bool initialized = false;
 
     bool changingInputs[VALUE_COUNT] = {};
-    bool initializedInputs[VALUE_COUNT] = {};
+    // bool initializedInputs[VALUE_COUNT] = {};
     SchmittTrigger valueUpTrigger[VALUE_COUNT];
     SchmittTrigger valueDownTrigger[VALUE_COUNT];
 
@@ -52,33 +52,13 @@ void ValueSaver::step()
     //  - in active inputs, default/unset value -> output
     //
     for (int i = 0; i < VALUE_COUNT; i++) {
-        // if (i == 0) { debug("A changingInputs[%d]: %d", i, changingInputs[i]);}
-
-        // process(rescale(in, low, high, 0.f, 1.f))
-        /*
-        float down = rescale(values[i], 0.0f, -CLOSE_ENOUGH, 0.0f, 1.f);
-        float up = rescale(values[i], 0.0f, CLOSE_ENOUGH, 0.0f, 1.f);
-        if (valueUpTrigger[i].process(up)) {
-            debug("valueUpTrigger[%d] triggered value: %f %f", i, values[i], up);
-        }
-        if (valueDownTrigger[i].process(down)) {
-            debug("valueDownTrigger[%d] triggered value: %f %f", i, values[i], down);
-        }
-        */
-
-        // Just output the "saved" value if no active input
-        // ... if it is changed from the initializedValue (as loaded from json) enough
+        // Just output the "saved" value if NO ACTIVE input
         if (!inputs[VALUE_INPUT + i].active) {
             outputs[VALUE_OUTPUT + i].value = prevInputs[i];
-            /*
-            // prevInputs[i] = inputs[i].value;
-            outputs[VALUE_OUTPUT + i].value = values[i];
-            prevInputs[i] = values[i];
-            continue;
-            */
+
         } else {
             // ACTIVE INPUTS
-            if (isNear(inputs[VALUE_INPUT + i].value, 0.0f)) {
+            if (!changingInputs[i] && isNear(inputs[VALUE_INPUT + i].value, 0.0f)) {
                 // active input put it is 0.0f, like a midi-1 on startup that hasn't sent any signal yet
                 debug("[%d] ACTIVE but input is ~0.0f, prevInputs[%d]=%f", i, i, prevInputs[i]);
                 values[i] = prevInputs[i];
@@ -90,39 +70,10 @@ void ValueSaver::step()
                 outputs[VALUE_OUTPUT + i].value = values[i];
                 // debug("[%d] copying input %f to output, prevInput: %f", i, values[i], prevInputs[i]);
                 prevInputs[i] = values[i];
+                changingInputs[i] = true;
                 continue;
             }
         }
-        // active inputs
-        // prevInputs[i] = values[i];
-        // trigger?
-        /*
-        if (changingInputs[i]) {
-            debug("changingInpputs[%d] changing value %f to input.value %f", i, values[i], inputs[VALUE_INPUT + i].value);
-            values[i] = inputs[VALUE_INPUT + i].value;
-            changingInputs[i] = false;
-        }
-        */
-
-       /*
-        if (fabs(prevInputs[i] - values[i]) > CLOSE_ENOUGH) {
-            changingInputs[i] = true;
-            // values[i] = inputs[VALUE_INPUT + i].value;
-            if (i == 3) {
-                debug("B changingInputs[%d]=%d: prevInputs[%d]=%f input[%d]=%f values[%d]: %f",
-                 i, changingInputs[i], i, prevInputs[i], i, inputs[i].value, i, values[i]);
-            }
-            // prevInputs[i] = inputs[VALUE_INPUT + i].value;
-            // outputs[VALUE_OUTPUT + i].value = values[i];
-            // continue;
-        }
-        */
-       /*
-        prevInputs[i] = values[i];
-        values[i] = inputs[VALUE_INPUT + i].value;
-        outputs[VALUE_OUTPUT + i].value = values[i];
-        */
-        // outputs[VALUE_OUTPUT + i].value = values[i];
 
     }
 }
@@ -157,7 +108,7 @@ void ValueSaver::fromJson(json_t *rootJ) {
                 debug("fromJson values[%d] value: %f", i, json_number_value(valueJ));
                 savedInput = json_number_value(valueJ);
                 prevInputs[i] = savedInput;
-                initializedInputs[i] = savedInput;
+                // initializedInputs[i] = savedInput;
                 //inputs[i].value = savedInput;
                 values[i] = savedInput;
                 changingInputs[i] = false;

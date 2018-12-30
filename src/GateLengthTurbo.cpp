@@ -173,6 +173,37 @@ struct SmallPurpleTrimpot : Trimpot {
 	}
 };
 
+struct SymbolicNoteLengthItem : MenuItem {
+	// PatternWidget *widget = NULL;
+	// int pattern;
+	void onAction(EventAction &e) override {
+        debug("note length item onAction");
+	}
+};
+
+
+struct SymbolicNoteLengthChoice : LedDisplayChoice {
+	// GatelengthTurboWidget *widget = NULL;
+
+	void onAction(EventAction &e) override {
+		Menu *menu = gScene->createMenu();
+		menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Note Length"));
+
+        for (int i = 1; i <= 3; i++) {
+            SymbolicNoteLengthItem *item = new SymbolicNoteLengthItem();
+            item->text = stringf("some_text_%d", i);
+            item->rightText = "right_text";
+            item->visible = true;
+            menu->addChild(item);
+        }
+    }
+
+	void step() override {
+        text = stringf("the_text_from_step");
+        // debug("noteLengthChoice step");
+	}
+};
+
 
 struct GateLengthTurboWidget : ModuleWidget {
     GateLengthTurboWidget(GateLengthTurbo *module);
@@ -301,6 +332,26 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
                                           GateLengthTurbo::TRIGGER_INPUT + i));
 
         //y_pos += 35.0f;
+        // Vec pos = Vec();
+
+        Vec pos = Vec(x_pos + 5.0f, y_pos);
+        SymbolicNoteLengthChoice *noteLengthChoice = Widget::create<SymbolicNoteLengthChoice>(pos);
+        noteLengthChoice->textOffset = Vec(2, 7);
+        noteLengthChoice->box.size = Vec(30.0f, 30.0f);
+        // noteLengthChoice->box.size.x = box.size.x;
+
+	    // PatternChoice *patternChoice = Widget::create<PatternChoice>(pos);
+	    // patternChoice->widget = this;
+	    addChild(noteLengthChoice);
+        pos = noteLengthChoice->box.getBottomLeft();
+
+        // LedDisplaySeparator *separator = Widget::create<LedDisplaySeparator>(pos);
+        // separator->box.size.x = box.size.x;
+        // addChild(separator);
+
+        // LedDisplaySeparator *noteLengthSep = Widget::create<LedDisplaySeparator>(pos);
+	    // addChild(noteLengthSep);
+
         y_pos += 30.0f;
     }
 

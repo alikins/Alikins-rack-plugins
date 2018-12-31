@@ -20,6 +20,12 @@ be better implemented as responding to hypothetical onHoverEnter
 or onHoverLeave instead of polling.
 
 */
+
+/* This module was inspired by the question and discussion at
+    https://www.facebook.com/groups/vcvrack/permalink/286752278651590/
+
+    "Hi Folks, Just wondering, is it possible to see control parameter values in VCVRack?"
+*/
 struct HoveredValue : Module {
     enum ParamIds {
         HOVERED_PARAM_VALUE_PARAM,

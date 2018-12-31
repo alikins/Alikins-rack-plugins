@@ -124,6 +124,12 @@ to sample the output.
 Use in combo with 'Specific Value' to quickly determine what
 note each of the outputs or controls is set to.
 
+This module was inspired by a question and discussion on the
+Facebook 'VCV Rack Official User Group':
+
+   ["Hi Folks, Just wondering, is it possible to see control parameter values in VCVRack?"](https://www.facebook.com/groups/vcvrack/permalink/286752278651590/)
+
+
 ##### Virtual circuit bending
 
 Simulate virtual circuit bending by hovering over any widget on
@@ -429,6 +435,11 @@ A set of GUI buttons that send a +10V output while pressed.
 
 Change the length of a gate between 0 and 10 seconds.
 Length of gate is CV controllable.
+
+This module was inspired by the question and discussion at:
+Facebook 'VCV Rack Official User Group':
+
+   ["Okay , Rackheads... ;) Looking for a module that can "stretch" the length , extend the duration , of a gate/ trigger pulse."](https://www.facebook.com/groups/vcvrack/permalink/161960391130780/)
 
 ### Reference Voltages
 

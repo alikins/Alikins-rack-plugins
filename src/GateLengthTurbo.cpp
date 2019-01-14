@@ -173,22 +173,41 @@ struct SmallPurpleTrimpot : Trimpot {
 	}
 };
 
+struct NoteLength {
+	int val = 0; // Controller value
+	// TransitionSmoother tSmooth;
+	bool changed = false; // Value has been changed by midi message (only if it is in sync!)
+};
+
+struct NoteLengthChoiceMenuButton : OpaqueWidget {
+    std::string text = stringf("♩ %: %f", 1.0f);
+    // float noteLengths[3];
+    float noteLength = 1.0f;
+
+    NoteLengthChoiceMenuButton();
+};
+
 struct SymbolicNoteLengthItem : MenuItem {
 	// PatternWidget *widget = NULL;
 	// int pattern;
     float noteLength = 1.0f;
     int index;
+    NoteLengthChoiceMenuButton *noteLengthWidget;
 
 	void onAction(EventAction &e) override {
-        debug("note length item onAction %f index: %d", noteLength, index);
+        debug("note length item onAction %f index: %d noteLengthWidget->noteLength: %f", noteLength, index, noteLengthWidget->noteLength);
         // noteLength =
+        noteLengthWidget->noteLength = noteLength;
+                debug("AFTER note length item onAction %f index: %d noteLengthWidget->noteLength: %f", noteLength, index, noteLengthWidget->noteLength);
 	}
 };
 
 
+
 struct SymbolicNoteLengthChoice : LedDisplayChoice {
 	// GatelengthTurboWidget *widget = NULL;
-    // NoteLengthChoiceMenuButton *noteLengthWidget;
+    NoteLengthChoiceMenuButton *noteLengthWidget;
+
     float noteLengths[3] = { 1.0f, 0.5f, 0.3333f};
 
 	void onAction(EventAction &e) override {
@@ -203,6 +222,7 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
             item->rightText = "right_text";
             item->visible = true;
             item->index = i;
+            item->noteLengthWidget = noteLengthWidget;
             menu->addChild(item);
         }
     }
@@ -218,11 +238,10 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
 	}
 };
 
-struct NoteLengthChoiceMenuButton : OpaqueWidget {
-    std::string text = stringf("♩ %: %f", 1.0f);
-    // float noteLengths[3];
 
-    NoteLengthChoiceMenuButton() {
+
+
+NoteLengthChoiceMenuButton::NoteLengthChoiceMenuButton() {
         float x_pos = 0.0f;
         float y_pos = 0.0f;
 
@@ -242,6 +261,7 @@ struct NoteLengthChoiceMenuButton : OpaqueWidget {
         noteLengthChoice->box.pos = pos;
         noteLengthChoice->textOffset = Vec(2, 7);
         noteLengthChoice->box.size = Vec(30.0f, 30.0f);
+        noteLengthChoice->noteLengthWidget = this;
         // noteLengthChoice.noteLengths = this->noteLengths;
         // noteLengthChoice->text = stringf("♩ %: %f", &module->beat_length[0]);
         // noteLengthChoice->box.size.x = box.size.x;
@@ -258,7 +278,6 @@ struct NoteLengthChoiceMenuButton : OpaqueWidget {
         LedDisplaySeparator *noteLengthSep = Widget::create<LedDisplaySeparator>(pos);
 	    addChild(noteLengthSep);
     }
-};
 
 struct GateLengthFrame : OpaqueWidget {
     Port *lengthInputPort;

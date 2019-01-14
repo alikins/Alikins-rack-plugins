@@ -52,6 +52,7 @@ struct GateLengthTurbo : Module {
         ENUMS(BPM_PARAM, TURBO_COUNT),
         ENUMS(BEAT_LENGTH_MULTIPLIER_PARAM, TURBO_COUNT),
         ENUMS(USE_BPM_PARAM, TURBO_COUNT),
+        ENUMS(BPM_UNIT_NOTE_PARAM, TURBO_COUNT),
 
         // TODO: length percent/multiplier params (1.0 for quarter note, 2.0 for whole, .5 for eigth, etc)
         NUM_PARAMS
@@ -138,6 +139,18 @@ void GateLengthTurbo::step() {
             // rescale(param, 0.0f, 128.0f, 0.0f, 10.0f);
             // beat_length[i] = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 128.0f);
             float clamped_beat_length = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 160.0f);
+
+            // up to a 'bar' / whole note in length? longer? arbitrary?
+            // note: assums bar/whole note is 4x quarter note which is wrong for other time sig?
+            float clamped_beat_unit_length = clamp(params[BPM_UNIT_NOTE_PARAM + i].value, 0.0f, 4.0f);
+
+            // notational note length * arbitrary multiplier
+            float total_beat_length = clamped_beat_length * clamped_beat_unit_length;
+
+            // FIXME beat_length should be the BPM_NOTE_UNIT_PARAM (ie, quarter note etc) * multiplier
+            // FIXME: The params are 0-10s and/or up to 16x x whole note, but that shouldn't mean the
+            // gate length is longer than 10s, esp for slow temp, so clamp here likely wrong.
+
             beat_length[i] = rescale(clamped_beat_length, 0.0f, 160.0f, 0.0f, 10.0f);
 
             // debug("beat_length[%d]: %f param: %f clamped: %f", i, beat_length[i], inputs[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, clamped_beat_length);
@@ -150,6 +163,7 @@ void GateLengthTurbo::step() {
         //        from bpm/etc. Currently, this overrides the param with bpm derived info.
         //  default to setting bpm param based on sym note name (quarter etc) and gate length?
         if ( params[USE_BPM_PARAM + i].value ) {
+            // FIXME: gate_length doesn't need to be limited to what we can express in param or input (ie, 10s for the latter)
             gate_length[i] = quarter_note_beat_length_secs * beat_length[i];
         }
 
@@ -206,7 +220,7 @@ struct SymbolicNoteLengthItem : MenuItem {
 	// int pattern;
     float noteLength = 1.0f;
     int index;
-    bool enabled = false;
+    bool bpm_enabled = false;
     NoteLengthChoiceMenuButton *noteLengthWidget;
 
 	void onAction(EventAction &e) override {
@@ -221,7 +235,8 @@ struct SymbolicNoteLengthItem : MenuItem {
         // dynamic_cast<LedDisplayChoice *>(noteLengthWidget)->text = stringf("%s", noteLengthWidget->noteNames[index].c_str());
         noteLengthWidget->noteLength = noteLength;
                 debug("AFTER note length item onAction %f index: %d noteLengthWidget->noteLength: %f", noteLength, index, noteLengthWidget->noteLength );
-        engineSetParam(noteLengthWidget->module, GateLengthTurbo::USE_BPM_PARAM, enabled ? 1.0f : 0.0f);
+        engineSetParam(noteLengthWidget->module, GateLengthTurbo::USE_BPM_PARAM, bpm_enabled ? 1.0f : 0.0f);
+        engineSetParam(noteLengthWidget->module, GateLengthTurbo::BPM_UNIT_NOTE_PARAM, noteLength);
 	}
 };
 
@@ -255,7 +270,7 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
         item->rightText = stringf("BPM Ignored");
         item->visible = true;
         item->index = 0;
-        item->enabled = false;
+        item->bpm_enabled = false;
         item->noteLengthWidget = noteLengthWidget;
         menu->addChild(item);
 
@@ -270,7 +285,7 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
             item->visible = true;
             item->index = i;
             item->noteLengthWidget = noteLengthWidget;
-            item->enabled = true;
+            item->bpm_enabled = true;
             menu->addChild(item);
         }
     }
@@ -340,6 +355,7 @@ struct GateLengthFrame : OpaqueWidget {
     ParamWidget *gateLengthParam;
     ParamWidget *bpmParam;
     ParamWidget *beatLengthParam;
+    // Note USE_BPM and BPM_NOTE_UNIT_PARAM don't have "real" ParamWidgets associated with them
 
     float font_size = 10.0f;
 

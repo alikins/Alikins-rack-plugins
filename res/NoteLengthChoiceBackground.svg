@@ -11,9 +11,9 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg1383"
    version="1.1"
-   viewBox="0 0 15.875001 7.9375005"
-   height="30"
-   width="60"
+   viewBox="0 0 7.9375005 3.9687502"
+   height="15"
+   width="30"
    inkscape:version="0.92.2 5c3e80d, 2017-08-06"
    sodipodi:docname="NoteLengthChoiceBackground.svg">
   <sodipodi:namedview
@@ -50,7 +50,7 @@
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(0,-289.06247)"
+     transform="translate(0,-293.03122)"
      id="layer1"
      inkscape:groupmode="layer"
      inkscape:label="Layer 1"
@@ -58,8 +58,8 @@
   <rect
      style="opacity:1;fill:#6b7077;fill-opacity:1;fill-rule:evenodd;stroke:#ff230f;stroke-width:0.20600002;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
      id="rect1527"
-     width="15.669001"
-     height="7.7315006"
+     width="7.7315006"
+     height="3.7627501"
      x="0.10300001"
-     y="0.10300014" />
+     y="0.10300033" />
 </svg>

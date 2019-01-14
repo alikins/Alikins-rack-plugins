@@ -138,7 +138,7 @@ void GateLengthTurbo::step() {
             // if we increase the max of the param, need to rescale this back to the input range
             // rescale(param, 0.0f, 128.0f, 0.0f, 10.0f);
             // beat_length[i] = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 128.0f);
-            float clamped_beat_length = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 160.0f);
+            float clamped_beat_length = clamp(params[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, 0.0f, 16.0f);
 
             // up to a 'bar' / whole note in length? longer? arbitrary?
             // note: assums bar/whole note is 4x quarter note which is wrong for other time sig?
@@ -151,8 +151,8 @@ void GateLengthTurbo::step() {
             // FIXME: The params are 0-10s and/or up to 16x x whole note, but that shouldn't mean the
             // gate length is longer than 10s, esp for slow temp, so clamp here likely wrong.
 
-            beat_length[i] = rescale(clamped_beat_length, 0.0f, 160.0f, 0.0f, 10.0f);
-
+            // beat_length[i] = rescale(clamped_beat_length, 0.0f, 160.0f, 0.0f, 10.0f);
+            beat_length[i] = total_beat_length;
             // debug("beat_length[%d]: %f param: %f clamped: %f", i, beat_length[i], inputs[BEAT_LENGTH_MULTIPLIER_PARAM + i].value, clamped_beat_length);
         }
 
@@ -165,6 +165,8 @@ void GateLengthTurbo::step() {
         if ( params[USE_BPM_PARAM + i].value ) {
             // FIXME: gate_length doesn't need to be limited to what we can express in param or input (ie, 10s for the latter)
             gate_length[i] = quarter_note_beat_length_secs * beat_length[i];
+        } else {
+            gate_length[i] = beat_length[i];
         }
 
             /*
@@ -178,7 +180,8 @@ void GateLengthTurbo::step() {
         // BEAT_LENGTH_MULTIPLIER_INPUT
 
         if (inputOnTrigger[i].process(inputs[TRIGGER_INPUT + i].value)) {
-            // debug("GL INPUT ON TRIGGER %d gate_length: %f", i, gate_length[i]);
+            debug("params[USE_BPM_PARAM + i].value %f", params[USE_BPM_PARAM + i].value);
+            debug("GL INPUT ON TRIGGER %d gate_length: %f beat_length: %f", i, gate_length[i], beat_length[i]);
             gateGenerator[i].trigger(gate_length[i]);
         }
 
@@ -457,8 +460,8 @@ struct GateLengthFrame : OpaqueWidget {
                                               module,
                                               GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + index,
                                               // 16.0f = 16x sixteenth note == one quarter note? ??
-                                              0.0f, 160.0f, 16.0f);
-        ((Trimpot *) beatLengthParam)->snap = true;
+                                              0.0f, 4.0f, 1.0f);
+        // ((Trimpot *) beatLengthParam)->snap = true;
         addChild(beatLengthParam);
 
         // module->params[GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i]->

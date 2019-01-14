@@ -51,6 +51,7 @@ struct GateLengthTurbo : Module {
         ENUMS(GATE_LENGTH_PARAM, TURBO_COUNT),
         ENUMS(BPM_PARAM, TURBO_COUNT),
         ENUMS(BEAT_LENGTH_MULTIPLIER_PARAM, TURBO_COUNT),
+        ENUMS(USE_BPM_PARAM, TURBO_COUNT),
 
         // TODO: length percent/multiplier params (1.0 for quarter note, 2.0 for whole, .5 for eigth, etc)
         NUM_PARAMS
@@ -75,17 +76,23 @@ struct GateLengthTurbo : Module {
     float bpm_labels[TURBO_COUNT];
     float gate_length[TURBO_COUNT];
     float beat_length[TURBO_COUNT];
+    bool use_bpm[TURBO_COUNT];
     // float beat_length[TURBO_COUNT];
 
     SchmittTrigger inputOnTrigger[TURBO_COUNT];
 
     PulseGenerator gateGenerator[TURBO_COUNT];
 
-    GateLengthTurbo() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    GateLengthTurbo() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {
+        onReset();
+    }
 
     void step() override;
 
     void onReset() override {
+        for (int i = 0; i < TURBO_COUNT; i++){
+            use_bpm[i] = false;
+        }
     }
 
 };
@@ -138,7 +145,13 @@ void GateLengthTurbo::step() {
 
         float beats_per_sec = lfo_cv_to_freq(bpms[i]);
         float quarter_note_beat_length_secs = 1.0f / beats_per_sec;
-        gate_length[i] = quarter_note_beat_length_secs * beat_length[i];
+
+        // FIXME: Need to decide if we should use gate length directly, or try to compute it
+        //        from bpm/etc. Currently, this overrides the param with bpm derived info.
+        //  default to setting bpm param based on sym note name (quarter etc) and gate length?
+        if ( params[USE_BPM_PARAM + i].value ) {
+            gate_length[i] = quarter_note_beat_length_secs * beat_length[i];
+        }
 
             /*
             if (i == 2) {
@@ -176,13 +189,16 @@ struct SmallPurpleTrimpot : Trimpot {
 struct NoteLengthChoiceMenuButton : LedDisplay {
     // std::string text = stringf("\xE2 \x99 \xA9 %f", 1.0f);
     // float noteLengths[3];
-    float noteLength = 1.0f;
-    float noteLengths[3] = { 1.0f, 0.5f, 0.3333f};
-    std::string noteNames[3] = {"♩", "♪", "�"};
+    int defaultIndex = 0;
+
+    float noteLengths[4] = { 0.0f, 1.0f, 0.5f, 0.3333f};
+    float noteLength = noteLengths[defaultIndex];
+    std::string noteNames[4] = {"Free", "♩", "♪", "�"};
+
+    GateLengthTurbo *module = NULL;
 
     NoteLengthChoiceMenuButton();
     void step() override;
-
 };
 
 struct SymbolicNoteLengthItem : MenuItem {
@@ -190,6 +206,7 @@ struct SymbolicNoteLengthItem : MenuItem {
 	// int pattern;
     float noteLength = 1.0f;
     int index;
+    bool enabled = false;
     NoteLengthChoiceMenuButton *noteLengthWidget;
 
 	void onAction(EventAction &e) override {
@@ -204,6 +221,7 @@ struct SymbolicNoteLengthItem : MenuItem {
         // dynamic_cast<LedDisplayChoice *>(noteLengthWidget)->text = stringf("%s", noteLengthWidget->noteNames[index].c_str());
         noteLengthWidget->noteLength = noteLength;
                 debug("AFTER note length item onAction %f index: %d noteLengthWidget->noteLength: %f", noteLength, index, noteLengthWidget->noteLength );
+        engineSetParam(noteLengthWidget->module, GateLengthTurbo::USE_BPM_PARAM, enabled ? 1.0f : 0.0f);
 	}
 };
 
@@ -229,15 +247,30 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
 		Menu *menu = gScene->createMenu();
 		menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Note Length"));
 
-        for (int i = 0; i < 3; i++) {
+        SymbolicNoteLengthItem *item = new SymbolicNoteLengthItem();
+
+        // FIXME: replace with a struct and/or enums instead of matched arrays
+        item->text = noteLengthWidget->noteNames[noteLengthWidget->defaultIndex].c_str();
+        item->noteLength = noteLengthWidget->noteLengths[noteLengthWidget->defaultIndex];
+        item->rightText = stringf("BPM Ignored");
+        item->visible = true;
+        item->index = 0;
+        item->enabled = false;
+        item->noteLengthWidget = noteLengthWidget;
+        menu->addChild(item);
+
+        for (int i = 1; i < 4; i++) {
             SymbolicNoteLengthItem *item = new SymbolicNoteLengthItem();
             // item->text = stringf("some_text_%d", i);
+
+            // FIXME: replace with a struct and/or enums instead of matched arrays
             item->text = stringf("%s", noteLengthWidget->noteNames[i].c_str());
             item->noteLength = noteLengthWidget->noteLengths[i];
             item->rightText = stringf("%0.4f", noteLengthWidget->noteLengths[i]);
             item->visible = true;
             item->index = i;
             item->noteLengthWidget = noteLengthWidget;
+            item->enabled = true;
             menu->addChild(item);
         }
     }
@@ -311,7 +344,7 @@ struct GateLengthFrame : OpaqueWidget {
     float font_size = 10.0f;
 
     GateLengthFrame(GateLengthTurbo *module, int index) {
-        debug("GateLengthFrame");
+        debug("GateLengthFrame index: %d", index);
         SVGWidget *sw = new SVGWidget();
 
         addChild(sw);
@@ -322,7 +355,7 @@ struct GateLengthFrame : OpaqueWidget {
         float x_pos = 4.0f;
         float y_pos = 0.0f;
 
-        lengthInputPort = Port::create<SmallPurplePort>(Vec(x_pos, y_pos + 1.0f),
+        lengthInputPort = Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
                                           Port::INPUT,
                                           module,
                                           GateLengthTurbo::GATE_LENGTH_INPUT + index);
@@ -420,6 +453,7 @@ struct GateLengthFrame : OpaqueWidget {
 
         NoteLengthChoiceMenuButton *noteLengthChoiceMenuButton = new NoteLengthChoiceMenuButton();
         noteLengthChoiceMenuButton->box.pos = pos;
+        noteLengthChoiceMenuButton->module = module;
         addChild(noteLengthChoiceMenuButton);
 
         x_pos += 30.0f;
@@ -473,9 +507,9 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
         frame->box.pos = Vec(x_pos, y_pos);
         frame->font_size = font_size;
         addChild(frame);
-        debug("y_pos: %f box.size.y: %f", y_pos, frame->box.size.y);
+        // debug("y_pos: %f box.size.y: %f", y_pos, frame->box.size.y);
         // y_pos += frame->box.size.y;
-        y_pos += 65.0f;
+        y_pos += 75.0f;
 
         inputs.push_back(frame->lengthInputPort);
         inputs.push_back(frame->bpmInput);

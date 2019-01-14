@@ -176,8 +176,12 @@ struct SmallPurpleTrimpot : Trimpot {
 struct SymbolicNoteLengthItem : MenuItem {
 	// PatternWidget *widget = NULL;
 	// int pattern;
+    float noteLength = 1.0f;
+    int index;
+
 	void onAction(EventAction &e) override {
-        debug("note length item onAction");
+        debug("note length item onAction %f index: %d", noteLength, index);
+        // noteLength =
 	}
 };
 
@@ -191,25 +195,27 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
 		Menu *menu = gScene->createMenu();
 		menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Note Length"));
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 0; i < 3; i++) {
             SymbolicNoteLengthItem *item = new SymbolicNoteLengthItem();
             // item->text = stringf("some_text_%d", i);
-            item->text = stringf("♩ %%: %f", noteLengths[i-1]);
+            item->text = stringf("♩ %%: %f", noteLengths[i]);
+            item->noteLength = noteLengths[i];
             item->rightText = "right_text";
             item->visible = true;
+            item->index = i;
             menu->addChild(item);
         }
     }
 
-/*
+
 	void step() override {
-        debug("SymNoteLengthChoice noteLengthWidget->text: %f", noteLengthWidget->text.c_str());
+        // debug("SymNoteLengthChoice text: %s", text.c_str());
+        LedDisplayChoice::step();
         // text = noteLengthWidget->text;
-        // text = stringf("♩ %: %f", &module->beat_length[0]);
+        //text = stringf("♩ %: %f", &module->beat_length[0]);
         // text = stringf("the_text_from_step");
         // debug("noteLengthChoice step");
 	}
-    */
 };
 
 struct NoteLengthChoiceMenuButton : OpaqueWidget {

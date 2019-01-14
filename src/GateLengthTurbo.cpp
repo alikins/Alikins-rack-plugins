@@ -173,20 +173,16 @@ struct SmallPurpleTrimpot : Trimpot {
 	}
 };
 
-struct NoteLength {
-	int val = 0; // Controller value
-	// TransitionSmoother tSmooth;
-	bool changed = false; // Value has been changed by midi message (only if it is in sync!)
-};
-
-struct NoteLengthChoiceMenuButton : OpaqueWidget {
-    std::string text = stringf("\xE2 \x99 \xA9 %f", 1.0f);
+struct NoteLengthChoiceMenuButton : LedDisplay {
+    // std::string text = stringf("\xE2 \x99 \xA9 %f", 1.0f);
     // float noteLengths[3];
     float noteLength = 1.0f;
     float noteLengths[3] = { 1.0f, 0.5f, 0.3333f};
     std::string noteNames[3] = {"♩", "♪", "�"};
 
     NoteLengthChoiceMenuButton();
+    void step() override;
+
 };
 
 struct SymbolicNoteLengthItem : MenuItem {
@@ -197,16 +193,17 @@ struct SymbolicNoteLengthItem : MenuItem {
     NoteLengthChoiceMenuButton *noteLengthWidget;
 
 	void onAction(EventAction &e) override {
-        debug("note length item onAction %f index: %d noteLengthWidget->noteLength: %f NLW->text: %s", noteLength, index, noteLengthWidget->noteLength, noteLengthWidget->text.c_str());
+        debug("note length item onAction %f index: %d noteLengthWidget->noteLength: %f ", noteLength, index, noteLengthWidget->noteLength);
+
         //noteLengthWidget->text = stringf("♩ %f", noteLength);
         // noteLengthWidget->text = stringf("\xE299A9 %f", 1.0f);
         /* ♩ */
         // noteLengthWidget->text = stringf(u8"\u2669 %f", noteLength);
         // noteLength =
         // noteLengthWidget->text = stringf("%0.4f", noteLength);
-        noteLengthWidget->text = stringf("%s", noteLengthWidget->noteNames[index].c_str());
+        // dynamic_cast<LedDisplayChoice *>(noteLengthWidget)->text = stringf("%s", noteLengthWidget->noteNames[index].c_str());
         noteLengthWidget->noteLength = noteLength;
-                debug("AFTER note length item onAction %f index: %d noteLengthWidget->noteLength: %f NLW->text: %s", noteLength, index, noteLengthWidget->noteLength, noteLengthWidget->text.c_str());
+                debug("AFTER note length item onAction %f index: %d noteLengthWidget->noteLength: %f", noteLength, index, noteLengthWidget->noteLength );
 	}
 };
 
@@ -239,47 +236,52 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
 
 	void step() override {
         // debug("SymNoteLengthChoice text: %s", text.c_str());
+
+        text = stringf("%f", noteLengthWidget->noteLength);
+
         LedDisplayChoice::step();
-        text = noteLengthWidget->text;
+        // text = noteLengthWidget->text;
+        // text = dynamic_cast<LedDisplayChoice *>(noteLengthWidget)->text;
         //text = stringf("♩ %: %f", &module->beat_length[0]);
         // text = stringf("the_text_from_step");
         // debug("noteLengthChoice step");
 	}
 };
 
-
-
-
 NoteLengthChoiceMenuButton::NoteLengthChoiceMenuButton() {
-        float x_pos = 0.0f;
-        float y_pos = 0.0f;
+    float x_pos = 0.0f;
+    float y_pos = 0.0f;
 
-        Vec pos = Vec(x_pos + 5.0f, y_pos);
+    Vec pos = Vec(x_pos + 5.0f, y_pos);
 
-        debug("NoteLengthChoiceMenuButton");
-        SVGWidget *sw = new SVGWidget();
+    debug("NoteLengthChoiceMenuButton");
+    SVGWidget *sw = new SVGWidget();
 
-        addChild(sw);
-        sw->setSVG(SVG::load(assetPlugin(plugin, "res/NoteLengthChoiceBackground.svg")));
-        sw->wrap();
+    addChild(sw);
+    sw->setSVG(SVG::load(assetPlugin(plugin, "res/NoteLengthChoiceBackground.svg")));
+    sw->wrap();
 
-        SymbolicNoteLengthChoice *noteLengthChoice = new SymbolicNoteLengthChoice();
-        noteLengthChoice->box.pos = pos;
-        noteLengthChoice->textOffset = Vec(2, 7);
-        noteLengthChoice->box.size = sw->box.size;
-        noteLengthChoice->noteLengthWidget = this;
-        text = noteLengthChoice->text;
+    SymbolicNoteLengthChoice *noteLengthChoice = new SymbolicNoteLengthChoice();
+    noteLengthChoice->box.pos = pos;
+    noteLengthChoice->textOffset = Vec(2, 7);
+    noteLengthChoice->box.size = sw->box.size;
+    noteLengthChoice->noteLengthWidget = this;
+    // text = noteLengthChoice->text;
 
-	    addChild(noteLengthChoice);
-        pos = noteLengthChoice->box.getBottomLeft();
+    addChild(noteLengthChoice);
+    pos = noteLengthChoice->box.getBottomLeft();
 
-        LedDisplaySeparator *separator = Widget::create<LedDisplaySeparator>(pos);
-        separator->box.size.x = box.size.x;
-        addChild(separator);
+    LedDisplaySeparator *separator = Widget::create<LedDisplaySeparator>(pos);
+    separator->box.size.x = box.size.x;
+    addChild(separator);
 
-        LedDisplaySeparator *noteLengthSep = Widget::create<LedDisplaySeparator>(pos);
-	    addChild(noteLengthSep);
-    }
+    LedDisplaySeparator *noteLengthSep = Widget::create<LedDisplaySeparator>(pos);
+    addChild(noteLengthSep);
+}
+
+void NoteLengthChoiceMenuButton::step() {
+    LedDisplay::step();
+}
 
 struct GateLengthFrame : OpaqueWidget {
     Port *lengthInputPort;
@@ -292,7 +294,7 @@ struct GateLengthFrame : OpaqueWidget {
     ParamWidget *bpmParam;
     ParamWidget *beatLengthParam;
 
-    float font_size;
+    float font_size = 8.0f;
 
     GateLengthFrame(GateLengthTurbo *module, int index) {
         debug("GateLengthFrame");
@@ -333,7 +335,7 @@ struct GateLengthFrame : OpaqueWidget {
         gate_length_display->value = &module->gate_length[index];
         gate_length_display->precision = 4;
         // gate_length_display->font_size = font_size;
-        gate_length_display->font_size = 11.0f;
+        gate_length_display->font_size = font_size;
         gate_length_display->text_pos_x = 2.0f;
         gate_length_display->text_pos_y = 12.0f;
         gate_length_display->lcd_letter_spacing = 1.0f;
@@ -356,14 +358,11 @@ struct GateLengthFrame : OpaqueWidget {
 
         addChild(bpmInput);
 
-        x_pos += 5.0f;
-        Vec pos = Vec(x_pos, y_pos);
+        x_pos += bpmInput->box.size.x;
 
-        NoteLengthChoiceMenuButton *noteLengthChoiceMenuButton = new NoteLengthChoiceMenuButton();
-        noteLengthChoiceMenuButton->box.pos = pos;
-        addChild(noteLengthChoiceMenuButton);
 
-        x_pos += 19.0f;
+        // x_pos += noteLengthChoiceMenuButton->box.size.x;
+
         bpmParam  = ParamWidget::create<SmallPurpleTrimpot>(Vec(x_pos, y_pos),
                                               module,
                                               GateLengthTurbo::BPM_PARAM + index,
@@ -406,6 +405,15 @@ struct GateLengthFrame : OpaqueWidget {
 
         // module->params[GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i]->
         x_pos += 19.0f;  // size of beat length trimpot
+
+        // select the base note (ie, quarter note etc)
+        Vec pos = Vec(x_pos, y_pos);
+
+        NoteLengthChoiceMenuButton *noteLengthChoiceMenuButton = new NoteLengthChoiceMenuButton();
+        noteLengthChoiceMenuButton->box.pos = pos;
+        addChild(noteLengthChoiceMenuButton);
+
+        x_pos += 30.0f;
 
         MsDisplayWidget *beat_length_display = new MsDisplayWidget();
         beat_length_display->box.pos = Vec(x_pos, y_pos);

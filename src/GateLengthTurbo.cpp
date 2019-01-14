@@ -204,6 +204,79 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
 	}
 };
 
+struct GateLengthFrame : OpaqueWidget {
+    Port *lengthInputPort;
+    ParamWidget *gateLengthParam;
+
+    GateLengthFrame(GateLengthTurbo *module) {
+        debug("GateLengthFrame");
+        SVGWidget *sw = new SVGWidget();
+
+        addChild(sw);
+        sw->setSVG(SVG::load(assetPlugin(plugin, "res/GateLengthFrame.svg")));
+
+        sw->wrap();
+
+        float x_pos = 4.0f;
+        float y_pos = 0.0f;
+        // y_pos += 39.0f;
+        //y_pos += 32.0f;
+
+        // float y_middle = 22.0f / 2.0f;
+        // x_pos += 30.0f;
+        // x_pos += 19.0f;    // size of input port
+        lengthInputPort = Port::create<SmallPurplePort>(Vec(x_pos, 0.0f + 1.0f),
+                                          Port::INPUT,
+                                          module,
+                                          GateLengthTurbo::GATE_LENGTH_INPUT);
+
+        addChild(lengthInputPort);
+
+        x_pos += 19.0f;
+        gateLengthParam = ParamWidget::create<SmallPurpleTrimpot>(Vec(x_pos, 0.0f),
+                                            module,
+                                            GateLengthTurbo::GATE_LENGTH_PARAM,
+                                            0.0f, 10.0f, 0.1f);
+        addChild(gateLengthParam);
+
+        x_pos += 19.0f;
+
+        MsDisplayWidget *gate_length_display = new MsDisplayWidget();
+        gate_length_display->box.pos = Vec(x_pos, 0.0f + 1.0f);
+        gate_length_display->box.size = Vec(60.0f, 15.0f);
+        gate_length_display->value = &module->gate_length[0];
+        gate_length_display->precision = 4;
+        // gate_length_display->font_size = font_size;
+        gate_length_display->font_size = 11.0f;
+        gate_length_display->text_pos_x = 2.0f;
+        gate_length_display->text_pos_y = 12.0f;
+        gate_length_display->lcd_letter_spacing = 1.0f;
+
+        addChild(gate_length_display);
+
+        y_pos += 26.0f;
+
+        Vec pos = Vec(x_pos + 5.0f, y_pos);
+        SymbolicNoteLengthChoice *noteLengthChoice = Widget::create<SymbolicNoteLengthChoice>(pos);
+        noteLengthChoice->textOffset = Vec(2, 7);
+        noteLengthChoice->box.size = Vec(30.0f, 30.0f);
+        // noteLengthChoice->box.size.x = box.size.x;
+
+	    // PatternChoice *patternChoice = Widget::create<PatternChoice>(pos);
+	    // patternChoice->widget = this;
+	    addChild(noteLengthChoice);
+        pos = noteLengthChoice->box.getBottomLeft();
+
+        LedDisplaySeparator *separator = Widget::create<LedDisplaySeparator>(pos);
+        separator->box.size.x = box.size.x;
+        addChild(separator);
+
+        LedDisplaySeparator *noteLengthSep = Widget::create<LedDisplaySeparator>(pos);
+	    addChild(noteLengthSep);
+    }
+
+};
+
 
 struct GateLengthTurboWidget : ModuleWidget {
     GateLengthTurboWidget(GateLengthTurbo *module);
@@ -225,12 +298,29 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
         // float y_middle = 22.0f / 2.0f;
         // x_pos += 30.0f;
         // x_pos += 19.0f;    // size of input port
-        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos + 1.0f),
+        GateLengthFrame *frame = new GateLengthFrame(module);
+
+        frame->box.pos = Vec(x_pos, y_pos);
+        addChild(frame);
+        debug("y_pos: %f box.size.y: %f", y_pos, frame->box.size.y);
+        // y_pos += frame->box.size.y;
+        y_pos += 65.0f;
+
+        inputs.push_back(frame->lengthInputPort);
+        // addChild(frame->lengthInputPort);
+        //addInput(frame->lengthInputPort);
+        /*addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos + 1.0f),
                                           Port::INPUT,
                                           module,
                                           GateLengthTurbo::GATE_LENGTH_INPUT + i));
+        */
+        // x_pos += 19.0f;
+        params.push_back(frame->gateLengthParam);
 
-        x_pos += 19.0f;
+	    // addChild(frame->gateLengthParam);
+        // addParam(frame->gateLengthParam);
+
+        /*
         addParam(ParamWidget::create<SmallPurpleTrimpot>(Vec(x_pos, y_pos),
                                             module,
                                             GateLengthTurbo::GATE_LENGTH_PARAM + i,
@@ -351,8 +441,9 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
 
         // LedDisplaySeparator *noteLengthSep = Widget::create<LedDisplaySeparator>(pos);
 	    // addChild(noteLengthSep);
+        */
+        // y_pos += 30.0f;
 
-        y_pos += 30.0f;
     }
 
     addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));

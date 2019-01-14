@@ -216,6 +216,15 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
     // float noteLengths[3] = { 1.0f, 0.5f, 0.3333f};
     // std::string noteNames[3] = {"♩", "♩♩", "3♩" };
 
+    SymbolicNoteLengthChoice() {
+        LedDisplayChoice();
+        box.size = mm2px(Vec(0, 28.0 / 3));
+        font = Font::load(assetGlobal("res/fonts/DejaVuSans.ttf"));
+	    // color = nvgRGB(1.0f, 0.0f, 0.0f);
+        // box.size = mm2px(Vec(0, 28.0 / 3));
+    	textOffset = Vec(1, 8);
+    }
+
 	void onAction(EventAction &e) override {
 		Menu *menu = gScene->createMenu();
 		menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Note Length"));
@@ -225,7 +234,7 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
             // item->text = stringf("some_text_%d", i);
             item->text = stringf("%s", noteLengthWidget->noteNames[i].c_str());
             item->noteLength = noteLengthWidget->noteLengths[i];
-            item->rightText = "right_text";
+            item->rightText = stringf("%0.4f", noteLengthWidget->noteLengths[i]);
             item->visible = true;
             item->index = i;
             item->noteLengthWidget = noteLengthWidget;
@@ -249,6 +258,9 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
 };
 
 NoteLengthChoiceMenuButton::NoteLengthChoiceMenuButton() {
+
+	// textOffset = Vec(10, 18);
+
     float x_pos = 0.0f;
     float y_pos = 0.0f;
 
@@ -263,8 +275,10 @@ NoteLengthChoiceMenuButton::NoteLengthChoiceMenuButton() {
 
     SymbolicNoteLengthChoice *noteLengthChoice = new SymbolicNoteLengthChoice();
     noteLengthChoice->box.pos = pos;
-    noteLengthChoice->textOffset = Vec(2, 7);
+    // noteLengthChoice->
+    // noteLengthChoice->textOffset = Vec(0, 8);
     noteLengthChoice->box.size = sw->box.size;
+    //noteLengthChoice->box.size = Vec(20.0f, 30.0f);
     noteLengthChoice->noteLengthWidget = this;
     // text = noteLengthChoice->text;
 
@@ -294,7 +308,7 @@ struct GateLengthFrame : OpaqueWidget {
     ParamWidget *bpmParam;
     ParamWidget *beatLengthParam;
 
-    float font_size = 8.0f;
+    float font_size = 10.0f;
 
     GateLengthFrame(GateLengthTurbo *module, int index) {
         debug("GateLengthFrame");
@@ -330,7 +344,7 @@ struct GateLengthFrame : OpaqueWidget {
         x_pos += 19.0f;
 
         MsDisplayWidget *gate_length_display = new MsDisplayWidget();
-        gate_length_display->box.pos = Vec(x_pos, 0.0f + 1.0f);
+        gate_length_display->box.pos = Vec(x_pos, y_pos);
         gate_length_display->box.size = Vec(60.0f, 15.0f);
         gate_length_display->value = &module->gate_length[index];
         gate_length_display->precision = 4;

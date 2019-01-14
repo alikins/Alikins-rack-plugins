@@ -184,6 +184,8 @@ struct SymbolicNoteLengthItem : MenuItem {
 
 struct SymbolicNoteLengthChoice : LedDisplayChoice {
 	// GatelengthTurboWidget *widget = NULL;
+    // NoteLengthChoiceMenuButton *noteLengthWidget;
+    float noteLengths[3] = { 1.0f, 0.5f, 0.3333f};
 
 	void onAction(EventAction &e) override {
 		Menu *menu = gScene->createMenu();
@@ -191,17 +193,65 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
 
         for (int i = 1; i <= 3; i++) {
             SymbolicNoteLengthItem *item = new SymbolicNoteLengthItem();
-            item->text = stringf("some_text_%d", i);
+            // item->text = stringf("some_text_%d", i);
+            item->text = stringf("♩ %%: %f", noteLengths[i-1]);
             item->rightText = "right_text";
             item->visible = true;
             menu->addChild(item);
         }
     }
 
+/*
 	void step() override {
-        text = stringf("the_text_from_step");
+        debug("SymNoteLengthChoice noteLengthWidget->text: %f", noteLengthWidget->text.c_str());
+        // text = noteLengthWidget->text;
+        // text = stringf("♩ %: %f", &module->beat_length[0]);
+        // text = stringf("the_text_from_step");
         // debug("noteLengthChoice step");
 	}
+    */
+};
+
+struct NoteLengthChoiceMenuButton : OpaqueWidget {
+    std::string text = stringf("♩ %: %f", 1.0f);
+    // float noteLengths[3];
+
+    NoteLengthChoiceMenuButton() {
+        float x_pos = 0.0f;
+        float y_pos = 0.0f;
+
+
+        Vec pos = Vec(x_pos + 5.0f, y_pos);
+
+        debug("NoteLengthChoiceMenuButton");
+        SVGWidget *sw = new SVGWidget();
+
+        addChild(sw);
+        sw->setSVG(SVG::load(assetPlugin(plugin, "res/NoteLengthChoiceBackground.svg")));
+
+        sw->wrap();
+
+        SymbolicNoteLengthChoice *noteLengthChoice = new SymbolicNoteLengthChoice();
+        noteLengthChoice->text = this->text;
+        noteLengthChoice->box.pos = pos;
+        noteLengthChoice->textOffset = Vec(2, 7);
+        noteLengthChoice->box.size = Vec(30.0f, 30.0f);
+        // noteLengthChoice.noteLengths = this->noteLengths;
+        // noteLengthChoice->text = stringf("♩ %: %f", &module->beat_length[0]);
+        // noteLengthChoice->box.size.x = box.size.x;
+
+	    // PatternChoice *patternChoice = Widget::create<PatternChoice>(pos);
+	    // patternChoice->widget = this;
+	    addChild(noteLengthChoice);
+        pos = noteLengthChoice->box.getBottomLeft();
+
+        LedDisplaySeparator *separator = Widget::create<LedDisplaySeparator>(pos);
+        separator->box.size.x = box.size.x;
+        addChild(separator);
+
+        LedDisplaySeparator *noteLengthSep = Widget::create<LedDisplaySeparator>(pos);
+	    addChild(noteLengthSep);
+    }
 };
 
 struct GateLengthFrame : OpaqueWidget {
@@ -255,8 +305,13 @@ struct GateLengthFrame : OpaqueWidget {
         addChild(gate_length_display);
 
         y_pos += 26.0f;
-
         Vec pos = Vec(x_pos + 5.0f, y_pos);
+
+        NoteLengthChoiceMenuButton *noteLengthChoiceMenuButton = new NoteLengthChoiceMenuButton();
+        noteLengthChoiceMenuButton->box.pos = pos;
+
+        addChild(noteLengthChoiceMenuButton);
+        /*
         SymbolicNoteLengthChoice *noteLengthChoice = Widget::create<SymbolicNoteLengthChoice>(pos);
         noteLengthChoice->textOffset = Vec(2, 7);
         noteLengthChoice->box.size = Vec(30.0f, 30.0f);
@@ -273,6 +328,7 @@ struct GateLengthFrame : OpaqueWidget {
 
         LedDisplaySeparator *noteLengthSep = Widget::create<LedDisplaySeparator>(pos);
 	    addChild(noteLengthSep);
+        */
     }
 
 };

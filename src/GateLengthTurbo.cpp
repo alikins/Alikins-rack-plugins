@@ -180,9 +180,11 @@ struct NoteLength {
 };
 
 struct NoteLengthChoiceMenuButton : OpaqueWidget {
-    std::string text = stringf("♩ %: %f", 1.0f);
+    std::string text = stringf("\xE2 \x99 \xA9 %f", 1.0f);
     // float noteLengths[3];
     float noteLength = 1.0f;
+    float noteLengths[3] = { 1.0f, 0.5f, 0.3333f};
+    std::string noteNames[3] = {"♩", "♪", "�"};
 
     NoteLengthChoiceMenuButton();
 };
@@ -195,10 +197,16 @@ struct SymbolicNoteLengthItem : MenuItem {
     NoteLengthChoiceMenuButton *noteLengthWidget;
 
 	void onAction(EventAction &e) override {
-        debug("note length item onAction %f index: %d noteLengthWidget->noteLength: %f", noteLength, index, noteLengthWidget->noteLength);
+        debug("note length item onAction %f index: %d noteLengthWidget->noteLength: %f NLW->text: %s", noteLength, index, noteLengthWidget->noteLength, noteLengthWidget->text.c_str());
+        //noteLengthWidget->text = stringf("♩ %f", noteLength);
+        // noteLengthWidget->text = stringf("\xE299A9 %f", 1.0f);
+        /* ♩ */
+        // noteLengthWidget->text = stringf(u8"\u2669 %f", noteLength);
         // noteLength =
+        // noteLengthWidget->text = stringf("%0.4f", noteLength);
+        noteLengthWidget->text = stringf("%s", noteLengthWidget->noteNames[index].c_str());
         noteLengthWidget->noteLength = noteLength;
-                debug("AFTER note length item onAction %f index: %d noteLengthWidget->noteLength: %f", noteLength, index, noteLengthWidget->noteLength);
+                debug("AFTER note length item onAction %f index: %d noteLengthWidget->noteLength: %f NLW->text: %s", noteLength, index, noteLengthWidget->noteLength, noteLengthWidget->text.c_str());
 	}
 };
 
@@ -208,7 +216,8 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
 	// GatelengthTurboWidget *widget = NULL;
     NoteLengthChoiceMenuButton *noteLengthWidget;
 
-    float noteLengths[3] = { 1.0f, 0.5f, 0.3333f};
+    // float noteLengths[3] = { 1.0f, 0.5f, 0.3333f};
+    // std::string noteNames[3] = {"♩", "♩♩", "3♩" };
 
 	void onAction(EventAction &e) override {
 		Menu *menu = gScene->createMenu();
@@ -217,8 +226,8 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
         for (int i = 0; i < 3; i++) {
             SymbolicNoteLengthItem *item = new SymbolicNoteLengthItem();
             // item->text = stringf("some_text_%d", i);
-            item->text = stringf("♩ %%: %f", noteLengths[i]);
-            item->noteLength = noteLengths[i];
+            item->text = stringf("%s", noteLengthWidget->noteNames[i].c_str());
+            item->noteLength = noteLengthWidget->noteLengths[i];
             item->rightText = "right_text";
             item->visible = true;
             item->index = i;
@@ -231,7 +240,7 @@ struct SymbolicNoteLengthChoice : LedDisplayChoice {
 	void step() override {
         // debug("SymNoteLengthChoice text: %s", text.c_str());
         LedDisplayChoice::step();
-        // text = noteLengthWidget->text;
+        text = noteLengthWidget->text;
         //text = stringf("♩ %: %f", &module->beat_length[0]);
         // text = stringf("the_text_from_step");
         // debug("noteLengthChoice step");
@@ -257,15 +266,16 @@ NoteLengthChoiceMenuButton::NoteLengthChoiceMenuButton() {
         sw->wrap();
 
         SymbolicNoteLengthChoice *noteLengthChoice = new SymbolicNoteLengthChoice();
-        noteLengthChoice->text = this->text;
+        // noteLengthChoice->text = this->text;
         noteLengthChoice->box.pos = pos;
         noteLengthChoice->textOffset = Vec(2, 7);
-        noteLengthChoice->box.size = Vec(30.0f, 30.0f);
+        // noteLengthChoice->box.size = Vec(30.0f, 30.0f);
+        noteLengthChoice->box.size = sw->box.size;
         noteLengthChoice->noteLengthWidget = this;
         // noteLengthChoice.noteLengths = this->noteLengths;
         // noteLengthChoice->text = stringf("♩ %: %f", &module->beat_length[0]);
         // noteLengthChoice->box.size.x = box.size.x;
-
+        text = noteLengthChoice->text;
 	    // PatternChoice *patternChoice = Widget::create<PatternChoice>(pos);
 	    // patternChoice->widget = this;
 	    addChild(noteLengthChoice);

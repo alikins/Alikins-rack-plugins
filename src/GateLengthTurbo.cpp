@@ -321,13 +321,8 @@ struct GateLengthFrame : OpaqueWidget {
 
         float x_pos = 4.0f;
         float y_pos = 0.0f;
-        // y_pos += 39.0f;
-        //y_pos += 32.0f;
 
-        // float y_middle = 22.0f / 2.0f;
-        // x_pos += 30.0f;
-        // x_pos += 19.0f;    // size of input port
-        lengthInputPort = Port::create<SmallPurplePort>(Vec(x_pos, 0.0f + 1.0f),
+        lengthInputPort = Port::create<SmallPurplePort>(Vec(x_pos, y_pos + 1.0f),
                                           Port::INPUT,
                                           module,
                                           GateLengthTurbo::GATE_LENGTH_INPUT + index);
@@ -335,7 +330,7 @@ struct GateLengthFrame : OpaqueWidget {
         addChild(lengthInputPort);
 
         x_pos += 19.0f;
-        gateLengthParam = ParamWidget::create<SmallPurpleTrimpot>(Vec(x_pos, 0.0f),
+        gateLengthParam = ParamWidget::create<SmallPurpleTrimpot>(Vec(x_pos, y_pos),
                                             module,
                                             GateLengthTurbo::GATE_LENGTH_PARAM + index,
                                             0.0f, 10.0f, 0.1f);
@@ -357,7 +352,7 @@ struct GateLengthFrame : OpaqueWidget {
         addChild(gate_length_display);
 
         x_pos += 64.0f;
-        gateOutput = Port::create<SmallPurplePort>(Vec(x_pos, 0.0f),
+        gateOutput = Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
                                                 Port::OUTPUT,
                                                 module,
                                                 GateLengthTurbo::GATE_OUTPUT + index);
@@ -483,145 +478,14 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
         y_pos += 65.0f;
 
         inputs.push_back(frame->lengthInputPort);
-        // addChild(frame->lengthInputPort);
-        //addInput(frame->lengthInputPort);
-        /*addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos + 1.0f),
-                                          Port::INPUT,
-                                          module,
-                                          GateLengthTurbo::GATE_LENGTH_INPUT + i));
-        */
-        // x_pos += 19.0f;
-        params.push_back(frame->gateLengthParam);
-
-        // TODO: get noteLengthWidget selection to the module
-
-/*
-        x_pos += 64.0f;
-        addOutput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos + 1.0f),
-                                                Port::OUTPUT,
-                                                module,
-                                                GateLengthTurbo::GATE_OUTPUT + i));
-*/
-        outputs.push_back(frame->gateOutput);
-
-/*
-        y_pos += 22.0f;   // next "line"
-        x_pos = 4.0f;
-        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
-                                          Port::INPUT,
-                                          module,
-                                          GateLengthTurbo::BPM_INPUT + i));
-*/
         inputs.push_back(frame->bpmInput);
-
-/*
-        x_pos += 19.0f;
-        addParam(ParamWidget::create<SmallPurpleTrimpot>(Vec(x_pos, y_pos),
-                                              module,
-                                              GateLengthTurbo::BPM_PARAM + i,
-                                              -5.0f, 5.0f, 0.0f));
-*/
-        params.push_back(frame->bpmParam);
-
-        /*
-        x_pos += 19.0f;   // size of trimpot
-
-        MsDisplayWidget *bpm_display = new MsDisplayWidget();
-        bpm_display->box.pos = Vec(x_pos, y_pos);
-        bpm_display->box.size = Vec(48.0f, 18.0f);
-        bpm_display->precision = 2;
-        bpm_display->font_size = font_size;
-        bpm_display->value = &module->bpm_labels[i];
-        debug("i: %d bpm: %f", i, bpm_display->value);
-        addChild(bpm_display);
-        */
-
-        // x_pos += 84.0f;
-        //  x_pos += 62.0f
-        // x_pos += 48.0f;  // size of bpm display
-        /*
-        x_pos = 4.0f;
-        y_pos += 22.0f;   // next "line"
-
-        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
-                                          Port::INPUT,
-                                          module,
-                                          GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_INPUT + i));
-
-        */
         inputs.push_back(frame->beatLengthMultiplierInput);
-
-        /*
-        x_pos += 19.0f;
-
-        // TODO: if we assume the 'snapped' values are say, a 32nd up to a whole note, we could make
-        //       the param value be the number of 32nd's. Not sure how to support dotted or tuplets
-        //       for that case though, which would be nice to have.
-        //
-        // TODO: alternatively, maybe a custom Knob with it's own snap behavior?
-        ParamWidget *beatLengthParam = ParamWidget::create<Trimpot>(Vec(x_pos, y_pos),
-                                              module,
-                                              GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i,
-                                              // 16.0f = 16x sixteenth note == one quarter note? ??
-                                              0.0f, 160.0f, 16.0f);
-        ((Trimpot *) beatLengthParam)->snap = true;
-        addParam(beatLengthParam);
-        // module->params[GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i];
-        // beatLengthParam)->snap = true;
-        //addParam(beatLengthParam);
-        */
-        params.push_back(frame->beatLengthParam);
-
-        /*
-        // module->params[GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i]->
-        x_pos += 19.0f;  // size of beat length trimpot
-
-        MsDisplayWidget *beat_length_display = new MsDisplayWidget();
-        beat_length_display->box.pos = Vec(x_pos, y_pos);
-        beat_length_display->box.size = Vec(48.0f, 18.0f);
-        beat_length_display->precision = 2;
-        beat_length_display->font_size = font_size;
-        beat_length_display->value = &module->beat_length[i];
-        debug("i: %d beat_length: %f", i, beat_length_display->value);
-        addChild(beat_length_display);
-        */
-
-        // y_pos += 26.0f;
-        // x_pos += 30.0f;
-        /*
-        x_pos += 52.0f;
-
-        addInput(Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
-                                          Port::INPUT,
-                                          module,
-                                          GateLengthTurbo::TRIGGER_INPUT + i));
-
-        //y_pos += 35.0f;
-        // Vec pos = Vec();
-        */
         inputs.push_back(frame->triggerInput);
-
-        /*
-        Vec pos = Vec(x_pos + 5.0f, y_pos);
-        SymbolicNoteLengthChoice *noteLengthChoice = Widget::create<SymbolicNoteLengthChoice>(pos);
-        noteLengthChoice->textOffset = Vec(2, 7);
-        noteLengthChoice->box.size = Vec(30.0f, 30.0f);
-        // noteLengthChoice->box.size.x = box.size.x;
-
-	    // PatternChoice *patternChoice = Widget::create<PatternChoice>(pos);
-	    // patternChoice->widget = this;
-	    addChild(noteLengthChoice);
-        pos = noteLengthChoice->box.getBottomLeft();
-
-        // LedDisplaySeparator *separator = Widget::create<LedDisplaySeparator>(pos);
-        // separator->box.size.x = box.size.x;
-        // addChild(separator);
-
-        // LedDisplaySeparator *noteLengthSep = Widget::create<LedDisplaySeparator>(pos);
-	    // addChild(noteLengthSep);
-        */
-
-
+        // TODO: get noteLengthWidget selection to the module
+        params.push_back(frame->gateLengthParam);
+        params.push_back(frame->bpmParam);
+        params.push_back(frame->beatLengthParam);
+        outputs.push_back(frame->gateOutput);
     }
 
     addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));

@@ -4,7 +4,7 @@
 #include "cv_utils.hpp"
 #include "MsDisplayWidget.hpp"
 
-#define TURBO_COUNT 4
+#define TURBO_COUNT 2
 
 /* Notes:
    dotted note = 1.5x orig value
@@ -166,7 +166,7 @@ void GateLengthTurbo::step() {
             // FIXME: gate_length doesn't need to be limited to what we can express in param or input (ie, 10s for the latter)
             gate_length[i] = quarter_note_beat_length_secs * beat_length[i];
         } else {
-            gate_length[i] = beat_length[i];
+            // gate_length[i] = beat_length[i];
         }
 
             /*
@@ -371,6 +371,7 @@ struct GateLengthFrame : OpaqueWidget {
 
         sw->wrap();
 
+
         float x_pos = 4.0f;
         float y_pos = 0.0f;
 
@@ -467,6 +468,9 @@ struct GateLengthFrame : OpaqueWidget {
         // module->params[GateLengthTurbo::BEAT_LENGTH_MULTIPLIER_PARAM + i]->
         x_pos += 19.0f;  // size of beat length trimpot
 
+        x_pos = 4.0f;
+        y_pos += 22.0f;   // next "line"
+
         // select the base note (ie, quarter note etc)
         Vec pos = Vec(x_pos, y_pos);
 
@@ -528,7 +532,8 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
         addChild(frame);
         // debug("y_pos: %f box.size.y: %f", y_pos, frame->box.size.y);
         // y_pos += frame->box.size.y;
-        y_pos += 75.0f;
+
+        y_pos += 125.0f;
 
         inputs.push_back(frame->lengthInputPort);
         inputs.push_back(frame->bpmInput);

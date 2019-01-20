@@ -203,6 +203,42 @@ struct SmallPurpleTrimpot : Trimpot {
 	}
 };
 
+struct SVGLabel : SVGWidget {
+
+    std::string svgFileName;
+
+    SVGLabel() {
+        SVGWidget *sw = new SVGWidget();
+        addChild(sw);
+        sw->setSVG(SVG::load(assetPlugin(plugin, svgFileName)));
+        sw->wrap();
+    };
+
+    void change(int labelId) {
+        debug("Label(%p) change to %d", (void *) this, labelId);
+    };
+};
+
+struct LabeledTrimpot : SmallPurpleTrimpot {
+    std::string svgFileName = "res/BpmLabel.svg";
+    SmallPurpleTrimpot *trimpot = NULL;
+
+    LabeledTrimpot() {
+        // SmallPurpleTrimpot();
+        SVGWidget *sw = new SVGWidget();
+        addChild(sw);
+        sw->setSVG(SVG::load(assetPlugin(plugin, svgFileName)));
+        sw->wrap();
+        sw->box.pos.x = 0.0f;
+        // sw->box.pos.y = box.size.y - sw->box.size.y;
+        sw->box.pos.y = box.size.y;
+        // trimpot = new SmallPurpleTrimpot();
+        box.size.y += sw->box.size.y;
+
+    };
+
+};
+
 struct NoteLengthChoiceMenuButton : LedDisplay {
     // std::string text = stringf("\xE2 \x99 \xA9 %f", 1.0f);
     // float noteLengths[3];
@@ -425,7 +461,7 @@ struct GateLengthFrame : OpaqueWidget {
 
         // x_pos += noteLengthChoiceMenuButton->box.size.x;
 
-        bpmParam  = ParamWidget::create<SmallPurpleTrimpot>(Vec(x_pos, y_pos),
+        bpmParam  = ParamWidget::create<LabeledTrimpot>(Vec(x_pos, y_pos),
                                               module,
                                               GateLengthTurbo::BPM_PARAM + index,
                                               -5.0f, 5.0f, 0.0f);
@@ -442,7 +478,7 @@ struct GateLengthFrame : OpaqueWidget {
         addChild(bpm_display);
 
         x_pos = 4.0f;
-        y_pos += 22.0f;   // next "line"
+        y_pos += 42.0f;   // next "line"
 
         beatLengthMultiplierInput = Port::create<SmallPurplePort>(Vec(x_pos, y_pos),
                                           Port::INPUT,
@@ -507,6 +543,8 @@ struct GateLengthFrame : OpaqueWidget {
 
 struct GateLengthTurboWidget : ModuleWidget {
     GateLengthTurboWidget(GateLengthTurbo *module);
+
+    void step() override;
 };
 
 GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWidget(module) {
@@ -552,6 +590,11 @@ GateLengthTurboWidget::GateLengthTurboWidget(GateLengthTurbo *module) : ModuleWi
     addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
 
 }
+
+void GateLengthTurboWidget::step() {
+    ModuleWidget::step();
+    // debug("GLW: step");
+};
 
 Model *modelGateLengthTurbo = Model::create<GateLengthTurbo, GateLengthTurboWidget>(
         "Alikins", "GateLengthTurbo", "Gate Length Turbo", UTILITY_TAG);

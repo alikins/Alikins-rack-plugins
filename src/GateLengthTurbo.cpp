@@ -264,6 +264,7 @@ struct SymbolicNoteLengthItem : MenuItem {
 
 	void onAction(EventAction &e) override {
         debug("note length item onAction %f index: %d noteLengthWidget->noteLength: %f ", noteLength, index, noteLengthWidget->noteLength);
+        debug("SymbolicNoteLengthItem(%p) onAction %f", (void *) this, noteLengthWidget->noteLength);
 
         //noteLengthWidget->text = stringf("♩ %f", noteLength);
         // noteLengthWidget->text = stringf("\xE299A9 %f", 1.0f);

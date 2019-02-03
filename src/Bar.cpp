@@ -159,22 +159,10 @@ struct BarGraphWidget : FramebufferWidget {
 		nvgRect(vg, 0.0f, y_origin, box.size.x, -box_height);
 		//NVGcolor barColor = nvgRGBf(red, 0.5f, blue);
 
-		// float hue = 0.0f;
 		float hue = size > 0 ? 0.0f : 0.35f;
-		/*
-		if (size > 0) {
-			hue = rescale(size, 0.0f, 10.0f, 0.05f, 0.0f);
-			hue = 1.0f;
-		} else {
-			hue = rescale(size, 0.0f, -10.0f, 0.30f, 0.35f);
-			// hue = 0.35f;
-		}
-		*/
-		// hue = rescale(size, -10.f, 10.0f, 0.35f, 0.0f);
+
 		float sat = rescale(abs(size), 0.0f, 10.0f, 0.75f, .6f);
 		float sat_adj = rescale(abs(size), 0.0f, 10.0f, 0.0, 0.05f);
-		// float hue = rescale(size, -10.0f, 10.0f, 0.0f, 1.0f);
-		//float sat = 0.75f;
 		float lightness = 0.5f;
 		//float lightness = rescale(abs(size), 0.0f, 10.0f, 0.6f, 0.5f);
 		NVGcolor barColor = nvgHSL(hue, sat+sat_adj, lightness);
@@ -196,6 +184,8 @@ struct BarGraphWidget : FramebufferWidget {
 
 		nvgFillColor(vg, barColor);
 		nvgFill(vg);
+		nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, .5f));
+		nvgStroke(vg);
 
 		// TODO: make text display optional, possible extract to method or widget
 		// snprintf(value, 100, "Velocity: %06.3fV (Midi %03d)", displayVelocity * 10.f, (int)(127 * displayVelocity));

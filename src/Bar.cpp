@@ -43,6 +43,10 @@ struct BarGraphWidget : FramebufferWidget {
 	float value = -13.0f;
 	float oldValue = -11.0f;
 
+	// guestimate of how tall the text will be
+	// TODO: can we query that?
+	float approx_text_height = 10.0f;
+
 	BarGraphWidget() {
 	};
 
@@ -81,16 +85,21 @@ struct BarGraphWidget : FramebufferWidget {
 		// nvgRect(vg, 0.0, 0.0, box.size.x, box.size.y);
 		float size = module->inputs[Bar::PITCH_INPUT].value;
 
+		float drawing_area_height = box.size.y;
+		// Leave some room for the text display
+		float bar_area_height = box.size.y - approx_text_height;
+
 		// For unipolar / all positive values
-		float y_origin = box.size.y;
+		// float y_origin = box.size.y;
 
 		// For +/- value draw y origin (0) in center of box
-		y_origin = box.size.y / 2.0f;
+		//y_origin = box.size.y / 2.0f;
+		float y_origin = bar_area_height / 2.0f;
 
-		float half_box_height = box.size.y - y_origin;
-		debug("box.size.y: %f y_origin: %f", box.size.y, y_origin);
+		float half_box_height = bar_area_height - y_origin;
+		// debug("box.size.y: %f b_a_h: %f y_origin: %f", box.size.y, bar_area_height, y_origin);
 		float box_height = rescale(size, -10.0f, 10.0f, -half_box_height, half_box_height);
-		debug("input: %f box_height: %f", size, box_height);
+		// debug("input: %f box_height: %f", size, box_height);
 		float x_middle = box.size.x / 2.0f;
 
 		nvgRect(vg, 0.0f, y_origin, box.size.x, -box_height);
@@ -103,9 +112,11 @@ struct BarGraphWidget : FramebufferWidget {
 		nvgFontSize(vg, 10.0f);
 		nvgBeginPath(vg);
     	nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 1.0f));
-    	nvgFillColor(vg, nvgRGBAf(1.f, 1.0f, 1.3f, 1.0f));
+    	// nvgFillColor(vg, nvgRGBAf(1.f, 1.0f, 1.30f, 1.0f));
+		nvgFillColor(vg, nvgRGBAf(0.f, 0.0f, 0.0f, 1.0f));
     	nvgTextAlign(vg, NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-    	nvgText(vg, x_middle, box.size.y -20.0f, valueStr.c_str(), NULL);
+		// nvgText()
+    	nvgText(vg, x_middle, bar_area_height + (approx_text_height / 2.0f), valueStr.c_str(), NULL);
 		nvgStroke(vg);
     	nvgFill(vg);
 

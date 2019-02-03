@@ -80,8 +80,6 @@ struct BarGraphWidget : FramebufferWidget {
 		nvgBeginPath(vg);
 		// nvgRect(vg, 0.0, 0.0, box.size.x, box.size.y);
 		float size = module->inputs[Bar::PITCH_INPUT].value;
-		float boxSize = rescale(size, 0.0f, 10.0f, 0.0f, -box.size.y);
-		float x_middle = box.size.x / 2.0f;
 
 		// For unipolar / all positive values
 		float y_origin = box.size.y;
@@ -89,7 +87,13 @@ struct BarGraphWidget : FramebufferWidget {
 		// For +/- value draw y origin (0) in center of box
 		y_origin = box.size.y / 2.0f;
 
-		nvgRect(vg, 0.0f, y_origin, box.size.x, boxSize);
+		float half_box_height = box.size.y - y_origin;
+		debug("box.size.y: %f y_origin: %f", box.size.y, y_origin);
+		float box_height = rescale(size, -10.0f, 10.0f, -half_box_height, half_box_height);
+		debug("input: %f box_height: %f", size, box_height);
+		float x_middle = box.size.x / 2.0f;
+
+		nvgRect(vg, 0.0f, y_origin, box.size.x, -box_height);
 		nvgFillColor(vg, barColor);
 		nvgFill(vg);
 

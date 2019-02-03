@@ -156,7 +156,13 @@ struct BarGraphWidget : FramebufferWidget {
 		// debug("input: %f box_height: %f", size, box_height);
 		float x_middle = box.size.x / 2.0f;
 
-		nvgRect(vg, 0.0f, y_origin, box.size.x, -box_height);
+		/*
+		NVGcolor backgroundColor = nvgRGBf(.75f, 0.75f, 0.75f);
+		nvgRect(vg, 0.0f, -10.0f, box.size.x, 60.0f);
+		nvgFillColor(vg, backgroundColor);
+		nvgFill(vg);
+		*/
+		// nvgRect(vg, 0.0f, 0.0f, box.size.x, bar_area_height);
 		//NVGcolor barColor = nvgRGBf(red, 0.5f, blue);
 
 		float hue = size > 0 ? 0.0f : 0.35f;
@@ -181,6 +187,8 @@ struct BarGraphWidget : FramebufferWidget {
 		float lightness = 0.25f;
 		NVGcolor barColor = nvgHSL(hue, sat, lightness);
 		*/
+
+		nvgRect(vg, 0.0f, y_origin, box.size.x, -box_height);
 
 		nvgFillColor(vg, barColor);
 		nvgFill(vg);

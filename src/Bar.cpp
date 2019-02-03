@@ -34,6 +34,48 @@ struct Bar : Module {
 void Bar::step() {
 }
 
+
+//rotate/flip a quadrant appropriately
+void rot(int n, int *x, int *y, int rx, int ry) {
+    if (ry == 0) {
+        if (rx == 1) {
+            *x = n-1 - *x;
+            *y = n-1 - *y;
+        }
+
+        //Swap x and y
+        int t  = *x;
+        *x = *y;
+        *y = t;
+    }
+}
+
+int xy2d (int n, int x, int y) {
+    int rx, ry, s, d=0;
+    for (s=n/2; s>0; s/=2) {
+        rx = (x & s) > 0;
+        ry = (y & s) > 0;
+        d += s * s * ((3 * rx) ^ ry);
+        rot(s, &x, &y, rx, ry);
+    }
+    return d;
+}
+
+//convert d to (x,y)
+void d2xy(int n, int d, int *x, int *y) {
+    int rx, ry, s, t=d;
+    *x = *y = 0;
+    for (s=1; s<n; s*=2) {
+        rx = 1 & (t/2);
+        ry = 1 & (t ^ rx);
+        rot(s, x, y, rx, ry);
+        *x += s * rx;
+        *y += s * ry;
+        t /= 4;
+    }
+}
+
+
 struct BarGraphWidget : FramebufferWidget {
 	Module *module;
 	int stepCount = 0;
@@ -76,10 +118,6 @@ struct BarGraphWidget : FramebufferWidget {
 	void draw(NVGcontext *vg) override {
 		// debug("draw %d value: %f", drawCount, value);
 		drawCount++;
-		// FIXME: not really red, green, blue anymore
-		// could include alpha
-		// debug("RgbPanel.draw red=%f, green=%f, blue=%f", red, green, blue);
-		NVGcolor barColor = nvgRGBf(0.0f, 0.0f, 1.0f);
 
 		nvgBeginPath(vg);
 		// nvgRect(vg, 0.0, 0.0, box.size.x, box.size.y);
@@ -95,6 +133,22 @@ struct BarGraphWidget : FramebufferWidget {
 		// For +/- value draw y origin (0) in center of box
 		//y_origin = box.size.y / 2.0f;
 		float y_origin = bar_area_height / 2.0f;
+		int x = 0;
+		int y = 0;
+		// int d = floor(abs(size));
+		int n = 16;
+
+		int max_d = xy2d(n, n-1, n-1);
+		float size_d_f = rescale(size, -10.0f, 10.0f, 0.0f, max_d);
+		int d = floor(abs(size_d_f));
+
+		d2xy(n, d, &x, &y);
+		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d", max_d, size_d_f, n, d, x, y);
+
+		float red = rescale(x, 0, n, 0.0f, 1.0f);
+		float blue = rescale(y, 0, n, 0.0f, 1.0f);
+
+		debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
 
 		float half_box_height = bar_area_height - y_origin;
 		// debug("box.size.y: %f b_a_h: %f y_origin: %f", box.size.y, bar_area_height, y_origin);
@@ -103,6 +157,7 @@ struct BarGraphWidget : FramebufferWidget {
 		float x_middle = box.size.x / 2.0f;
 
 		nvgRect(vg, 0.0f, y_origin, box.size.x, -box_height);
+		NVGcolor barColor = nvgRGBf(red, 0.0f, blue);
 		nvgFillColor(vg, barColor);
 		nvgFill(vg);
 

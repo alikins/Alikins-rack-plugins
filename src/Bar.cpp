@@ -136,19 +136,19 @@ struct BarGraphWidget : FramebufferWidget {
 		int x = 0;
 		int y = 0;
 		// int d = floor(abs(size));
-		int n = 16;
+		int n = 64;
 
 		int max_d = xy2d(n, n-1, n-1);
 		float size_d_f = rescale(size, -10.0f, 10.0f, 0.0f, max_d);
-		int d = floor(abs(size_d_f));
-
+		// int d = floor(abs(size_d_f));
+		int d = round(size_d_f);
 		d2xy(n, d, &x, &y);
 		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d", max_d, size_d_f, n, d, x, y);
 
 		float red = rescale(x, 0, n, 0.0f, 1.0f);
 		float blue = rescale(y, 0, n, 0.0f, 1.0f);
 
-		debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
+		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
 
 		float half_box_height = bar_area_height - y_origin;
 		// debug("box.size.y: %f b_a_h: %f y_origin: %f", box.size.y, bar_area_height, y_origin);
@@ -157,7 +157,43 @@ struct BarGraphWidget : FramebufferWidget {
 		float x_middle = box.size.x / 2.0f;
 
 		nvgRect(vg, 0.0f, y_origin, box.size.x, -box_height);
-		NVGcolor barColor = nvgRGBf(red, 0.0f, blue);
+		//NVGcolor barColor = nvgRGBf(red, 0.5f, blue);
+
+		// float hue = 0.0f;
+		float hue = size > 0 ? 0.0f : 0.35f;
+		/*
+		if (size > 0) {
+			hue = rescale(size, 0.0f, 10.0f, 0.05f, 0.0f);
+			hue = 1.0f;
+		} else {
+			hue = rescale(size, 0.0f, -10.0f, 0.30f, 0.35f);
+			// hue = 0.35f;
+		}
+		*/
+		// hue = rescale(size, -10.f, 10.0f, 0.35f, 0.0f);
+		float sat = rescale(abs(size), 0.0f, 10.0f, 0.75f, .6f);
+		float sat_adj = rescale(abs(size), 0.0f, 10.0f, 0.0, 0.05f);
+		// float hue = rescale(size, -10.0f, 10.0f, 0.0f, 1.0f);
+		//float sat = 0.75f;
+		float lightness = 0.5f;
+		//float lightness = rescale(abs(size), 0.0f, 10.0f, 0.6f, 0.5f);
+		NVGcolor barColor = nvgHSL(hue, sat+sat_adj, lightness);
+
+		/* kind of nice, although hue center seems wrong
+		float hue = rescale(size, -10.0f, 10.0f, 0.0f, 1.0f);
+		float sat = 0.5f;
+		float lightness = 0.5f;
+		NVGcolor barColor = nvgHSL(hue, sat, lightness);
+		*/
+
+		/* HSL doesnt seem to work well with a 2d hilbert, ends up with
+		   the brightness flashing
+		float hue = red;
+		float sat = 0.5f;
+		float lightness = 0.25f;
+		NVGcolor barColor = nvgHSL(hue, sat, lightness);
+		*/
+
 		nvgFillColor(vg, barColor);
 		nvgFill(vg);
 

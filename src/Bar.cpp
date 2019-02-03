@@ -48,14 +48,19 @@ struct BarGraphWidget : FramebufferWidget {
 
 	void step() override {
 		value = module->inputs[Bar::PITCH_INPUT].value;
+
 		// TODO: figure out if we are dirty... weird
+		// TODO: though, probably should do this is Module.step() instead of widget
+		//       store value that we last rendered?
 		// if so, update any values if changed, tweak dirty, then FramebufferWidget::step()
 		if (!isNear(oldValue, value, 1.0e-2f) | dirty){
 			dirty = true;
-			debug("changing value old: %f new: %f diff: %f", oldValue, value, oldValue-value);
+			// debug("changing value old: %f new: %f diff: %f", oldValue, value, oldValue-value);
 		}
+
+		// TODO: do we need this?
 		FramebufferWidget::step();
-		debug("step %d", stepCount);
+		// debug("step %d", stepCount);
 		stepCount++;
 		oldValue = value;
 		// dirty = false;
@@ -65,7 +70,7 @@ struct BarGraphWidget : FramebufferWidget {
 	// we make this a paramwidget/quantitywidget
 
 	void draw(NVGcontext *vg) override {
-		debug("draw %d value: %f", drawCount, value);
+		// debug("draw %d value: %f", drawCount, value);
 		drawCount++;
 		// FIXME: not really red, green, blue anymore
 		// could include alpha
@@ -78,10 +83,17 @@ struct BarGraphWidget : FramebufferWidget {
 		float boxSize = rescale(size, 0.0f, 10.0f, 0.0f, -box.size.y);
 		float x_middle = box.size.x / 2.0f;
 
-		nvgRect(vg, 0.0f, box.size.y, box.size.x, boxSize);
+		// For unipolar / all positive values
+		float y_origin = box.size.y;
+
+		// For +/- value draw y origin (0) in center of box
+		y_origin = box.size.y / 2.0f;
+
+		nvgRect(vg, 0.0f, y_origin, box.size.x, boxSize);
 		nvgFillColor(vg, barColor);
 		nvgFill(vg);
 
+		// TODO: make text display optional, possible extract to method or widget
 		// snprintf(value, 100, "Velocity: %06.3fV (Midi %03d)", displayVelocity * 10.f, (int)(127 * displayVelocity));
 		std::string valueStr = stringf("%#.3g", size);
 		nvgFontSize(vg, 10.0f);
@@ -103,7 +115,6 @@ struct BarGraphWidget : FramebufferWidget {
 struct BarWidget : ModuleWidget {
 	BarWidget(Bar *module) : ModuleWidget(module) {
 		setPanel(SVG::load(assetPlugin(plugin, "res/Bar.svg")));
-
 
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));

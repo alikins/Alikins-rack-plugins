@@ -133,20 +133,6 @@ struct BarGraphWidget : FramebufferWidget {
 		// For +/- value draw y origin (0) in center of box
 		//y_origin = box.size.y / 2.0f;
 		float y_origin = bar_area_height / 2.0f;
-		int x = 0;
-		int y = 0;
-		// int d = floor(abs(size));
-		int n = 64;
-
-		int max_d = xy2d(n, n-1, n-1);
-		float size_d_f = rescale(size, -10.0f, 10.0f, 0.0f, max_d);
-		// int d = floor(abs(size_d_f));
-		int d = round(size_d_f);
-		d2xy(n, d, &x, &y);
-		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d", max_d, size_d_f, n, d, x, y);
-
-		float red = rescale(x, 0, n, 0.0f, 1.0f);
-		float blue = rescale(y, 0, n, 0.0f, 1.0f);
 
 		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
 
@@ -156,37 +142,13 @@ struct BarGraphWidget : FramebufferWidget {
 		// debug("input: %f box_height: %f", size, box_height);
 		float x_middle = box.size.x / 2.0f;
 
-		/*
-		NVGcolor backgroundColor = nvgRGBf(.75f, 0.75f, 0.75f);
-		nvgRect(vg, 0.0f, -10.0f, box.size.x, 60.0f);
-		nvgFillColor(vg, backgroundColor);
-		nvgFill(vg);
-		*/
-		// nvgRect(vg, 0.0f, 0.0f, box.size.x, bar_area_height);
-		//NVGcolor barColor = nvgRGBf(red, 0.5f, blue);
-
+		// positive values are red, negative green
 		float hue = size > 0 ? 0.0f : 0.35f;
 
 		float sat = rescale(abs(size), 0.0f, 10.0f, 0.75f, .6f);
 		float sat_adj = rescale(abs(size), 0.0f, 10.0f, 0.0, 0.05f);
 		float lightness = 0.5f;
-		//float lightness = rescale(abs(size), 0.0f, 10.0f, 0.6f, 0.5f);
 		NVGcolor barColor = nvgHSL(hue, sat+sat_adj, lightness);
-
-		/* kind of nice, although hue center seems wrong
-		float hue = rescale(size, -10.0f, 10.0f, 0.0f, 1.0f);
-		float sat = 0.5f;
-		float lightness = 0.5f;
-		NVGcolor barColor = nvgHSL(hue, sat, lightness);
-		*/
-
-		/* HSL doesnt seem to work well with a 2d hilbert, ends up with
-		   the brightness flashing
-		float hue = red;
-		float sat = 0.5f;
-		float lightness = 0.25f;
-		NVGcolor barColor = nvgHSL(hue, sat, lightness);
-		*/
 
 		nvgRect(vg, 0.0f, y_origin, box.size.x, -box_height);
 

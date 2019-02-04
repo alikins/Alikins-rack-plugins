@@ -57,6 +57,12 @@ struct BarGraphWidget : VirtualWidget {
 	};
 
 
+	void step() override {
+		debug("BarGraphWidget.step() input_value:%f", input_value);
+		VirtualWidget::step();
+	};
+
+
 	// need an onChange? can set dirty from onChange?  if
 	// we make this a paramwidget/quantitywidget
 
@@ -142,17 +148,20 @@ struct BarGraphFrameBuffer : FramebufferWidget {
 	BarGraphFrameBuffer() {
 		barGraphWidget = Widget::create<BarGraphWidget>(Vec(0.0f, 0.0f));
 		barGraphWidget->box.pos.y = box.pos.y;
-        barGraphWidget->box.size = box.size;
+        barGraphWidget->box.size.x = box.size.x;
 		barGraphWidget->box.size.y = box.size.y;
 		barGraphWidget->module = module;
 		addChild(barGraphWidget);
+
+		dirty = true;
 	};
 
 	void inputChanged() {
-		debug("inputChanged old: %f input_value: %f", oldValue, input_value);
+		debug("inputChanged old: %f input_value: %f dirty: %d", oldValue, input_value, dirty);
 		dirty = true;
 		oldValue = input_value;
 		barGraphWidget->input_value = input_value;
+		// FramebufferWidget::step();
 	};
 
 	void step() override {
@@ -166,9 +175,18 @@ struct BarGraphFrameBuffer : FramebufferWidget {
 
 		if (!isNear(oldValue, input_value, 1.0e-2f)){
 			inputChanged();
+		} else {
+			// dirty = false;
 		}
 
-		// FramebufferWidget::step();
+		FramebufferWidget::step();
+	};
+
+	void draw(NVGcontext *vg) override {
+		debug("BarGraphFrameBuffer::draw dirty:%d", dirty);
+		FramebufferWidget::draw(vg);
+		// Widget::draw(vg);
+		debug("BarGraphFrameBuffer::draw2 dirty:%d", dirty);
 	};
 
 };
@@ -197,13 +215,15 @@ struct BarWidget : ModuleWidget {
 		// addOutput(Port::create<PJ301MPort>(Vec(33, 275), Port::OUTPUT, module, Bar::SINE_OUTPUT));
 
 		// BarGraphWidget *barGraphWidget = new BarGraphWidget();
-		BarGraphFrameBuffer *barGraphFrameBuffer = Widget::create<BarGraphFrameBuffer>(Vec(0.0f, 0.0f));
+		// BarGraphFrameBuffer *barGraphFrameBuffer = Widget::create<BarGraphFrameBuffer>(Vec(0.0f, 0.0f));
+		BarGraphFrameBuffer *barGraphFrameBuffer = new BarGraphFrameBuffer();
 
 		barGraphFrameBuffer->box.pos.y = 15.0f;
-        barGraphFrameBuffer->box.size = box.size;
+        barGraphFrameBuffer->box.size.x = box.size.x;
 		barGraphFrameBuffer->box.size.y = box.size.y - 60.0f;
 		barGraphFrameBuffer->module = module;
 		addChild(barGraphFrameBuffer);
+		barGraphFrameBuffer->dirty = true;
 		// addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, Bar::BLINK_LIGHT));
 	}
 };

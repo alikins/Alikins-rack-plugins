@@ -22,6 +22,14 @@ struct Bar : Module {
 		NUM_LIGHTS
 	};
 
+    enum InputRange {
+		MINUS_PLUS_TEN,
+        ZERO_TEN,
+        MINUS_PLUS_FIVE
+    };
+
+    InputRange inputRange = MINUS_PLUS_TEN;
+
 	float phase = 0.0;
 	float blinkPhase = 0.0;
 
@@ -33,48 +41,6 @@ struct Bar : Module {
 
 void Bar::step() {
 }
-
-
-//rotate/flip a quadrant appropriately
-void rot(int n, int *x, int *y, int rx, int ry) {
-    if (ry == 0) {
-        if (rx == 1) {
-            *x = n-1 - *x;
-            *y = n-1 - *y;
-        }
-
-        //Swap x and y
-        int t  = *x;
-        *x = *y;
-        *y = t;
-    }
-}
-
-int xy2d (int n, int x, int y) {
-    int rx, ry, s, d=0;
-    for (s=n/2; s>0; s/=2) {
-        rx = (x & s) > 0;
-        ry = (y & s) > 0;
-        d += s * s * ((3 * rx) ^ ry);
-        rot(s, &x, &y, rx, ry);
-    }
-    return d;
-}
-
-//convert d to (x,y)
-void d2xy(int n, int d, int *x, int *y) {
-    int rx, ry, s, t=d;
-    *x = *y = 0;
-    for (s=1; s<n; s*=2) {
-        rx = 1 & (t/2);
-        ry = 1 & (t ^ rx);
-        rot(s, x, y, rx, ry);
-        *x += s * rx;
-        *y += s * ry;
-        t /= 4;
-    }
-}
-
 
 struct BarGraphWidget : FramebufferWidget {
 	Module *module;
@@ -127,18 +93,26 @@ struct BarGraphWidget : FramebufferWidget {
 		// Leave some room for the text display
 		float bar_area_height = box.size.y - approx_text_height;
 
+		Bar *bar = dynamic_cast<Bar*>(module);
+
+		float y_origin = bar_area_height / 2.0f;
+
+		if (bar->inputRange == Bar::ZERO_TEN) {
+			y_origin = box.size.y;
+		}
+
 		// For unipolar / all positive values
 		// float y_origin = box.size.y;
 
 		// For +/- value draw y origin (0) in center of box
 		//y_origin = box.size.y / 2.0f;
-		float y_origin = bar_area_height / 2.0f;
+		// float y_origin = bar_area_height / 2.0f;
 
 		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
 
 		float half_box_height = bar_area_height - y_origin;
 		// debug("box.size.y: %f b_a_h: %f y_origin: %f", box.size.y, bar_area_height, y_origin);
-		float box_height = rescale(size, -10.0f, 10.0f, -half_box_height, half_box_height);
+		float box_height = rescale(size, voltage_min[bar->inputRange], voltage_max[bar->inputRange], -half_box_height, half_box_height);
 		// debug("input: %f box_height: %f", size, box_height);
 		float x_middle = box.size.x / 2.0f;
 
@@ -179,6 +153,8 @@ struct BarGraphWidget : FramebufferWidget {
 
 
 struct BarWidget : ModuleWidget {
+	Menu *createContextMenu() override;
+
 	BarWidget(Bar *module) : ModuleWidget(module) {
 		setPanel(SVG::load(assetPlugin(plugin, "res/Bar.svg")));
 
@@ -209,6 +185,54 @@ struct BarWidget : ModuleWidget {
 	}
 };
 
+struct InputRangeItem : MenuItem {
+    Bar *bar;
+    Bar::InputRange inputRange;
+
+    void onAction(EventAction &e) override {
+        bar->inputRange = inputRange;
+    };
+
+    void step() override {
+        rightText = (bar->inputRange == inputRange)? "✔" : "";
+    };
+
+};
+
+Menu *BarWidget::createContextMenu() {
+
+    Menu *menu = ModuleWidget::createContextMenu();
+
+    MenuLabel *spacerLabel = new MenuLabel();
+    menu->addChild(spacerLabel);
+
+    Bar *bar = dynamic_cast<Bar*>(module);
+    assert(bar);
+
+    MenuLabel *modeLabel2 = new MenuLabel();
+    modeLabel2->text = "Input Range";
+    menu->addChild(modeLabel2);
+
+	InputRangeItem *tenTenItem = new InputRangeItem();
+    tenTenItem->text = "-10V - +10V";
+    tenTenItem->bar = bar;
+    tenTenItem->inputRange = Bar::MINUS_PLUS_TEN;
+    menu->addChild(tenTenItem);
+
+    InputRangeItem *zeroTenItem = new InputRangeItem();
+    zeroTenItem->text = "0 - +10V (uni)";
+    zeroTenItem->bar = bar;
+    zeroTenItem->inputRange = Bar::ZERO_TEN;
+    menu->addChild(zeroTenItem);
+
+    InputRangeItem *fiveFiveItem = new InputRangeItem();
+    fiveFiveItem->text = "-5 - +5V (bi)";
+    fiveFiveItem->bar = bar;
+    fiveFiveItem->inputRange = Bar::MINUS_PLUS_FIVE;
+    menu->addChild(fiveFiveItem);
+
+    return menu;
+}
 
 // Specify the Module and ModuleWidget subclass, human-readable
 // author name for categorization per plugin, module slug (should never

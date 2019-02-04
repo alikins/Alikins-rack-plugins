@@ -10,7 +10,7 @@ struct Bar : Module {
 		NUM_PARAMS
 	};
 	enum InputIds {
-		PITCH_INPUT,
+		VALUE_INPUT,
 		NUM_INPUTS
 	};
 	enum OutputIds {
@@ -30,64 +30,45 @@ struct Bar : Module {
 
     InputRange inputRange = MINUS_PLUS_TEN;
 
-	float phase = 0.0;
-	float blinkPhase = 0.0;
+	float input_value = 0.0f;
 
 	Bar() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 	void step() override;
 
 };
 
-
 void Bar::step() {
+	/*
+	if (inputs[VALUE_INPUT].active) {
+        input_value = clamp(inputs[VALUE_INPUT].value, voltage_min[inputRange], voltage_max[inputRange]);
+	}
+	*/
 }
 
-struct BarGraphWidget : FramebufferWidget {
+struct BarGraphWidget : VirtualWidget {
 	Module *module;
-	int stepCount = 0;
-	int drawCount = 0;
-
-	// another reinvented quantitywidget
-	float value = -13.0f;
-	float oldValue = -11.0f;
 
 	// guestimate of how tall the text will be
 	// TODO: can we query that?
 	float approx_text_height = 10.0f;
+	float input_value = 11.1f;
 
 	BarGraphWidget() {
 	};
 
-	void step() override {
-		value = module->inputs[Bar::PITCH_INPUT].value;
-
-		// TODO: figure out if we are dirty... weird
-		// TODO: though, probably should do this is Module.step() instead of widget
-		//       store value that we last rendered?
-		// if so, update any values if changed, tweak dirty, then FramebufferWidget::step()
-		if (!isNear(oldValue, value, 1.0e-2f) | dirty){
-			dirty = true;
-			// debug("changing value old: %f new: %f diff: %f", oldValue, value, oldValue-value);
-		}
-
-		// TODO: do we need this?
-		FramebufferWidget::step();
-		// debug("step %d", stepCount);
-		stepCount++;
-		oldValue = value;
-		// dirty = false;
-	};
 
 	// need an onChange? can set dirty from onChange?  if
 	// we make this a paramwidget/quantitywidget
 
 	void draw(NVGcontext *vg) override {
-		// debug("draw %d value: %f", drawCount, value);
-		drawCount++;
+		//debug("dirty: %d", dirty);
+
+		debug("draw value: %f", input_value);
+		// drawCount++;
 
 		nvgBeginPath(vg);
 		// nvgRect(vg, 0.0, 0.0, box.size.x, box.size.y);
-		float size = module->inputs[Bar::PITCH_INPUT].value;
+		//float size = module->inputs[Bar::VALUE_INPUT].value;
 
 		float drawing_area_height = box.size.y;
 		// Leave some room for the text display
@@ -96,31 +77,30 @@ struct BarGraphWidget : FramebufferWidget {
 		Bar *bar = dynamic_cast<Bar*>(module);
 
 		float y_origin = bar_area_height / 2.0f;
+		float bar_height = bar_area_height - y_origin;
 
 		if (bar->inputRange == Bar::ZERO_TEN) {
-			y_origin = box.size.y;
+			// y_origin = box.size.y;
+			y_origin = bar_area_height;
+			bar_height = bar_area_height;
 		}
-
-		// For unipolar / all positive values
-		// float y_origin = box.size.y;
-
-		// For +/- value draw y origin (0) in center of box
-		//y_origin = box.size.y / 2.0f;
-		// float y_origin = bar_area_height / 2.0f;
 
 		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
 
-		float half_box_height = bar_area_height - y_origin;
+		// float half_box_height = bar_area_height - y_origin;
 		// debug("box.size.y: %f b_a_h: %f y_origin: %f", box.size.y, bar_area_height, y_origin);
-		float box_height = rescale(size, voltage_min[bar->inputRange], voltage_max[bar->inputRange], -half_box_height, half_box_height);
+		float clamped_input_value = clamp(input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange]);
+		float box_height = rescale(clamped_input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange], -bar_height, bar_height);
+
+
 		// debug("input: %f box_height: %f", size, box_height);
 		float x_middle = box.size.x / 2.0f;
 
 		// positive values are red, negative green
-		float hue = size > 0 ? 0.0f : 0.35f;
+		float hue = clamped_input_value > 0 ? 0.0f : 0.35f;
 
-		float sat = rescale(abs(size), 0.0f, 10.0f, 0.75f, .6f);
-		float sat_adj = rescale(abs(size), 0.0f, 10.0f, 0.0, 0.05f);
+		float sat = rescale(abs(clamped_input_value), 0.0f, 10.0f, 0.75f, .6f);
+		float sat_adj = rescale(abs(clamped_input_value), 0.0f, 10.0f, 0.0, 0.05f);
 		float lightness = 0.5f;
 		NVGcolor barColor = nvgHSL(hue, sat+sat_adj, lightness);
 
@@ -133,7 +113,7 @@ struct BarGraphWidget : FramebufferWidget {
 
 		// TODO: make text display optional, possible extract to method or widget
 		// snprintf(value, 100, "Velocity: %06.3fV (Midi %03d)", displayVelocity * 10.f, (int)(127 * displayVelocity));
-		std::string valueStr = stringf("%#.3g", size);
+		std::string valueStr = stringf("%#.3g", clamped_input_value);
 		nvgFontSize(vg, 10.0f);
 		nvgBeginPath(vg);
     	nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 1.0f));
@@ -145,11 +125,53 @@ struct BarGraphWidget : FramebufferWidget {
 		nvgStroke(vg);
     	nvgFill(vg);
 
-		// debug("box.size x:%f y:%f", box.size.x, box.size.y);
-		// FramebufferWidget::draw(vg);
 	}
 };
 
+struct BarGraphFrameBuffer : FramebufferWidget {
+	Module *module;
+	int stepCount = 0;
+	int drawCount = 0;
+
+	// another reinvented quantitywidget
+	float input_value = -13.0f;
+	float oldValue = -11.0f;
+
+	BarGraphWidget *barGraphWidget = NULL;
+
+	BarGraphFrameBuffer() {
+		barGraphWidget = Widget::create<BarGraphWidget>(Vec(0.0f, 0.0f));
+		barGraphWidget->box.pos.y = box.pos.y;
+        barGraphWidget->box.size = box.size;
+		barGraphWidget->box.size.y = box.size.y;
+		barGraphWidget->module = module;
+		addChild(barGraphWidget);
+	};
+
+	void inputChanged() {
+		debug("inputChanged old: %f input_value: %f", oldValue, input_value);
+		dirty = true;
+		oldValue = input_value;
+		barGraphWidget->input_value = input_value;
+	};
+
+	void step() override {
+		Bar *bar = dynamic_cast<Bar*>(module);
+
+		input_value = clamp(module->inputs[Bar::VALUE_INPUT].value,
+			voltage_min[bar->inputRange],
+			voltage_max[bar->inputRange]);
+
+		stepCount++;
+
+		if (!isNear(oldValue, input_value, 1.0e-2f)){
+			inputChanged();
+		}
+
+		// FramebufferWidget::step();
+	};
+
+};
 
 
 struct BarWidget : ModuleWidget {
@@ -166,7 +188,7 @@ struct BarWidget : ModuleWidget {
 
 		// addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(28, 87), module, Bar::PITCH_PARAM, -3.0, 3.0, 0.0));
 
-		Port *input = Port::create<PJ301MPort>(Vec(33, box.size.y), Port::INPUT, module, Bar::PITCH_INPUT);
+		Port *input = Port::create<PJ301MPort>(Vec(33, box.size.y), Port::INPUT, module, Bar::VALUE_INPUT);
 
 		input->box.pos.x = 2.0f;
 		input->box.pos.y = box.size.y - input->box.size.y - 20.0f;
@@ -175,12 +197,13 @@ struct BarWidget : ModuleWidget {
 		// addOutput(Port::create<PJ301MPort>(Vec(33, 275), Port::OUTPUT, module, Bar::SINE_OUTPUT));
 
 		// BarGraphWidget *barGraphWidget = new BarGraphWidget();
-		BarGraphWidget *barGraphWidget = Widget::create<BarGraphWidget>(Vec(0.0f, 0.0f));
-		barGraphWidget->box.pos.y = 15.0f;
-        barGraphWidget->box.size = box.size;
-		barGraphWidget->box.size.y = box.size.y - 60.0f;
-		barGraphWidget->module = module;
-		addChild(barGraphWidget);
+		BarGraphFrameBuffer *barGraphFrameBuffer = Widget::create<BarGraphFrameBuffer>(Vec(0.0f, 0.0f));
+
+		barGraphFrameBuffer->box.pos.y = 15.0f;
+        barGraphFrameBuffer->box.size = box.size;
+		barGraphFrameBuffer->box.size.y = box.size.y - 60.0f;
+		barGraphFrameBuffer->module = module;
+		addChild(barGraphFrameBuffer);
 		// addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, Bar::BLINK_LIGHT));
 	}
 };

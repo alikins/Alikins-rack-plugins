@@ -121,16 +121,19 @@ struct BarGraphWidget : VirtualWidget {
 		nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, .5f));
 		nvgStroke(vg);
 
+
+		nvgFontSize(vg, 10.0f);
+		nvgBeginPath(vg);
+
+		// outline the boxes a bit to make separate
+    	nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 1.0f));
+
+		nvgFillColor(vg, nvgRGBAf(0.f, 0.0f, 0.0f, 1.0f));
+
 		// TODO: make text display optional, possible extract to method or widget
 		// snprintf(value, 100, "Velocity: %06.3fV (Midi %03d)", displayVelocity * 10.f, (int)(127 * displayVelocity));
 		std::string valueStr = stringf("%#.3g", input_value);
-		nvgFontSize(vg, 10.0f);
-		nvgBeginPath(vg);
-    	nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 1.0f));
-    	// nvgFillColor(vg, nvgRGBAf(1.f, 1.0f, 1.30f, 1.0f));
-		nvgFillColor(vg, nvgRGBAf(0.f, 0.0f, 0.0f, 1.0f));
     	nvgTextAlign(vg, NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-		// nvgText()
     	nvgText(vg, x_middle, bar_area_height + (approx_text_height / 2.0f), valueStr.c_str(), NULL);
 		nvgStroke(vg);
     	nvgFill(vg);
@@ -139,8 +142,6 @@ struct BarGraphWidget : VirtualWidget {
 };
 
 struct BarWidget : ModuleWidget {
-	// Module *module;
-
 	// another reinvented quantitywidget
 	float input_value = -13.0f;
 

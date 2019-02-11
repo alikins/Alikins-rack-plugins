@@ -2,8 +2,6 @@
 
 #include "alikins.hpp"
 
-
-
 struct Bar : Module {
 	enum ParamIds {
 		PITCH_PARAM,
@@ -74,19 +72,11 @@ struct BarGraphWidget : VirtualWidget {
 			voltage_min[bar->inputRange],
 			voltage_max[bar->inputRange]);
 
-		// debug("BarGraphWidget.step() input_value:%f", input_value);
 		VirtualWidget::step();
 	};
 
 	void draw(NVGcontext *vg) override {
-		//debug("dirty: %d", dirty);
-
-		// debug("draw value: %f", input_value);
-		// drawCount++;
-
 		nvgBeginPath(vg);
-		// nvgRect(vg, 0.0, 0.0, box.size.x, box.size.y);
-		//float size = module->inputs[Bar::VALUE_INPUT].value;
 
 		// Leave some room for the text display
 		float bar_area_height = box.size.y - approx_text_height;
@@ -105,21 +95,18 @@ struct BarGraphWidget : VirtualWidget {
 
 		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
 
-		// float half_bar_height = bar_area_height - y_origin;
-		// debug("box.size.y: %f b_a_h: %f y_origin: %f", box.size.y, bar_area_height, y_origin);
-
 		float bar_height = rescale(input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange], bar_height_min, bar_height_max);
 
-
-		// debug("input: %f ci: %f bx_ht: %f bar_ht: %f", input_value, clamped_input_value, bar_height, bar_height_max);
 		float x_middle = box.size.x / 2.0f;
 
 		// positive values are red, negative green
 		float hue = input_value > 0 ? 0.0f : 0.35f;
 
+		// make the bars slightly light for large values, just to add a touch of animation
 		float sat = rescale(abs(input_value), 0.0f, 10.0f, 0.75f, .6f);
 		float sat_adj = rescale(abs(input_value), 0.0f, 10.0f, 0.0, 0.05f);
 		float lightness = 0.5f;
+
 		NVGcolor barColor = nvgHSL(hue, sat+sat_adj, lightness);
 
 		nvgRect(vg, 0.0f, y_origin, box.size.x, -bar_height);
@@ -173,7 +160,6 @@ struct BarWidget : ModuleWidget {
 		barGraphWidget->box.pos.y = box.pos.y;
 		barGraphWidget->box.pos.y = 15.0f;
         barGraphWidget->box.size.x = box.size.x;
-		// barGraphWidget->box.size.y = box.size.y;
 		barGraphWidget->box.size.y = box.size.y - 60.0f;
 		barGraphWidget->module = module;
 		addChild(barGraphWidget);
@@ -234,4 +220,4 @@ Menu *BarWidget::createContextMenu() {
 // author name for categorization per plugin, module slug (should never
 // change), human-readable module name, and any number of tags
 // (found in `include/tags.hpp`) separated by commas.
-Model *modelBar = Model::create<Bar, BarWidget>("Alikins", "Bar", "Bar", OSCILLATOR_TAG);
+Model *modelBar = Model::create<Bar, BarWidget>("Alikins", "BarGraphElement", "Bar Graph Element - visualize a value", VISUAL_TAG, UTILITY_TAG);

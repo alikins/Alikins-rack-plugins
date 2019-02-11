@@ -100,19 +100,18 @@ struct BarGraphWidget : VirtualWidget {
 
 		// float half_box_height = bar_area_height - y_origin;
 		// debug("box.size.y: %f b_a_h: %f y_origin: %f", box.size.y, bar_area_height, y_origin);
-		float clamped_input_value = clamp(input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange]);
 
-		float box_height = rescale(clamped_input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange], bar_height_min, bar_height_max);
+		float box_height = rescale(input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange], bar_height_min, bar_height_max);
 
 
 		// debug("input: %f ci: %f bx_ht: %f bar_ht: %f", input_value, clamped_input_value, box_height, bar_height_max);
 		float x_middle = box.size.x / 2.0f;
 
 		// positive values are red, negative green
-		float hue = clamped_input_value > 0 ? 0.0f : 0.35f;
+		float hue = input_value > 0 ? 0.0f : 0.35f;
 
-		float sat = rescale(abs(clamped_input_value), 0.0f, 10.0f, 0.75f, .6f);
-		float sat_adj = rescale(abs(clamped_input_value), 0.0f, 10.0f, 0.0, 0.05f);
+		float sat = rescale(abs(input_value), 0.0f, 10.0f, 0.75f, .6f);
+		float sat_adj = rescale(abs(input_value), 0.0f, 10.0f, 0.0, 0.05f);
 		float lightness = 0.5f;
 		NVGcolor barColor = nvgHSL(hue, sat+sat_adj, lightness);
 
@@ -125,7 +124,7 @@ struct BarGraphWidget : VirtualWidget {
 
 		// TODO: make text display optional, possible extract to method or widget
 		// snprintf(value, 100, "Velocity: %06.3fV (Midi %03d)", displayVelocity * 10.f, (int)(127 * displayVelocity));
-		std::string valueStr = stringf("%#.3g", clamped_input_value);
+		std::string valueStr = stringf("%#.3g", input_value);
 		nvgFontSize(vg, 10.0f);
 		nvgBeginPath(vg);
     	nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 1.0f));

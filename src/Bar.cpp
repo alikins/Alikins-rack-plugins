@@ -87,14 +87,13 @@ struct BarGraphWidget : VirtualWidget {
 		Bar *bar = dynamic_cast<Bar*>(module);
 
 		float y_origin = bar_area_height / 2.0f;
-		float bar_height = bar_area_height - y_origin;
-		float bar_min = -bar_height;
+		float bar_height_max = bar_area_height - y_origin;
+		float bar_height_min = -bar_height_max;
 
 		if (bar->inputRange == Bar::ZERO_TEN) {
-			// y_origin = box.size.y;
 			y_origin = bar_area_height;
-			bar_height = bar_area_height;
-			bar_min = 0.0f;
+			bar_height_max = bar_area_height;
+			bar_height_min = 0.0f;
 		}
 
 		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
@@ -103,10 +102,10 @@ struct BarGraphWidget : VirtualWidget {
 		// debug("box.size.y: %f b_a_h: %f y_origin: %f", box.size.y, bar_area_height, y_origin);
 		float clamped_input_value = clamp(input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange]);
 
-		float box_height = rescale(clamped_input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange], bar_min, bar_height);
+		float box_height = rescale(clamped_input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange], bar_height_min, bar_height_max);
 
 
-		// debug("input: %f ci: %f bx_ht: %f bar_ht: %f", input_value, clamped_input_value, box_height, bar_height);
+		// debug("input: %f ci: %f bx_ht: %f bar_ht: %f", input_value, clamped_input_value, box_height, bar_height_max);
 		float x_middle = box.size.x / 2.0f;
 
 		// positive values are red, negative green

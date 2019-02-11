@@ -66,14 +66,14 @@ struct BarGraphWidget : VirtualWidget {
 			voltage_min[bar->inputRange],
 			voltage_max[bar->inputRange]);
 
-		debug("BarGraphWidget.step() input_value:%f", input_value);
+		// debug("BarGraphWidget.step() input_value:%f", input_value);
 		VirtualWidget::step();
 	};
 
 	void draw(NVGcontext *vg) override {
 		//debug("dirty: %d", dirty);
 
-		debug("draw value: %f", input_value);
+		// debug("draw value: %f", input_value);
 		// drawCount++;
 
 		nvgBeginPath(vg);
@@ -88,11 +88,13 @@ struct BarGraphWidget : VirtualWidget {
 
 		float y_origin = bar_area_height / 2.0f;
 		float bar_height = bar_area_height - y_origin;
+		float bar_min = -bar_height;
 
 		if (bar->inputRange == Bar::ZERO_TEN) {
 			// y_origin = box.size.y;
 			y_origin = bar_area_height;
 			bar_height = bar_area_height;
+			bar_min = 0.0f;
 		}
 
 		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
@@ -100,10 +102,11 @@ struct BarGraphWidget : VirtualWidget {
 		// float half_box_height = bar_area_height - y_origin;
 		// debug("box.size.y: %f b_a_h: %f y_origin: %f", box.size.y, bar_area_height, y_origin);
 		float clamped_input_value = clamp(input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange]);
-		float box_height = rescale(clamped_input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange], -bar_height, bar_height);
+
+		float box_height = rescale(clamped_input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange], bar_min, bar_height);
 
 
-		// debug("input: %f box_height: %f", size, box_height);
+		// debug("input: %f ci: %f bx_ht: %f bar_ht: %f", input_value, clamped_input_value, box_height, bar_height);
 		float x_middle = box.size.x / 2.0f;
 
 		// positive values are red, negative green
@@ -161,12 +164,12 @@ struct BarWidget : ModuleWidget {
 		input->box.pos.y = box.size.y - input->box.size.y - 20.0f;
 		addInput(input);
 
-		// BarGraphWidget *barGraphWidget = new BarGraphWidget();
-
 		barGraphWidget = Widget::create<BarGraphWidget>(Vec(0.0f, 0.0f));
 		barGraphWidget->box.pos.y = box.pos.y;
+		barGraphWidget->box.pos.y = 15.0f;
         barGraphWidget->box.size.x = box.size.x;
-		barGraphWidget->box.size.y = box.size.y;
+		// barGraphWidget->box.size.y = box.size.y;
+		barGraphWidget->box.size.y = box.size.y - 60.0f;
 		barGraphWidget->module = module;
 		addChild(barGraphWidget);
 	}

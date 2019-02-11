@@ -33,19 +33,27 @@ struct Bar : Module {
 	float input_value = 0.0f;
 
 	Bar() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-	// void step() override;
+
+    json_t *toJson() override;
+    void fromJson(json_t *rootJ) override;
 
 };
 
-/*
-void Bar::step() {
+json_t* Bar::toJson() {
+    json_t *rootJ = json_object();
 
-	if (inputs[VALUE_INPUT].active) {
-        input_value = clamp(inputs[VALUE_INPUT].value, voltage_min[inputRange], voltage_max[inputRange]);
-	}
+    json_object_set_new(rootJ, "inputRange", json_integer(inputRange));
+
+    return rootJ;
+}
+
+void Bar::fromJson(json_t *rootJ) {
+    json_t *inputRangeJ = json_object_get(rootJ, "inputRange");
+    if (inputRangeJ) {
+        inputRange = (InputRange) json_integer_value(inputRangeJ);
+    }
 
 }
-*/
 
 struct BarGraphWidget : VirtualWidget {
 	Module *module;
@@ -80,7 +88,6 @@ struct BarGraphWidget : VirtualWidget {
 		// nvgRect(vg, 0.0, 0.0, box.size.x, box.size.y);
 		//float size = module->inputs[Bar::VALUE_INPUT].value;
 
-		float drawing_area_height = box.size.y;
 		// Leave some room for the text display
 		float bar_area_height = box.size.y - approx_text_height;
 
@@ -116,11 +123,11 @@ struct BarGraphWidget : VirtualWidget {
 		NVGcolor barColor = nvgHSL(hue, sat+sat_adj, lightness);
 
 		nvgRect(vg, 0.0f, y_origin, box.size.x, -bar_height);
+
 		nvgFillColor(vg, barColor);
 		nvgFill(vg);
 		nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, .5f));
 		nvgStroke(vg);
-
 
 		nvgFontSize(vg, 10.0f);
 		nvgBeginPath(vg);

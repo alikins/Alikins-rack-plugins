@@ -33,17 +33,19 @@ struct Bar : Module {
 	float input_value = 0.0f;
 
 	Bar() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-	void step() override;
+	// void step() override;
 
 };
 
+/*
 void Bar::step() {
-	/*
+
 	if (inputs[VALUE_INPUT].active) {
         input_value = clamp(inputs[VALUE_INPUT].value, voltage_min[inputRange], voltage_max[inputRange]);
 	}
-	*/
+
 }
+*/
 
 struct BarGraphWidget : VirtualWidget {
 	Module *module;
@@ -58,13 +60,15 @@ struct BarGraphWidget : VirtualWidget {
 
 
 	void step() override {
+		Bar *bar = dynamic_cast<Bar*>(module);
+
+		input_value = clamp(module->inputs[Bar::VALUE_INPUT].value,
+			voltage_min[bar->inputRange],
+			voltage_max[bar->inputRange]);
+
 		debug("BarGraphWidget.step() input_value:%f", input_value);
 		VirtualWidget::step();
 	};
-
-
-	// need an onChange? can set dirty from onChange?  if
-	// we make this a paramwidget/quantitywidget
 
 	void draw(NVGcontext *vg) override {
 		//debug("dirty: %d", dirty);
@@ -134,65 +138,13 @@ struct BarGraphWidget : VirtualWidget {
 	}
 };
 
-struct BarGraphFrameBuffer : FramebufferWidget {
-	Module *module;
-	int stepCount = 0;
-	int drawCount = 0;
+struct BarWidget : ModuleWidget {
+	// Module *module;
 
 	// another reinvented quantitywidget
 	float input_value = -13.0f;
-	float oldValue = -11.0f;
 
 	BarGraphWidget *barGraphWidget = NULL;
-
-	BarGraphFrameBuffer() {
-		barGraphWidget = Widget::create<BarGraphWidget>(Vec(0.0f, 0.0f));
-		barGraphWidget->box.pos.y = box.pos.y;
-        barGraphWidget->box.size.x = box.size.x;
-		barGraphWidget->box.size.y = box.size.y;
-		barGraphWidget->module = module;
-		addChild(barGraphWidget);
-
-		dirty = true;
-	};
-
-	void inputChanged() {
-		debug("inputChanged old: %f input_value: %f dirty: %d", oldValue, input_value, dirty);
-		dirty = true;
-		oldValue = input_value;
-		barGraphWidget->input_value = input_value;
-		// FramebufferWidget::step();
-	};
-
-	void step() override {
-		Bar *bar = dynamic_cast<Bar*>(module);
-
-		input_value = clamp(module->inputs[Bar::VALUE_INPUT].value,
-			voltage_min[bar->inputRange],
-			voltage_max[bar->inputRange]);
-
-		stepCount++;
-
-		if (!isNear(oldValue, input_value, 1.0e-2f)){
-			inputChanged();
-		} else {
-			// dirty = false;
-		}
-
-		FramebufferWidget::step();
-	};
-
-	void draw(NVGcontext *vg) override {
-		debug("BarGraphFrameBuffer::draw dirty:%d", dirty);
-		FramebufferWidget::draw(vg);
-		// Widget::draw(vg);
-		debug("BarGraphFrameBuffer::draw2 dirty:%d", dirty);
-	};
-
-};
-
-
-struct BarWidget : ModuleWidget {
 	Menu *createContextMenu() override;
 
 	BarWidget(Bar *module) : ModuleWidget(module) {
@@ -203,28 +155,20 @@ struct BarWidget : ModuleWidget {
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-
-		// addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(28, 87), module, Bar::PITCH_PARAM, -3.0, 3.0, 0.0));
-
 		Port *input = Port::create<PJ301MPort>(Vec(33, box.size.y), Port::INPUT, module, Bar::VALUE_INPUT);
 
 		input->box.pos.x = 2.0f;
 		input->box.pos.y = box.size.y - input->box.size.y - 20.0f;
 		addInput(input);
 
-		// addOutput(Port::create<PJ301MPort>(Vec(33, 275), Port::OUTPUT, module, Bar::SINE_OUTPUT));
-
 		// BarGraphWidget *barGraphWidget = new BarGraphWidget();
-		// BarGraphFrameBuffer *barGraphFrameBuffer = Widget::create<BarGraphFrameBuffer>(Vec(0.0f, 0.0f));
-		BarGraphFrameBuffer *barGraphFrameBuffer = new BarGraphFrameBuffer();
 
-		barGraphFrameBuffer->box.pos.y = 15.0f;
-        barGraphFrameBuffer->box.size.x = box.size.x;
-		barGraphFrameBuffer->box.size.y = box.size.y - 60.0f;
-		barGraphFrameBuffer->module = module;
-		addChild(barGraphFrameBuffer);
-		barGraphFrameBuffer->dirty = true;
-		// addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, Bar::BLINK_LIGHT));
+		barGraphWidget = Widget::create<BarGraphWidget>(Vec(0.0f, 0.0f));
+		barGraphWidget->box.pos.y = box.pos.y;
+        barGraphWidget->box.size.x = box.size.x;
+		barGraphWidget->box.size.y = box.size.y;
+		barGraphWidget->module = module;
+		addChild(barGraphWidget);
 	}
 };
 
@@ -251,6 +195,7 @@ Menu *BarWidget::createContextMenu() {
 
     Bar *bar = dynamic_cast<Bar*>(module);
     assert(bar);
+	assert(module);
 
     MenuLabel *modeLabel2 = new MenuLabel();
     modeLabel2->text = "Input Range";

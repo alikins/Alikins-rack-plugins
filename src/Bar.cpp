@@ -98,13 +98,13 @@ struct BarGraphWidget : VirtualWidget {
 
 		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
 
-		// float half_box_height = bar_area_height - y_origin;
+		// float half_bar_height = bar_area_height - y_origin;
 		// debug("box.size.y: %f b_a_h: %f y_origin: %f", box.size.y, bar_area_height, y_origin);
 
-		float box_height = rescale(input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange], bar_height_min, bar_height_max);
+		float bar_height = rescale(input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange], bar_height_min, bar_height_max);
 
 
-		// debug("input: %f ci: %f bx_ht: %f bar_ht: %f", input_value, clamped_input_value, box_height, bar_height_max);
+		// debug("input: %f ci: %f bx_ht: %f bar_ht: %f", input_value, clamped_input_value, bar_height, bar_height_max);
 		float x_middle = box.size.x / 2.0f;
 
 		// positive values are red, negative green
@@ -115,8 +115,7 @@ struct BarGraphWidget : VirtualWidget {
 		float lightness = 0.5f;
 		NVGcolor barColor = nvgHSL(hue, sat+sat_adj, lightness);
 
-		nvgRect(vg, 0.0f, y_origin, box.size.x, -box_height);
-
+		nvgRect(vg, 0.0f, y_origin, box.size.x, -bar_height);
 		nvgFillColor(vg, barColor);
 		nvgFill(vg);
 		nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, .5f));

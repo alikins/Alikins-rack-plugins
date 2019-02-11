@@ -35,4 +35,4 @@ extern Model *modelHoveredValue;
 extern Model *modelInjectValue;
 extern Model *modelShiftPedal;
 extern Model *modelValueSaver;
-extern Model *modelBar;
+extern Model *modelBarGraphElement;

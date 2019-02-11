@@ -23,5 +23,5 @@ void init(rack::Plugin *p) {
     p->addModel(modelShiftPedal);
     p->addModel(modelSpecificValue);
     p->addModel(modelValueSaver);
-    p->addModel(modelBar);
+    p->addModel(modelBarGraphElement);
 }

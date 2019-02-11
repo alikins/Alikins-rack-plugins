@@ -2,7 +2,7 @@
 
 #include "alikins.hpp"
 
-struct Bar : Module {
+struct BarGraphElement : Module {
 	enum ParamIds {
 		PITCH_PARAM,
 		NUM_PARAMS
@@ -30,14 +30,14 @@ struct Bar : Module {
 
 	float input_value = 0.0f;
 
-	Bar() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+	BarGraphElement() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 
     json_t *toJson() override;
     void fromJson(json_t *rootJ) override;
 
 };
 
-json_t* Bar::toJson() {
+json_t* BarGraphElement::toJson() {
     json_t *rootJ = json_object();
 
     json_object_set_new(rootJ, "inputRange", json_integer(inputRange));
@@ -45,7 +45,7 @@ json_t* Bar::toJson() {
     return rootJ;
 }
 
-void Bar::fromJson(json_t *rootJ) {
+void BarGraphElement::fromJson(json_t *rootJ) {
     json_t *inputRangeJ = json_object_get(rootJ, "inputRange");
     if (inputRangeJ) {
         inputRange = (InputRange) json_integer_value(inputRangeJ);
@@ -66,9 +66,9 @@ struct BarGraphWidget : VirtualWidget {
 
 
 	void step() override {
-		Bar *bar = dynamic_cast<Bar*>(module);
+		BarGraphElement *bar = dynamic_cast<BarGraphElement*>(module);
 
-		input_value = clamp(module->inputs[Bar::VALUE_INPUT].value,
+		input_value = clamp(module->inputs[BarGraphElement::VALUE_INPUT].value,
 			voltage_min[bar->inputRange],
 			voltage_max[bar->inputRange]);
 
@@ -81,13 +81,13 @@ struct BarGraphWidget : VirtualWidget {
 		// Leave some room for the text display
 		float bar_area_height = box.size.y - approx_text_height;
 
-		Bar *bar = dynamic_cast<Bar*>(module);
+		BarGraphElement *bar = dynamic_cast<BarGraphElement*>(module);
 
 		float y_origin = bar_area_height / 2.0f;
 		float bar_height_max = bar_area_height - y_origin;
 		float bar_height_min = -bar_height_max;
 
-		if (bar->inputRange == Bar::ZERO_TEN) {
+		if (bar->inputRange == BarGraphElement::ZERO_TEN) {
 			y_origin = bar_area_height;
 			bar_height_max = bar_area_height;
 			bar_height_min = 0.0f;
@@ -135,22 +135,22 @@ struct BarGraphWidget : VirtualWidget {
 	}
 };
 
-struct BarWidget : ModuleWidget {
+struct BarGraphElementWidget : ModuleWidget {
 	// another reinvented quantitywidget
 	float input_value = -13.0f;
 
 	BarGraphWidget *barGraphWidget = NULL;
 	Menu *createContextMenu() override;
 
-	BarWidget(Bar *module) : ModuleWidget(module) {
-		setPanel(SVG::load(assetPlugin(plugin, "res/Bar.svg")));
+	BarGraphElementWidget(BarGraphElement *module) : ModuleWidget(module) {
+		setPanel(SVG::load(assetPlugin(plugin, "res/BarGraphElement.svg")));
 
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
 		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		Port *input = Port::create<PJ301MPort>(Vec(33, box.size.y), Port::INPUT, module, Bar::VALUE_INPUT);
+		Port *input = Port::create<PJ301MPort>(Vec(33, box.size.y), Port::INPUT, module, BarGraphElement::VALUE_INPUT);
 
 		input->box.pos.x = 2.0f;
 		input->box.pos.y = box.size.y - input->box.size.y - 20.0f;
@@ -167,8 +167,8 @@ struct BarWidget : ModuleWidget {
 };
 
 struct InputRangeItem : MenuItem {
-    Bar *bar;
-    Bar::InputRange inputRange;
+    BarGraphElement *bar;
+    BarGraphElement::InputRange inputRange;
 
     void onAction(EventAction &e) override {
         bar->inputRange = inputRange;
@@ -180,14 +180,14 @@ struct InputRangeItem : MenuItem {
 
 };
 
-Menu *BarWidget::createContextMenu() {
+Menu *BarGraphElementWidget::createContextMenu() {
 
     Menu *menu = ModuleWidget::createContextMenu();
 
     MenuLabel *spacerLabel = new MenuLabel();
     menu->addChild(spacerLabel);
 
-    Bar *bar = dynamic_cast<Bar*>(module);
+    BarGraphElement *bar = dynamic_cast<BarGraphElement*>(module);
     assert(bar);
 	assert(module);
 
@@ -198,22 +198,22 @@ Menu *BarWidget::createContextMenu() {
 	InputRangeItem *tenTenItem = new InputRangeItem();
     tenTenItem->text = "-10V - +10V";
     tenTenItem->bar = bar;
-    tenTenItem->inputRange = Bar::MINUS_PLUS_TEN;
+    tenTenItem->inputRange = BarGraphElement::MINUS_PLUS_TEN;
     menu->addChild(tenTenItem);
 
     InputRangeItem *zeroTenItem = new InputRangeItem();
     zeroTenItem->text = "0 - +10V (uni)";
     zeroTenItem->bar = bar;
-    zeroTenItem->inputRange = Bar::ZERO_TEN;
+    zeroTenItem->inputRange = BarGraphElement::ZERO_TEN;
     menu->addChild(zeroTenItem);
 
     InputRangeItem *fiveFiveItem = new InputRangeItem();
     fiveFiveItem->text = "-5 - +5V (bi)";
     fiveFiveItem->bar = bar;
-    fiveFiveItem->inputRange = Bar::MINUS_PLUS_FIVE;
+    fiveFiveItem->inputRange = BarGraphElement::MINUS_PLUS_FIVE;
     menu->addChild(fiveFiveItem);
 
     return menu;
 }
 
-Model *modelBarGraphElement = Model::create<Bar, BarWidget>("Alikins", "BarGraphElement", "Bar Graph Element - visualize a value", VISUAL_TAG, UTILITY_TAG);
+Model *modelBarGraphElement = Model::create<BarGraphElement, BarGraphElementWidget>("Alikins", "BarGraphElement", "Bar Graph Element - visualize a value", VISUAL_TAG, UTILITY_TAG);

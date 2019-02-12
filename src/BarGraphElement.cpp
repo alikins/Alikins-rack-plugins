@@ -87,16 +87,18 @@ struct BarGraphWidget : VirtualWidget {
 		float y_origin = bar_area_height / 2.0f;
 		float bar_height_max = bar_area_height - y_origin;
 		float bar_height_min = -bar_height_max;
-		int divs = 10;
+		int divs = 20;
 
 		if (bar->inputRange == BarGraphElement::ZERO_TEN) {
 			y_origin = bar_area_height;
 			bar_height_max = bar_area_height;
 			bar_height_min = 0.0f;
 
-			divs = 5;
+			divs = 10;
 		}
-
+		if (bar->inputRange == BarGraphElement::MINUS_PLUS_FIVE) {
+			divs = 10;
+		}
 
 		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
 		nvgBeginPath(vg);
@@ -145,9 +147,16 @@ struct BarGraphWidget : VirtualWidget {
 			nvgBeginPath(vg);
 			float y_line = 0.0f + (i*ret_line_centers);
 			debug("drawing y_line at %f", y_line);
-			nvgRect(vg, 5.0f, y_line, box.size.x - 10.0f, 0.0f);
-			nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.1f));
-			nvgFillColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.1f));
+
+			float wideness = 10.0f;
+			nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.05f));
+			if (i % 5 == 0) {
+				nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.2f));
+				wideness = 5.0f;
+			}
+			nvgRect(vg, wideness, y_line, box.size.x - (2 * wideness), 0.0f);
+			nvgFillColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.05f));
+
 			nvgStroke(vg);
 			nvgFill(vg);
 		}

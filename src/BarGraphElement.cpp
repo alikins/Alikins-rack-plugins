@@ -76,25 +76,30 @@ struct BarGraphWidget : VirtualWidget {
 	};
 
 	void draw(NVGcontext *vg) override {
-		nvgBeginPath(vg);
+
 
 		// Leave some room for the text display
 		float bar_area_height = box.size.y - approx_text_height;
+		// debug("bar_area_height: %f, size.x: %f", bar_area_height, box.size.x);
 
 		BarGraphElement *bar = dynamic_cast<BarGraphElement*>(module);
 
 		float y_origin = bar_area_height / 2.0f;
 		float bar_height_max = bar_area_height - y_origin;
 		float bar_height_min = -bar_height_max;
+		int divs = 10;
 
 		if (bar->inputRange == BarGraphElement::ZERO_TEN) {
 			y_origin = bar_area_height;
 			bar_height_max = bar_area_height;
 			bar_height_min = 0.0f;
+
+			divs = 5;
 		}
 
-		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
 
+		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
+		nvgBeginPath(vg);
 		float bar_height = rescale(input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange], bar_height_min, bar_height_max);
 
 		float x_middle = box.size.x / 2.0f;
@@ -132,6 +137,20 @@ struct BarGraphWidget : VirtualWidget {
 		nvgStroke(vg);
     	nvgFill(vg);
 
+		// reticular lines
+
+		float ret_line_centers = bar_area_height / divs;
+		debug("ret_line_centers: %f", ret_line_centers);
+		for (int i=0; i<divs; i++) {
+			nvgBeginPath(vg);
+			float y_line = 0.0f + (i*ret_line_centers);
+			debug("drawing y_line at %f", y_line);
+			nvgRect(vg, 5.0f, y_line, box.size.x - 10.0f, 0.0f);
+			nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.1f));
+			nvgFillColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.1f));
+			nvgStroke(vg);
+			nvgFill(vg);
+		}
 	}
 };
 

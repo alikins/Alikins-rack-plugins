@@ -27,6 +27,7 @@ struct BarGraphElement : Module {
     };
 
     InputRange inputRange = MINUS_PLUS_TEN;
+	bool showLines = false;
 
 	float input_value = 0.0f;
 
@@ -41,6 +42,7 @@ json_t* BarGraphElement::toJson() {
     json_t *rootJ = json_object();
 
     json_object_set_new(rootJ, "inputRange", json_integer(inputRange));
+	json_object_set_new(rootJ, "showLines", json_boolean(showLines));
 
     return rootJ;
 }
@@ -51,6 +53,10 @@ void BarGraphElement::fromJson(json_t *rootJ) {
         inputRange = (InputRange) json_integer_value(inputRangeJ);
     }
 
+	json_t *showLinesJ = json_object_get(rootJ, "showLines");
+	if (showLinesJ) {
+		showLines = json_is_true(showLinesJ);
+	}
 }
 
 struct BarGraphWidget : VirtualWidget {
@@ -60,6 +66,8 @@ struct BarGraphWidget : VirtualWidget {
 	// TODO: can we query that?
 	float approx_text_height = 10.0f;
 	float input_value = 11.1f;
+
+	//bool showLines = false;
 
 	BarGraphWidget() {
 	};
@@ -76,10 +84,9 @@ struct BarGraphWidget : VirtualWidget {
 	};
 
 	void draw(NVGcontext *vg) override {
-
-
 		// Leave some room for the text display
 		float bar_area_height = box.size.y - approx_text_height;
+
 		// debug("bar_area_height: %f, size.x: %f", bar_area_height, box.size.x);
 
 		BarGraphElement *bar = dynamic_cast<BarGraphElement*>(module);
@@ -102,7 +109,7 @@ struct BarGraphWidget : VirtualWidget {
 
 		// debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
 		nvgBeginPath(vg);
-		float bar_height = rescale(input_value, voltage_min[bar->inputRange], voltage_max[bar->inputRange], bar_height_min, bar_height_max);
+		float bar_height = rescale(input_value, voltage_min[bar->inputRange], voltage_max		[bar->inputRange], bar_height_min, bar_height_max);
 
 		float x_middle = box.size.x / 2.0f;
 
@@ -139,8 +146,11 @@ struct BarGraphWidget : VirtualWidget {
 		nvgStroke(vg);
     	nvgFill(vg);
 
-		// reticular lines
+		if (!bar->showLines) {
+			return;
+		}
 
+		// reticular lines
 		float ret_line_centers = bar_area_height / divs;
 		debug("ret_line_centers: %f", ret_line_centers);
 		for (int i=0; i<divs; i++) {
@@ -205,7 +215,19 @@ struct InputRangeItem : MenuItem {
     void step() override {
         rightText = (bar->inputRange == inputRange)? "✔" : "";
     };
+};
 
+struct LinesItem : MenuItem {
+    BarGraphElement *bar;
+
+    void onAction(EventAction &e) override {
+		bar->showLines = !bar->showLines;
+    };
+
+    void step() override {
+        // rightText = (bar->showLines == inputRange)? "✔" : "";
+		rightText = bar->showLines ? "✔" : "";
+    };
 };
 
 Menu *BarGraphElementWidget::createContextMenu() {
@@ -241,7 +263,14 @@ Menu *BarGraphElementWidget::createContextMenu() {
     fiveFiveItem->inputRange = BarGraphElement::MINUS_PLUS_FIVE;
     menu->addChild(fiveFiveItem);
 
-    return menu;
+	MenuLabel *lineSpacerLabel = new MenuLabel();
+    menu->addChild(lineSpacerLabel);
+
+    LinesItem *linesItem = new LinesItem();
+    linesItem->text = "Show Lines";
+    linesItem->bar = bar;
+    menu->addChild(linesItem);
+	return menu;
 }
 
 Model *modelBarGraphElement = Model::create<BarGraphElement, BarGraphElementWidget>("Alikins", "BarGraphElement", "Bar Graph Element - visualize a value", VISUAL_TAG, UTILITY_TAG);

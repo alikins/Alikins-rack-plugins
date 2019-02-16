@@ -27,7 +27,7 @@ struct BarGraphElement : Module {
     };
 
     InputRange inputRange = MINUS_PLUS_TEN;
-	bool showLines = false;
+    bool showLines = false;
 
 	float input_value = 0.0f;
 
@@ -42,7 +42,7 @@ json_t* BarGraphElement::toJson() {
     json_t *rootJ = json_object();
 
     json_object_set_new(rootJ, "inputRange", json_integer(inputRange));
-	json_object_set_new(rootJ, "showLines", json_boolean(showLines));
+    json_object_set_new(rootJ, "showLines", json_boolean(showLines));
 
     return rootJ;
 }
@@ -53,10 +53,10 @@ void BarGraphElement::fromJson(json_t *rootJ) {
         inputRange = (InputRange) json_integer_value(inputRangeJ);
     }
 
-	json_t *showLinesJ = json_object_get(rootJ, "showLines");
-	if (showLinesJ) {
-		showLines = json_is_true(showLinesJ);
-	}
+    json_t *showLinesJ = json_object_get(rootJ, "showLines");
+    if (showLinesJ) {
+        showLines = json_is_true(showLinesJ);
+    }
 }
 
 struct BarGraphWidget : VirtualWidget {
@@ -221,12 +221,12 @@ struct LinesItem : MenuItem {
     BarGraphElement *bar;
 
     void onAction(EventAction &e) override {
-		bar->showLines = !bar->showLines;
+        bar->showLines = !bar->showLines;
     };
 
     void step() override {
         // rightText = (bar->showLines == inputRange)? "✔" : "";
-		rightText = bar->showLines ? "✔" : "";
+        rightText = bar->showLines ? "✔" : "";
     };
 };
 
@@ -239,13 +239,13 @@ Menu *BarGraphElementWidget::createContextMenu() {
 
     BarGraphElement *bar = dynamic_cast<BarGraphElement*>(module);
     assert(bar);
-	assert(module);
+    assert(module);
 
     MenuLabel *modeLabel2 = new MenuLabel();
     modeLabel2->text = "Input Range";
     menu->addChild(modeLabel2);
 
-	InputRangeItem *tenTenItem = new InputRangeItem();
+    InputRangeItem *tenTenItem = new InputRangeItem();
     tenTenItem->text = "-10V - +10V";
     tenTenItem->bar = bar;
     tenTenItem->inputRange = BarGraphElement::MINUS_PLUS_TEN;
@@ -263,14 +263,14 @@ Menu *BarGraphElementWidget::createContextMenu() {
     fiveFiveItem->inputRange = BarGraphElement::MINUS_PLUS_FIVE;
     menu->addChild(fiveFiveItem);
 
-	MenuLabel *lineSpacerLabel = new MenuLabel();
+    MenuLabel *lineSpacerLabel = new MenuLabel();
     menu->addChild(lineSpacerLabel);
 
     LinesItem *linesItem = new LinesItem();
     linesItem->text = "Show Lines";
     linesItem->bar = bar;
     menu->addChild(linesItem);
-	return menu;
+    return menu;
 }
 
 Model *modelBarGraphElement = Model::create<BarGraphElement, BarGraphElementWidget>("Alikins", "BarGraphElement", "Bar Graph Element - visualize a value", VISUAL_TAG, UTILITY_TAG);

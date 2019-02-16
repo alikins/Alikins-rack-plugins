@@ -67,8 +67,6 @@ struct BarGraphWidget : VirtualWidget {
     float approx_text_height = 10.0f;
     float input_value = 11.1f;
 
-    //bool showLines = false;
-
     BarGraphWidget() {
     };
 
@@ -103,6 +101,7 @@ struct BarGraphWidget : VirtualWidget {
 
             divs = 10;
         }
+
         if (bar->inputRange == BarGraphElement::MINUS_PLUS_FIVE) {
             divs = 10;
         }
@@ -152,18 +151,20 @@ struct BarGraphWidget : VirtualWidget {
 
         // reticular lines
         float ret_line_centers = bar_area_height / divs;
-        debug("ret_line_centers: %f", ret_line_centers);
+
         for (int i=0; i<divs; i++) {
             nvgBeginPath(vg);
-            float y_line = 0.0f + (i*ret_line_centers);
-            debug("drawing y_line at %f", y_line);
 
+            float y_line = 0.0f + (i * ret_line_centers);
             float wideness = 10.0f;
+
             nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.05f));
+
             if (i % 5 == 0) {
                 nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.2f));
                 wideness = 5.0f;
             }
+
             nvgRect(vg, wideness, y_line, box.size.x - (2 * wideness), 0.0f);
             nvgFillColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.05f));
 

@@ -92,18 +92,22 @@ struct BarGraphWidget : VirtualWidget {
         float y_origin = bar_area_height / 2.0f;
         float bar_height_max = bar_area_height - y_origin;
         float bar_height_min = -bar_height_max;
-        int divs = 20;
+        float div_unit = 1.0f;
+        float total_input_range = voltage_max[bar->inputRange] - voltage_min[bar->inputRange];
+        int divs = static_cast<int>(total_input_range / div_unit);
+        debug("div_unit: %f, total_input_range: %f, divs: %d", div_unit, total_input_range, divs);
+        //int divs = 20;
 
         if (bar->inputRange == BarGraphElement::ZERO_TEN) {
             y_origin = bar_area_height;
             bar_height_max = bar_area_height;
             bar_height_min = 0.0f;
 
-            divs = 10;
+            // divs = 10;
         }
 
         if (bar->inputRange == BarGraphElement::MINUS_PLUS_FIVE) {
-            divs = 10;
+            // divs = 10;
         }
 
         // debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);

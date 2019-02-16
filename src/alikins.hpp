@@ -10,10 +10,11 @@ enum VoltageRange {
     MINUS_PLUS_TEN,
     ZERO_TEN,
     MINUS_PLUS_FIVE,
+    ZERO_ONE,
 };
 
-const float voltage_min[3] = {-10.0f, 0.0f, -5.0f};
-const float voltage_max[3] = {10.0f, 10.0f, 5.0f};
+const float voltage_min[4] = {-10.0f, 0.0f, -5.0f, 0.0f};
+const float voltage_max[4] = {10.0f, 10.0f, 5.0f, 1.0f};
 
 using namespace rack;
 

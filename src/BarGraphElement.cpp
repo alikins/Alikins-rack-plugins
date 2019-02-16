@@ -23,10 +23,22 @@ struct BarGraphElement : Module {
     enum InputRange {
         MINUS_PLUS_TEN,
         ZERO_TEN,
-        MINUS_PLUS_FIVE
+        MINUS_PLUS_FIVE,
+        ZERO_ONE,
+    };
+
+    enum LineUnit {
+        NO_LINES,
+        ONE_VOLT,
+        HALF_VOLT,
+        // one semitone CV 1.0/12.0
+        ONE_SEMITONE,
+        TEN_CENTS,
     };
 
     InputRange inputRange = MINUS_PLUS_TEN;
+    LineUnit lineUnit = ONE_VOLT;
+
     bool showLines = false;
 
     float input_value = 0.0f;
@@ -43,6 +55,7 @@ json_t* BarGraphElement::toJson() {
 
     json_object_set_new(rootJ, "inputRange", json_integer(inputRange));
     json_object_set_new(rootJ, "showLines", json_boolean(showLines));
+    json_object_set_new(rootJ, "lineUnit", json_integer(lineUnit));
 
     return rootJ;
 }
@@ -57,6 +70,11 @@ void BarGraphElement::fromJson(json_t *rootJ) {
     if (showLinesJ) {
         showLines = json_is_true(showLinesJ);
     }
+
+    json_t *lineUnitJ = json_object_get(rootJ, "lineUnit");
+    if (lineUnitJ) {
+        lineUnit = (LineUnit) json_integer_value(lineUnitJ);
+    }
 }
 
 struct BarGraphWidget : VirtualWidget {
@@ -66,6 +84,9 @@ struct BarGraphWidget : VirtualWidget {
     // TODO: can we query that?
     float approx_text_height = 10.0f;
     float input_value = 11.1f;
+
+    const float lineUnitValues[5] = {0.0f, 1.0f, 0.5f, 1.0f/12.0f, 1.0f/120.0f};
+    const int lineUnitLargeCount[5] = {1, 5, 10, 12, 120};
 
     BarGraphWidget() {
     };
@@ -92,22 +113,27 @@ struct BarGraphWidget : VirtualWidget {
         float y_origin = bar_area_height / 2.0f;
         float bar_height_max = bar_area_height - y_origin;
         float bar_height_min = -bar_height_max;
-        float div_unit = 1.0f;
+        // float div_unit = 1.0f;
+        // float div_unit = 1.0f / 12.0f;   // per CV note
+        float div_unit = lineUnitValues[bar->lineUnit];
+
+        // how many small lines before a periodical large line
+        // int large_div_count = 12;
+        // int large_div_count = 5;
+        int large_div_count = lineUnitLargeCount[bar->lineUnit];
+
         float total_input_range = voltage_max[bar->inputRange] - voltage_min[bar->inputRange];
         int divs = static_cast<int>(total_input_range / div_unit);
-        debug("div_unit: %f, total_input_range: %f, divs: %d", div_unit, total_input_range, divs);
-        //int divs = 20;
+        //debug("div_unit: %f, total_input_range: %f, lu: %d ldc: %d divs: %d",
+        //    div_unit, total_input_range, bar->lineUnit, large_div_count, divs);
 
-        if (bar->inputRange == BarGraphElement::ZERO_TEN) {
+
+        if (bar->inputRange == BarGraphElement::ZERO_TEN ||
+            bar->inputRange == BarGraphElement::ZERO_ONE) {
+
             y_origin = bar_area_height;
             bar_height_max = bar_area_height;
             bar_height_min = 0.0f;
-
-            // divs = 10;
-        }
-
-        if (bar->inputRange == BarGraphElement::MINUS_PLUS_FIVE) {
-            // divs = 10;
         }
 
         // debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
@@ -149,31 +175,48 @@ struct BarGraphWidget : VirtualWidget {
         nvgStroke(vg);
         nvgFill(vg);
 
-        if (!bar->showLines) {
+        if (bar->lineUnit == BarGraphElement::NO_LINES) {
             return;
         }
 
         // reticular lines
         float ret_line_centers = bar_area_height / divs;
 
-        for (int i=0; i<divs; i++) {
+        for (int i=0; i<=divs; i++) {
             nvgBeginPath(vg);
 
             float y_line = 0.0f + (i * ret_line_centers);
             float wideness = 10.0f;
 
-            nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.05f));
+            // nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.05f));
 
-            if (i % 5 == 0) {
-                nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.2f));
+            // draw a larger bolder line for larger units
+            if (i % large_div_count == 0) {
+                // nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.2f));
                 wideness = 5.0f;
             }
 
-            nvgRect(vg, wideness, y_line, box.size.x - (2 * wideness), 0.0f);
-            nvgFillColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.05f));
+            // debug("wideness: %f, y_line: %f, x-w: %f",
+            //    wideness, y_line, box.size.x - wideness);
+            nvgMoveTo(vg, wideness, y_line);
+            nvgLineTo(vg, box.size.x - wideness, y_line);
+
+            if (i % large_div_count == 0) {
+                nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.2f));
+            } else {
+                nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.1f));
+            }
+            // nvgFillColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.05f));
 
             nvgStroke(vg);
+
+            /*
+            std::string valueStr = stringf("%#.3g", input_value);
+            nvgTextAlign(vg, NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
+            nvgText(vg, x_middle, bar_area_height + (approx_text_height / 2.0f), valueStr.c_str(), NULL);
+            nvgStroke(vg);
             nvgFill(vg);
+            */
         }
     }
 };
@@ -235,6 +278,21 @@ struct LinesItem : MenuItem {
     };
 };
 
+struct LineUnitItem : MenuItem {
+    BarGraphElement *bar;
+    BarGraphElement::LineUnit lineUnit;
+
+    void onAction(EventAction &e) override {
+        bar->lineUnit = lineUnit;
+    };
+
+    void step() override {
+        // rightText = (bar->showLines == inputRange)? "✔" : "";
+        // rightText = bar->showLines ? "✔" : "";
+        rightText = (bar->lineUnit == lineUnit)? "✔" : "";
+    };
+};
+
 Menu *BarGraphElementWidget::createContextMenu() {
 
     Menu *menu = ModuleWidget::createContextMenu();
@@ -268,13 +326,33 @@ Menu *BarGraphElementWidget::createContextMenu() {
     fiveFiveItem->inputRange = BarGraphElement::MINUS_PLUS_FIVE;
     menu->addChild(fiveFiveItem);
 
+    InputRangeItem *zeroOneItem = new InputRangeItem();
+    zeroOneItem->text = "0 - +1V";
+    zeroOneItem->bar = bar;
+    zeroOneItem->inputRange = BarGraphElement::ZERO_ONE;
+    menu->addChild(zeroOneItem);
+
     MenuLabel *lineSpacerLabel = new MenuLabel();
     menu->addChild(lineSpacerLabel);
 
-    LinesItem *linesItem = new LinesItem();
-    linesItem->text = "Show Lines";
-    linesItem->bar = bar;
-    menu->addChild(linesItem);
+    LineUnitItem *noLinesItem = new LineUnitItem();
+    noLinesItem->text = "No lines";
+    noLinesItem->bar = bar;
+    noLinesItem->lineUnit = BarGraphElement::NO_LINES;
+    menu->addChild(noLinesItem);
+
+    LineUnitItem *oneVoltLinesItem = new LineUnitItem();
+    oneVoltLinesItem->text = "1V";
+    oneVoltLinesItem->bar = bar;
+    oneVoltLinesItem->lineUnit = BarGraphElement::ONE_VOLT;
+    menu->addChild(oneVoltLinesItem);
+
+    LineUnitItem *oneSemitoneLinesItem = new LineUnitItem();
+    oneSemitoneLinesItem->text = "1 CV semitone";
+    oneSemitoneLinesItem->bar = bar;
+    oneSemitoneLinesItem->lineUnit = BarGraphElement::ONE_SEMITONE;
+    menu->addChild(oneSemitoneLinesItem);
+
     return menu;
 }
 

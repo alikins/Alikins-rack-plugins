@@ -113,20 +113,16 @@ struct BarGraphWidget : VirtualWidget {
         float y_origin = bar_area_height / 2.0f;
         float bar_height_max = bar_area_height - y_origin;
         float bar_height_min = -bar_height_max;
-        // float div_unit = 1.0f;
-        // float div_unit = 1.0f / 12.0f;   // per CV note
         float div_unit = lineUnitValues[bar->lineUnit];
 
         // how many small lines before a periodical large line
-        // int large_div_count = 12;
-        // int large_div_count = 5;
         int large_div_count = lineUnitLargeCount[bar->lineUnit];
 
         float total_input_range = voltage_max[bar->inputRange] - voltage_min[bar->inputRange];
         int divs = static_cast<int>(total_input_range / div_unit);
+
         //debug("div_unit: %f, total_input_range: %f, lu: %d ldc: %d divs: %d",
         //    div_unit, total_input_range, bar->lineUnit, large_div_count, divs);
-
 
         if (bar->inputRange == BarGraphElement::ZERO_TEN ||
             bar->inputRange == BarGraphElement::ZERO_ONE) {
@@ -137,8 +133,10 @@ struct BarGraphWidget : VirtualWidget {
         }
 
         // debug("max_d: %d size_d_f: %f n:%d d:%d x:%d y:%d r:%f b:%f", max_d, size_d_f, n, d, x, y, red, blue);
+
         nvgBeginPath(vg);
-        float bar_height = rescale(input_value, voltage_min[bar->inputRange], voltage_max		[bar->inputRange], bar_height_min, bar_height_max);
+        float bar_height = rescale(input_value, voltage_min[bar->inputRange],
+            voltage_max[bar->inputRange], bar_height_min, bar_height_max);
 
         float x_middle = box.size.x / 2.0f;
 
@@ -168,7 +166,6 @@ struct BarGraphWidget : VirtualWidget {
         nvgFillColor(vg, nvgRGBAf(0.f, 0.0f, 0.0f, 1.0f));
 
         // TODO: make text display optional, possible extract to method or widget
-        // snprintf(value, 100, "Velocity: %06.3fV (Midi %03d)", displayVelocity * 10.f, (int)(127 * displayVelocity));
         std::string valueStr = stringf("%#.3g", input_value);
         nvgTextAlign(vg, NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
         nvgText(vg, x_middle, bar_area_height + (approx_text_height / 2.0f), valueStr.c_str(), NULL);
@@ -188,8 +185,6 @@ struct BarGraphWidget : VirtualWidget {
             float y_line = 0.0f + (i * ret_line_centers);
             float wideness = 10.0f;
 
-            // nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.05f));
-
             // draw a larger bolder line for larger units
             if (i % large_div_count == 0) {
                 // nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.2f));
@@ -206,17 +201,9 @@ struct BarGraphWidget : VirtualWidget {
             } else {
                 nvgStrokeColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.1f));
             }
-            // nvgFillColor(vg, nvgRGBAf(0.f, 0.f, 0.f, 0.05f));
 
             nvgStroke(vg);
 
-            /*
-            std::string valueStr = stringf("%#.3g", input_value);
-            nvgTextAlign(vg, NVG_ALIGN_CENTER|NVG_ALIGN_MIDDLE);
-            nvgText(vg, x_middle, bar_area_height + (approx_text_height / 2.0f), valueStr.c_str(), NULL);
-            nvgStroke(vg);
-            nvgFill(vg);
-            */
         }
     }
 };
@@ -273,7 +260,6 @@ struct LinesItem : MenuItem {
     };
 
     void step() override {
-        // rightText = (bar->showLines == inputRange)? "✔" : "";
         rightText = bar->showLines ? "✔" : "";
     };
 };
@@ -287,8 +273,6 @@ struct LineUnitItem : MenuItem {
     };
 
     void step() override {
-        // rightText = (bar->showLines == inputRange)? "✔" : "";
-        // rightText = bar->showLines ? "✔" : "";
         rightText = (bar->lineUnit == lineUnit)? "✔" : "";
     };
 };
@@ -334,6 +318,10 @@ Menu *BarGraphElementWidget::createContextMenu() {
 
     MenuLabel *lineSpacerLabel = new MenuLabel();
     menu->addChild(lineSpacerLabel);
+
+    MenuLabel *markingLinesLabel = new MenuLabel();
+    markingLinesLabel->text = "Marking lines";
+    menu->addChild(markingLinesLabel);
 
     LineUnitItem *noLinesItem = new LineUnitItem();
     noLinesItem->text = "No lines";

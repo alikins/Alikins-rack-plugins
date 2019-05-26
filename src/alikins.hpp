@@ -18,7 +18,7 @@ const float voltage_max[3] = {10.0f, 10.0f, 5.0f};
 using namespace rack;
 
 
-extern Plugin *plugin;
+extern Plugin *pluginInstance;
 
 ////////////////////
 // module widgets

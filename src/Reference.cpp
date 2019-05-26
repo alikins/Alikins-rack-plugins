@@ -55,7 +55,7 @@ struct ReferenceWidget : ModuleWidget {
 ReferenceWidget::ReferenceWidget(Reference *module) : ModuleWidget(module) {
 
     // box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-    setPanel(SVG::load(assetPlugin(plugin, "res/Reference.svg")));
+    setPanel(SVG::load(assetPlugin(pluginInstance, "res/Reference.svg")));
 
     float y_pos = 18.0f;
 

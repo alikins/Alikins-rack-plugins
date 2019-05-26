@@ -82,7 +82,7 @@ struct InjectValueWidget : ModuleWidget
 
 InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 {
-    setPanel(SVG::load(assetPlugin(plugin, "res/InjectValue.svg")));
+    setPanel(SVG::load(assetPlugin(pluginInstance, "res/InjectValue.svg")));
 
     float y_baseline = 45.0f;
 

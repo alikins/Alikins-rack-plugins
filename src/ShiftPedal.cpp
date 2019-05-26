@@ -70,35 +70,35 @@ void ShiftPedal::step() {
 
 struct ShiftSwitch : SVGSwitch, ToggleSwitch {
     ShiftSwitch() {
-        addFrame(SVG::load(assetPlugin(plugin, "res/ShiftIsOff.svg")));
-        addFrame(SVG::load(assetPlugin(plugin, "res/ShiftIsOn.svg")));
+        addFrame(SVG::load(assetPlugin(pluginInstance, "res/ShiftIsOff.svg")));
+        addFrame(SVG::load(assetPlugin(pluginInstance, "res/ShiftIsOn.svg")));
     }
 };
 
 struct CtrlSwitch : SVGSwitch, ToggleSwitch {
     CtrlSwitch() {
-        addFrame(SVG::load(assetPlugin(plugin, "res/CtrlIsOff.svg")));
-        addFrame(SVG::load(assetPlugin(plugin, "res/CtrlIsOn.svg")));
+        addFrame(SVG::load(assetPlugin(pluginInstance, "res/CtrlIsOff.svg")));
+        addFrame(SVG::load(assetPlugin(pluginInstance, "res/CtrlIsOn.svg")));
     }
 };
 
 struct AltSwitch : SVGSwitch, ToggleSwitch {
     AltSwitch() {
-        addFrame(SVG::load(assetPlugin(plugin, "res/AltIsOff.svg")));
-        addFrame(SVG::load(assetPlugin(plugin, "res/AltIsOn.svg")));
+        addFrame(SVG::load(assetPlugin(pluginInstance, "res/AltIsOff.svg")));
+        addFrame(SVG::load(assetPlugin(pluginInstance, "res/AltIsOn.svg")));
     }
 };
 
 struct SuperSwitch : SVGSwitch, ToggleSwitch {
     SuperSwitch() {
-        addFrame(SVG::load(assetPlugin(plugin, "res/SuperIsOff.svg")));
-        addFrame(SVG::load(assetPlugin(plugin, "res/SuperIsOn.svg")));
+        addFrame(SVG::load(assetPlugin(pluginInstance, "res/SuperIsOff.svg")));
+        addFrame(SVG::load(assetPlugin(pluginInstance, "res/SuperIsOn.svg")));
     }
 };
 
 struct PurplePort : SVGPort {
 	PurplePort() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/PurplePort.svg")));
+		setSVG(SVG::load(assetPlugin(pluginInstance, "res/PurplePort.svg")));
 	}
 };
 
@@ -120,7 +120,7 @@ struct ShiftPedalWidget : ModuleWidget {
 
 ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-    setPanel(SVG::load(assetPlugin(plugin, "res/ShiftPedal.svg")));
+    setPanel(SVG::load(assetPlugin(pluginInstance, "res/ShiftPedal.svg")));
 
     // FIXME: change to #defines
     float buttonWidth = 30.0f;

@@ -83,7 +83,7 @@ struct GateLengthWidget : ModuleWidget {
 GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
 
     box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-    setPanel(SVG::load(assetPlugin(plugin, "res/GateLength.svg")));
+    setPanel(SVG::load(assetPlugin(pluginInstance, "res/GateLength.svg")));
 
     float y_pos = 2.0f;
 

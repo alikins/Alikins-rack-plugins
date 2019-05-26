@@ -176,7 +176,7 @@ void ValueSaverWidget::fromJson(json_t *rootJ) {
 ValueSaverWidget::ValueSaverWidget(ValueSaver *module) : ModuleWidget(module) {
 
     box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-    setPanel(SVG::load(assetPlugin(plugin, "res/ValueSaverPanel.svg")));
+    setPanel(SVG::load(assetPlugin(pluginInstance, "res/ValueSaverPanel.svg")));
 
     float y_baseline = 48.0f;
     float y_pos = y_baseline;

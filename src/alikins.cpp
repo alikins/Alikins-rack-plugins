@@ -1,10 +1,10 @@
 #include "alikins.hpp"
 
-// The plugin-wide instance of the Plugin class
-Plugin *plugin;
+// The pluginInstance-wide instance of the Plugin class
+Plugin *pluginInstance;
 
 void init(rack::Plugin *p) {
-    plugin = p;
+    pluginInstance = p;
 
     p->website = "https://github.com/alikins/Alikins-rack-plugins";
     p->manual = "https://github.com/alikins/Alikins-rack-plugins/blob/master/README.md";

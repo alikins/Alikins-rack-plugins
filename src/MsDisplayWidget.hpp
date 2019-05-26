@@ -9,7 +9,7 @@ struct MsDisplayWidget : TransparentWidget {
   std::shared_ptr<Font> font;
 
   MsDisplayWidget() {
-    font = Font::load(assetPlugin(plugin, "res/Segment7Standard.ttf"));
+    font = Font::load(assetPlugin(pluginInstance, "res/Segment7Standard.ttf"));
   }
 
   void draw(NVGcontext *vg) override {

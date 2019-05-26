@@ -63,43 +63,43 @@ ReferenceWidget::ReferenceWidget(Reference *module) : ModuleWidget(module) {
     float y_offset = 50.0f;
 
     addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                       Port::OUTPUT,
+                                       PortWidget::OUTPUT,
                                        module,
                                        Reference::PLUS_TEN_OUTPUT));
 
     y_pos += y_offset;
     addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                       Port::OUTPUT,
+                                       PortWidget::OUTPUT,
                                        module,
                                        Reference::PLUS_FIVE_OUTPUT));
 
     y_pos += y_offset;
     addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                       Port::OUTPUT,
+                                       PortWidget::OUTPUT,
                                        module,
                                        Reference::PLUS_ONE_OUTPUT));
 
     y_pos += y_offset;
     addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                       Port::OUTPUT,
+                                       PortWidget::OUTPUT,
                                        module,
                                        Reference::ZERO_OUTPUT));
 
     y_pos += y_offset;
     addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                       Port::OUTPUT,
+                                       PortWidget::OUTPUT,
                                        module,
                                        Reference::MINUS_ONE_OUTPUT));
 
     y_pos += y_offset;
     addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                       Port::OUTPUT,
+                                       PortWidget::OUTPUT,
                                        module,
                                        Reference::MINUS_FIVE_OUTPUT));
 
     y_pos += y_offset;
     addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                       Port::OUTPUT,
+                                       PortWidget::OUTPUT,
                                        module,
                                        Reference::MINUS_TEN_OUTPUT));
 

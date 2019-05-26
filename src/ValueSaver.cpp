@@ -192,7 +192,7 @@ ValueSaverWidget::ValueSaverWidget(ValueSaver *module) : ModuleWidget(module) {
         x_pos += 30.0f;
 
         addOutput(createPort<PJ301MPort>(Vec(box.size.x - 30.0f, y_pos),
-                                           Port::OUTPUT,
+                                           PortWidget::OUTPUT,
                                            module,
                                            ValueSaver::VALUE_OUTPUT + i));
 

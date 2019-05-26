@@ -140,11 +140,11 @@ BigMuteButtonWidget::BigMuteButtonWidget(BigMuteButton *module) : ModuleWidget(m
                 BigMuteButton::RIGHT_INPUT));
 
     addOutput(createPort<PJ301MPort>(Vec(60.0f, 302.0f),
-                Port::OUTPUT,
+                PortWidget::OUTPUT,
                 module,
                 BigMuteButton::LEFT_OUTPUT));
     addOutput(createPort<PJ301MPort>(Vec(60.0f, 330.0f),
-                Port::OUTPUT,
+                PortWidget::OUTPUT,
                 module,
                 BigMuteButton::RIGHT_OUTPUT));
 

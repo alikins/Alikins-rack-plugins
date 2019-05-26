@@ -108,7 +108,7 @@ GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
         x_pos += 84.0f;
         x_pos += 4.0f;
         addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                           Port::OUTPUT,
+                                           PortWidget::OUTPUT,
                                            module,
                                            GateLength::GATE_OUTPUT1 + i));
 

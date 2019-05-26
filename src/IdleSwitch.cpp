@@ -299,7 +299,7 @@ IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
 
     addInput(createPort<PJ301MPort>(Vec(10, 155.0), Port::INPUT, module, IdleSwitch::TIME_INPUT));
     addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
-    addOutput(createPort<PJ301MPort>(Vec(80, 155.0), Port::OUTPUT, module, IdleSwitch::TIME_OUTPUT));
+    addOutput(createPort<PJ301MPort>(Vec(80, 155.0), PortWidget::OUTPUT, module, IdleSwitch::TIME_OUTPUT));
 
     IdleSwitchMsDisplayWidget *time_remaining_display = new IdleSwitchMsDisplayWidget();
     time_remaining_display->box.pos = Vec(20, 225);
@@ -307,13 +307,13 @@ IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     time_remaining_display->value = &module->idleTimeLeftMS;
     addChild(time_remaining_display);
 
-    addOutput(createPort<PJ301MPort>(Vec(10, 263.0), Port::OUTPUT, module, IdleSwitch::IDLE_START_OUTPUT));
-    addOutput(createPort<PJ301MPort>(Vec(47.5, 263.0), Port::OUTPUT, module, IdleSwitch::IDLE_GATE_OUTPUT));
-    addOutput(createPort<PJ301MPort>(Vec(85, 263.0), Port::OUTPUT, module, IdleSwitch::IDLE_END_OUTPUT));
+    addOutput(createPort<PJ301MPort>(Vec(10, 263.0), PortWidget::OUTPUT, module, IdleSwitch::IDLE_START_OUTPUT));
+    addOutput(createPort<PJ301MPort>(Vec(47.5, 263.0), PortWidget::OUTPUT, module, IdleSwitch::IDLE_GATE_OUTPUT));
+    addOutput(createPort<PJ301MPort>(Vec(85, 263.0), PortWidget::OUTPUT, module, IdleSwitch::IDLE_END_OUTPUT));
 
     addInput(createPort<PJ301MPort>(Vec(10.0f, 315.0f), Port::INPUT, module, IdleSwitch::SWITCHED_INPUT));
-    addOutput(createPort<PJ301MPort>(Vec(47.5f, 315.0f), Port::OUTPUT, module, IdleSwitch::ON_WHEN_IDLE_OUTPUT));
-    addOutput(createPort<PJ301MPort>(Vec(85.0f, 315.0f), Port::OUTPUT, module, IdleSwitch::OFF_WHEN_IDLE_OUTPUT));
+    addOutput(createPort<PJ301MPort>(Vec(47.5f, 315.0f), PortWidget::OUTPUT, module, IdleSwitch::ON_WHEN_IDLE_OUTPUT));
+    addOutput(createPort<PJ301MPort>(Vec(85.0f, 315.0f), PortWidget::OUTPUT, module, IdleSwitch::OFF_WHEN_IDLE_OUTPUT));
 }
 
 Model *modelIdleSwitch = createModel<IdleSwitch, IdleSwitchWidget>(

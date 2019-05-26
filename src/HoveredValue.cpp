@@ -162,7 +162,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     // Scaled output port
     Port *scaled_value_out_port = createPort<PJ301MPort>(
         Vec(60.0f, y_baseline - 2.0f),
-        Port::OUTPUT,
+        PortWidget::OUTPUT,
         module,
         HoveredValue::SCALED_PARAM_VALUE_OUTPUT);
 
@@ -180,7 +180,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 
     Port *raw_value_out_port = createPort<PJ301MPort>(
         Vec(60.0f, box.size.y - 67.0f),
-        Port::OUTPUT,
+        PortWidget::OUTPUT,
         module,
         HoveredValue::PARAM_VALUE_OUTPUT);
 

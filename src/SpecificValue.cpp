@@ -825,7 +825,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
 
     Port *value_out_port = createPort<PJ301MPort>(
         Vec(out_port_x, y_baseline),
-        Port::OUTPUT,
+        PortWidget::OUTPUT,
         module,
         SpecificValue::VALUE1_OUTPUT);
 

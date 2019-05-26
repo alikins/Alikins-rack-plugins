@@ -129,7 +129,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     y_baseline = box.size.y - 128.0f;
 
-    inputVoltageSwitch = ParamWidget::create<CKSSThree>(Vec(5.0f, y_baseline ), module,
+    inputVoltageSwitch = createParam<CKSSThree>(Vec(5.0f, y_baseline ), module,
         InjectValue::INPUT_VOLTAGE_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(inputVoltageSwitch);
@@ -142,7 +142,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     y_baseline = box.size.y - 65.0f;
 
-    enableInjectSwitch = ParamWidget::create<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
+    enableInjectSwitch = createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
         InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(enableInjectSwitch);

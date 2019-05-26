@@ -132,7 +132,7 @@ MomentaryOnButtonsWidget::MomentaryOnButtonsWidget(MomentaryOnButtons *module) :
         x_pos = x_start + x_offset;
         y_pos = y_start + (i * y_offset);
 
-        addParam(ParamWidget::create<LEDButton>(Vec(x_pos + light_radius, y_pos + 3), module, MomentaryOnButtons::BUTTON1_PARAM + i, 0.0, 1.0, 0.0));
+        addParam(createParam<LEDButton>(Vec(x_pos + light_radius, y_pos + 3), module, MomentaryOnButtons::BUTTON1_PARAM + i, 0.0, 1.0, 0.0));
         addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(x_pos + 5 + light_radius, y_pos + light_radius), module, MomentaryOnButtons::BLINK1_LIGHT + i));
 
         addOutput(Port::create<PJ301MPort>(Vec(x_pos + 20 + light_radius, y_pos), Port::OUTPUT, module, MomentaryOnButtons::BUTTON1_OUTPUT + i));

@@ -154,7 +154,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     // y_baseline = y_baseline + 25.0f;
     y_baseline = box.size.y - 128.0f;
 
-    outputRangeSwitch = ParamWidget::create<CKSSThree>(Vec(5, y_baseline), module,
+    outputRangeSwitch = createParam<CKSSThree>(Vec(5, y_baseline), module,
         HoveredValue::OUTPUT_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(outputRangeSwitch);
@@ -173,7 +173,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     // enabled/disable switch
     y_baseline = box.size.y - 65.0f;
 
-    enableHoverSwitch = ParamWidget::create<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
+    enableHoverSwitch = createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
         HoveredValue::HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(enableHoverSwitch);

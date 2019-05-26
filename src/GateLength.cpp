@@ -121,7 +121,7 @@ GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
                                           GateLength::GATE_LENGTH_INPUT1 + i));
 
         x_pos += 30.0f;
-        addParam(ParamWidget::create<Trimpot>(Vec(x_pos, y_pos + 3.0f),
+        addParam(createParam<Trimpot>(Vec(x_pos, y_pos + 3.0f),
                                               module,
                                               GateLength::GATE_LENGTH_PARAM1 + i,
                                               0.0f, 10.0f, 0.1f));

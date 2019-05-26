@@ -837,7 +837,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     y_baseline += value_out_port->box.size.y;
     y_baseline += 16.0f;
 
-    PurpleTrimpot *trimpot = ParamWidget::create<PurpleTrimpot>(
+    PurpleTrimpot *trimpot = createParam<PurpleTrimpot>(
         Vec(middle - 24.0f, y_baseline + 4.5f),
         module,
         SpecificValue::VALUE1_PARAM,

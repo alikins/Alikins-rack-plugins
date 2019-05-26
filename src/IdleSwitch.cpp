@@ -298,7 +298,7 @@ IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     addChild(idle_time_display);
 
     addInput(Port::create<PJ301MPort>(Vec(10, 155.0), Port::INPUT, module, IdleSwitch::TIME_INPUT));
-    addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
+    addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
     addOutput(Port::create<PJ301MPort>(Vec(80, 155.0), Port::OUTPUT, module, IdleSwitch::TIME_OUTPUT));
 
     IdleSwitchMsDisplayWidget *time_remaining_display = new IdleSwitchMsDisplayWidget();

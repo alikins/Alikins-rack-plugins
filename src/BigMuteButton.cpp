@@ -125,7 +125,7 @@ BigMuteButtonWidget::BigMuteButtonWidget(BigMuteButton *module) : ModuleWidget(m
     box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     setPanel(SVG::load(assetPlugin(pluginInstance, "res/BigMuteButton.svg")));
 
-    addParam(ParamWidget::create<BigSwitch>(Vec(0.0f, 0.0f),
+    addParam(createParam<BigSwitch>(Vec(0.0f, 0.0f),
                 module,
                 BigMuteButton::BIG_MUTE_BUTTON_PARAM,
                 0.0f, 1.0f, 0.0f));

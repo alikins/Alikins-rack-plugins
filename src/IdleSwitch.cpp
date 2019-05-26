@@ -282,8 +282,8 @@ struct IdleSwitchWidget : ModuleWidget {
 IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     setPanel(SVG::load(assetPlugin(pluginInstance, "res/IdleSwitch.svg")));
 
-    addChild(Widget::create<ScrewSilver>(Vec(5, 0)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 20, 365)));
+    addChild(createWidget<ScrewSilver>(Vec(5, 0)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 20, 365)));
 
     addInput(createPort<PJ301MPort>(Vec(37, 20.0), PortWidget::INPUT, module, IdleSwitch::INPUT_SOURCE_INPUT));
     addInput(createPort<PJ301MPort>(Vec(37, 60.0), PortWidget::INPUT, module, IdleSwitch::HEARTBEAT_INPUT));

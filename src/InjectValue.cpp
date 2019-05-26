@@ -150,10 +150,10 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
     inputs.push_back(value_in_port);
     addChild(value_in_port);
 
-    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 365.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
 
     // fire off an event to refresh all the widgets
     EventChange e;

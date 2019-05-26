@@ -207,10 +207,10 @@ ValueSaverWidget::ValueSaverWidget(ValueSaver *module) : ModuleWidget(module) {
         y_pos += 14.0f;
     }
 
-    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 365.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
 
 }
 

@@ -285,9 +285,9 @@ struct InputRangeItem : MenuItem {
 
 };
 
-Menu *ColorPanelWidget::createContextMenu() {
+Menu *ColorPanelcreateWidgetContextMenu() {
 
-    Menu *menu = ModuleWidget::createContextMenu();
+    Menu *menu = ModulecreateWidgetContextMenu();
 
     MenuLabel *spacerLabel = new MenuLabel();
     menu->addChild(spacerLabel);

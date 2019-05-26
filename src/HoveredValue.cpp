@@ -188,10 +188,10 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 
     addChild(raw_value_out_port);
 
-    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 365.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
 
     // fire off an event to refresh all the widgets
     EventChange e;
@@ -368,8 +368,8 @@ struct UseTooltipMenuItem : MenuItem {
 };
 
 
-Menu *HoveredValueWidget::createContextMenu() {
-    Menu *menu = ModuleWidget::createContextMenu();
+Menu *HoveredValuecreateWidgetContextMenu() {
+    Menu *menu = ModulecreateWidgetContextMenu();
 
     MenuLabel *spacerLabel = new MenuLabel();
     menu->addChild(spacerLabel);

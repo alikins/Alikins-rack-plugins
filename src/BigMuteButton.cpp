@@ -148,9 +148,9 @@ BigMuteButtonWidget::BigMuteButtonWidget(BigMuteButton *module) : ModuleWidget(m
                 module,
                 BigMuteButton::RIGHT_OUTPUT));
 
-    addChild(Widget::create<ScrewSilver>(Vec(0.0, 0)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x-15, 0)));
-    addChild(Widget::create<ScrewSilver>(Vec(30, 365)));
+    addChild(createWidget<ScrewSilver>(Vec(0.0, 0)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x-15, 0)));
+    addChild(createWidget<ScrewSilver>(Vec(30, 365)));
 
 }
 

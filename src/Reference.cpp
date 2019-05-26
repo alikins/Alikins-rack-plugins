@@ -62,43 +62,43 @@ ReferenceWidget::ReferenceWidget(Reference *module) : ModuleWidget(module) {
     float x_pos = 2.0f;
     float y_offset = 50.0f;
 
-    addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
+    addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
                                        Port::OUTPUT,
                                        module,
                                        Reference::PLUS_TEN_OUTPUT));
 
     y_pos += y_offset;
-    addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
+    addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
                                        Port::OUTPUT,
                                        module,
                                        Reference::PLUS_FIVE_OUTPUT));
 
     y_pos += y_offset;
-    addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
+    addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
                                        Port::OUTPUT,
                                        module,
                                        Reference::PLUS_ONE_OUTPUT));
 
     y_pos += y_offset;
-    addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
+    addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
                                        Port::OUTPUT,
                                        module,
                                        Reference::ZERO_OUTPUT));
 
     y_pos += y_offset;
-    addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
+    addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
                                        Port::OUTPUT,
                                        module,
                                        Reference::MINUS_ONE_OUTPUT));
 
     y_pos += y_offset;
-    addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
+    addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
                                        Port::OUTPUT,
                                        module,
                                        Reference::MINUS_FIVE_OUTPUT));
 
     y_pos += y_offset;
-    addOutput(Port::create<PJ301MPort>(Vec(x_pos, y_pos),
+    addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
                                        Port::OUTPUT,
                                        module,
                                        Reference::MINUS_TEN_OUTPUT));

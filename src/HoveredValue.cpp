@@ -160,7 +160,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     addParam(outputRangeSwitch);
 
     // Scaled output port
-    Port *scaled_value_out_port = Port::create<PJ301MPort>(
+    Port *scaled_value_out_port = createPort<PJ301MPort>(
         Vec(60.0f, y_baseline - 2.0f),
         Port::OUTPUT,
         module,
@@ -178,7 +178,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 
     addParam(enableHoverSwitch);
 
-    Port *raw_value_out_port = Port::create<PJ301MPort>(
+    Port *raw_value_out_port = createPort<PJ301MPort>(
         Vec(60.0f, box.size.y - 67.0f),
         Port::OUTPUT,
         module,

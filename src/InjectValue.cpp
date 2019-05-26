@@ -134,7 +134,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     addParam(inputVoltageSwitch);
 
-    Port *value_in_port = Port::create<PJ301MPort>(
+    Port *value_in_port = createPort<PJ301MPort>(
         Vec(60.0f, y_baseline - 2.0),
         Port::INPUT,
         module,

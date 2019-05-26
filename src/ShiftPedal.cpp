@@ -1,6 +1,5 @@
 #include "alikins.hpp"
 
-#include "dsp/digital.hpp"
 #include "window.hpp"
 
 struct ShiftPedal : Module {

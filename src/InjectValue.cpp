@@ -2,7 +2,6 @@
 #include <math.h>
 #include "ui.hpp"
 #include "window.hpp"
-#include "dsp/digital.hpp"
 
 #include "ParamFloatField.hpp"
 

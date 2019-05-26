@@ -5,7 +5,6 @@
 
 #include "ui.hpp"
 #include "window.hpp"
-#include "dsp/digital.hpp"
 
 /* Notes:
 

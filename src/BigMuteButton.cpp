@@ -1,7 +1,5 @@
 #include "alikins.hpp"
 
-#include "dsp/digital.hpp"
-
 struct BigMuteButton : Module {
     enum ParamIds {
         BIG_MUTE_BUTTON_PARAM,

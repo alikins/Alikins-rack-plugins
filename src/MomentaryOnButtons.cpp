@@ -73,7 +73,7 @@ struct MomentaryOnButtons : Module {
     void step() override;
 
     // For more advanced Module features, read Rack's engine.hpp header file
-    // - dataToJson, fromJson: serialization of internal data
+    // - dataToJson, dataFromJson: serialization of internal data
     // - onSampleRateChange: event triggered by a change of sample rate
     // - reset, randomize: implements special behavior when user clicks these from the context menu
 };

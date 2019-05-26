@@ -46,7 +46,7 @@ struct ColorPanel : Module {
     void step() override;
 
     json_t *dataToJson() override;
-    void fromJson(json_t *rootJ) override;
+    void dataFromJson(json_t *rootJ) override;
 
 };
 
@@ -59,7 +59,7 @@ json_t* ColorPanel::dataToJson() {
     return rootJ;
 }
 
-void ColorPanel::fromJson(json_t *rootJ) {
+void ColorPanel::dataFromJson(json_t *rootJ) {
     json_t *inputRangeJ = json_object_get(rootJ, "inputRange");
     if (inputRangeJ) {
         inputRange = (InputRange) json_integer_value(inputRangeJ);
@@ -187,7 +187,7 @@ struct ColorPanelWidget : ModuleWidget {
     void step() override;
 
     json_t *dataToJson() override;
-    void fromJson(json_t *rootJ) override;
+    void dataFromJson(json_t *rootJ) override;
 };
 
 
@@ -246,8 +246,8 @@ json_t *ColorPanelWidget::dataToJson() {
 	return rootJ;
 }
 
-void ColorPanelWidget::fromJson(json_t *rootJ) {
-	ModuleWidget::fromJson(rootJ);
+void ColorPanelWidget::dataFromJson(json_t *rootJ) {
+	ModuleWidget::dataFromJson(rootJ);
 	json_t *widthJ = json_object_get(rootJ, "width");
     if (widthJ)
         box.size.x = json_number_value(widthJ);

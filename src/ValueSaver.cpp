@@ -29,7 +29,7 @@ struct ValueSaver : Module {
     }
 
     json_t *dataToJson() override;
-    void fromJson(json_t *rootJ) override;
+    void dataFromJson(json_t *rootJ) override;
 
     float values[VALUE_COUNT] = {0.0f};
     float prevInputs[VALUE_COUNT] = {0.0f};
@@ -108,7 +108,7 @@ json_t* ValueSaver::dataToJson() {
     return rootJ;
 }
 
-void ValueSaver::fromJson(json_t *rootJ) {
+void ValueSaver::dataFromJson(json_t *rootJ) {
     json_t *valuesJ = json_object_get(rootJ, "values");
     float savedInput;
 
@@ -142,7 +142,7 @@ struct ValueSaverWidget : ModuleWidget {
     LabelTextField *labelTextFields[VALUE_COUNT];
 
     json_t *dataToJson() override;
-    void fromJson(json_t *rootJ) override;
+    void dataFromJson(json_t *rootJ) override;
 };
 
 json_t *ValueSaverWidget::dataToJson() {
@@ -158,8 +158,8 @@ json_t *ValueSaverWidget::dataToJson() {
 	return rootJ;
 }
 
-void ValueSaverWidget::fromJson(json_t *rootJ) {
-    ModuleWidget::fromJson(rootJ);
+void ValueSaverWidget::dataFromJson(json_t *rootJ) {
+    ModuleWidget::dataFromJson(rootJ);
 
     json_t *labelsJ = json_object_get(rootJ, "labels");
     if (labelsJ) {

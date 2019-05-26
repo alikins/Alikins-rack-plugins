@@ -53,7 +53,7 @@ struct HoveredValue : Module {
     void step() override;
 
     json_t* dataToJson() override;
-    void fromJson(json_t *rootJ) override;
+    void dataFromJson(json_t *rootJ) override;
 
     HoverEnabled enabled = WITH_SHIFT;
 
@@ -74,7 +74,7 @@ json_t* HoveredValue::dataToJson() {
     return rootJ;
 }
 
-void HoveredValue::fromJson(json_t *rootJ) {
+void HoveredValue::dataFromJson(json_t *rootJ) {
     json_t *useTooltipJ = json_object_get(rootJ, "useTooltip");
     if (useTooltipJ) {
         useTooltip = json_boolean_value(useTooltipJ);

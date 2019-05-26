@@ -315,5 +315,4 @@ IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     addOutput(createPort<PJ301MPort>(Vec(85.0f, 315.0f), PortWidget::OUTPUT, module, IdleSwitch::OFF_WHEN_IDLE_OUTPUT));
 }
 
-Model *modelIdleSwitch = createModel<IdleSwitch, IdleSwitchWidget>(
-        "Alikins", "IdleSwitch", "Idle Switch", SWITCH_TAG  , UTILITY_TAG);
+Model *modelIdleSwitch = createModel<IdleSwitch, IdleSwitchWidget>("IdleSwitch");

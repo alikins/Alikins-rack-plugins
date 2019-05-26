@@ -18,6 +18,23 @@
       "tags": [
         "Utility"
       ]
+    },
+    {
+      "slug": "BigMuteButton",
+      "name": "Big Mute Button",
+      "description": "A big mute button",
+      "tags": [
+        "Utility"
+      ]
+    },
+    {
+      "slug": "IdleSwitch",
+      "name": "Idle Switch",
+      "description": "If a signal goes idle, flip a switch",
+      "tags": [
+        "Utility",
+        "Switch"
+      ]
     }
   ]
 }

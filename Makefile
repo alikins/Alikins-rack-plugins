@@ -1,7 +1,8 @@
 RACK_DIR ?= ../..
 
 # FLAGS will be passed to both the C and C++ compiler
-FLAGS +=
+# FLAGS +=
+FLAGS += -w
 CFLAGS +=
 CXXFLAGS +=
 
@@ -10,7 +11,8 @@ CXXFLAGS +=
 LDFLAGS +=
 
 # Add .cpp and .c files to the build
-SOURCES = $(wildcard src/*.cpp)
+# SOURCES = $(wildcard src/*.cpp)
+SOURCES = src/GateLength.cpp src/IdleSwitch.cpp
 
 # Must include the VCV plugin Makefile framework
 include $(RACK_DIR)/plugin.mk

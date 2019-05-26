@@ -152,5 +152,4 @@ BigMuteButtonWidget::BigMuteButtonWidget(BigMuteButton *module) : ModuleWidget(m
 
 }
 
-Model *modelBigMuteButton = createModel<BigMuteButton, BigMuteButtonWidget>(
-        "Alikins", "BigMuteButton", "Big Mute Button", UTILITY_TAG);
+Model *modelBigMuteButton = createModel<BigMuteButton, BigMuteButtonWidget>("BigMuteButton");

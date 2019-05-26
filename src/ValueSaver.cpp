@@ -214,5 +214,4 @@ ValueSaverWidget::ValueSaverWidget(ValueSaver *module) : ModuleWidget(module) {
 }
 
 
-Model *modelValueSaver = createModel<ValueSaver, ValueSaverWidget>(
-        "Alikins", "ValueSaver", "Value Saver", UTILITY_TAG);
+Model *modelValueSaver = createModel<ValueSaver, ValueSaverWidget>("ValueSaver");

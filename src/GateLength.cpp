@@ -92,7 +92,7 @@ GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
         y_pos += 39.0f;
 
         addInput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                          Port::INPUT,
+                                          PortWidget::INPUT,
                                           module,
                                           GateLength::TRIGGER_INPUT1 + i));
 
@@ -116,7 +116,7 @@ GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
         y_pos += 26.0f;
 
         addInput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                          Port::INPUT,
+                                          PortWidget::INPUT,
                                           module,
                                           GateLength::GATE_LENGTH_INPUT1 + i));
 

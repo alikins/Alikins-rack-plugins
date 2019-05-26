@@ -136,7 +136,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     Port *value_in_port = createPort<PJ301MPort>(
         Vec(60.0f, y_baseline - 2.0),
-        Port::INPUT,
+        PortWidget::INPUT,
         module,
         InjectValue::VALUE_INPUT);
 

@@ -28,7 +28,7 @@ struct ValueSaver : Module {
     void onReset() override {
     }
 
-    json_t *toJson() override;
+    json_t *dataToJson() override;
     void fromJson(json_t *rootJ) override;
 
     float values[VALUE_COUNT] = {0.0f};
@@ -93,13 +93,13 @@ void ValueSaver::step()
     }
 }
 
-json_t* ValueSaver::toJson() {
+json_t* ValueSaver::dataToJson() {
     json_t *rootJ = json_object();
 
     json_t *valuesJ = json_array();
     for (int i = 0; i < VALUE_COUNT; i++)
     {
-        // debug("toJson current values[%d]: %f", i, values[i]);
+        // debug("dataToJson current values[%d]: %f", i, values[i]);
         json_t *valueJ = json_real(values[i]);
         json_array_append_new(valuesJ, valueJ);
     }
@@ -141,12 +141,12 @@ struct ValueSaverWidget : ModuleWidget {
 
     LabelTextField *labelTextFields[VALUE_COUNT];
 
-    json_t *toJson() override;
+    json_t *dataToJson() override;
     void fromJson(json_t *rootJ) override;
 };
 
-json_t *ValueSaverWidget::toJson() {
-    json_t *rootJ = ModuleWidget::toJson();
+json_t *ValueSaverWidget::dataToJson() {
+    json_t *rootJ = ModuleWidget::dataToJson();
 
     json_t *labelsJ = json_array();
     for (int i = 0; i < VALUE_COUNT; i++) {

@@ -52,7 +52,7 @@ struct HoveredValue : Module {
 
     void step() override;
 
-    json_t* toJson() override;
+    json_t* dataToJson() override;
     void fromJson(json_t *rootJ) override;
 
     HoverEnabled enabled = WITH_SHIFT;
@@ -68,7 +68,7 @@ void HoveredValue::step() {
     outputs[SCALED_PARAM_VALUE_OUTPUT].value = params[HOVERED_SCALED_PARAM_VALUE_PARAM].value;
 }
 
-json_t* HoveredValue::toJson() {
+json_t* HoveredValue::dataToJson() {
     json_t *rootJ = json_object();
     json_object_set_new(rootJ, "useTooltip", json_boolean(useTooltip));
     return rootJ;

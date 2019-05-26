@@ -388,5 +388,5 @@ Menu *HoveredValueWidget::createContextMenu() {
 }
 
 
-Model *modelHoveredValue = Model::create<HoveredValue, HoveredValueWidget>(
+Model *modelHoveredValue = createModel<HoveredValue, HoveredValueWidget>(
     "Alikins", "HoveredValue", "Hovered Value - get value under cursor", UTILITY_TAG, CONTROLLER_TAG);

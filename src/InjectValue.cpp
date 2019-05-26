@@ -246,5 +246,5 @@ void InjectValueWidget::onChange(EventChange &e) {
     param_value_field->onChange(e);
 }
 
-Model *modelInjectValue = Model::create<InjectValue, InjectValueWidget>(
+Model *modelInjectValue = createModel<InjectValue, InjectValueWidget>(
     "Alikins", "InjectValue", "Inject Value - inject value into param under cursor", UTILITY_TAG, CONTROLLER_TAG);

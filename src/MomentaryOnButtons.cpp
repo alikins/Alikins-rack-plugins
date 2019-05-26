@@ -139,5 +139,5 @@ MomentaryOnButtonsWidget::MomentaryOnButtonsWidget(MomentaryOnButtons *module) :
     }
 }
 
-Model *modelMomentaryOnButtons = Model::create<MomentaryOnButtons, MomentaryOnButtonsWidget>(
+Model *modelMomentaryOnButtons = createModel<MomentaryOnButtons, MomentaryOnButtonsWidget>(
         "Alikins", "MomentaryOnButtons", "Momentary On Buttons", UTILITY_TAG);

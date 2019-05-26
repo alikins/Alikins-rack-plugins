@@ -378,7 +378,7 @@ Menu *HoveredValuecreateWidgetContextMenu() {
     assert(hoveredValue);
 
     UseTooltipMenuItem *useTooltipMenuItem =
-        MenuItem::create<UseTooltipMenuItem>("Show Tooltip",
+        createMenuItem<UseTooltipMenuItem>("Show Tooltip",
                                              CHECKMARK(hoveredValue->useTooltip > 2.0f));
 
     useTooltipMenuItem->module = hoveredValue;

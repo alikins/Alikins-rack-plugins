@@ -5,9 +5,6 @@ Plugin *plugin;
 
 void init(rack::Plugin *p) {
     plugin = p;
-    // This is the unique identifier for your plugin
-    p->slug = TOSTRING(SLUG);
-    p->version = TOSTRING(VERSION);
 
     p->website = "https://github.com/alikins/Alikins-rack-plugins";
     p->manual = "https://github.com/alikins/Alikins-rack-plugins/blob/master/README.md";

@@ -134,5 +134,4 @@ GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
 
 }
 
-Model *modelGateLength = Model::create<GateLength, GateLengthWidget>(
-        "Alikins", "GateLength", "Gate Length", UTILITY_TAG);
+Model *modelGateLength = Model::create<GateLength, GateLengthWidget>("GateLength");

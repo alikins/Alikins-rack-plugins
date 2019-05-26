@@ -1,0 +1,23 @@
+{
+  "slug": "Alikins",
+  "name": "Alikins",
+  "version": "1.0.0",
+  "license": "BSD-3-Clause",
+  "author": "Adrian Likins",
+  "authorEmail": "adrian@likins.com",
+  "authorUrl": "https://github.com/alikins/",
+  "pluginUrl": "https://github/com/alikins/Alikins-rack-plugins",
+  "manualUrl": "",
+  "sourceUrl": "https://github/com/alikins/Alikins-rack-plugins",
+  "donateUrl": "",
+  "modules": [
+    {
+      "slug": "GateLength",
+      "name": "Gate Length",
+      "description": "Create a gate with CV controlled length",
+      "tags": [
+        "Utility"
+      ]
+    }
+  ]
+}

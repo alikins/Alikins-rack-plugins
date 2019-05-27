@@ -14,6 +14,7 @@ LDFLAGS +=
 # SOURCES = $(wildcard src/*.cpp)
 SOURCES = src/GateLength.cpp src/IdleSwitch.cpp src/Reference.cpp \
 		  src/MomentaryOnButtons.cpp \
+		 # src/SpecificValue.cpp
 		 # src/ShiftPedal.cpp
 		 # src/ColorPanel.cpp
 

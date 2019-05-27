@@ -60,6 +60,14 @@
       ]
     },
     {
+      "slug": "SpecificValue",
+      "name": "Specific Value",
+      "description": "Set or view voltages with text widget",
+      "tags": [
+        "Utility"
+      ]
+    },
+    {
       "slug": "IdleSwitch",
       "name": "Idle Switch",
       "description": "If a signal goes idle, flip a switch",

@@ -875,5 +875,4 @@ void SpecificValueWidget::onChange(EventChange &e) {
     lfo_bpm_field->onChange(e);
 }
 
-Model *modelSpecificValue = createModel<SpecificValue, SpecificValueWidget>(
-    "Alikins", "SpecificValue", "Specific Value", UTILITY_TAG);
+Model *modelSpecificValue = createModel<SpecificValue, SpecificValueWidget>("SpecificValue");

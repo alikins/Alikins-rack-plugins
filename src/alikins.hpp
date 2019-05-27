@@ -27,11 +27,14 @@ extern Plugin *pluginInstance;
 extern Model *modelIdleSwitch;
 extern Model *modelMomentaryOnButtons;
 extern Model *modelBigMuteButton;
-extern Model *modelColorPanel;
 extern Model *modelGateLength;
-extern Model *modelSpecificValue;
 extern Model *modelReference;
+extern Model *modelValueSaver;
+extern Model *modelShiftPedal;
+
+/*
 extern Model *modelHoveredValue;
 extern Model *modelInjectValue;
-extern Model *modelShiftPedal;
-extern Model *modelValueSaver;
+extern Model *modelColorPanel;
+extern Model *modelSpecificValue;
+*/

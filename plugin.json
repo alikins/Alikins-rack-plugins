@@ -44,6 +44,14 @@
       ]
     },
     {
+      "slug": "MomentaryOnButtons",
+      "name": "Momentary On Buttons",
+      "description": "Set of momentarily on buttons",
+      "tags": [
+        "Switch"
+      ]
+    },
+    {
       "slug": "IdleSwitch",
       "name": "Idle Switch",
       "description": "If a signal goes idle, flip a switch",

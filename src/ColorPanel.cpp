@@ -261,7 +261,7 @@ struct ColorModeItem : MenuItem {
     ColorPanel *colorPanel;
     ColorPanel::ColorMode colorMode;
 
-    void onAction(EventAction &e) override {
+    void onAction(const event::Action &e) override {
         colorPanel->colorMode = colorMode;
     };
 
@@ -277,7 +277,7 @@ struct InputRangeItem : MenuItem {
     ColorPanel *colorPanel;
     ColorPanel::InputRange inputRange;
 
-    void onAction(EventAction &e) override {
+    void onAction(const event::Action &e) override {
         colorPanel->inputRange = inputRange;
     };
 

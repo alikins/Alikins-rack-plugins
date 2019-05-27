@@ -13,15 +13,15 @@ LDFLAGS +=
 # Add .cpp and .c files to the build
 # SOURCES = $(wildcard src/*.cpp)
 SOURCES = src/alikins.cpp \
+		  src/BigMuteButton.cpp \
 		  src/GateLength.cpp \
 		  src/IdleSwitch.cpp \
-		  src/Reference.cpp \
 		  src/MomentaryOnButtons.cpp \
-		  src/ValueSaver.cpp \
-		  src/BigMuteButton.cpp
+		  src/Reference.cpp \
+		  src/ValueSaver.cpp
+		 # src/ShiftPedal.cpp \
 		 # src/ColorPanel.cpp
 		 # src/SpecificValue.cpp
-		 # src/ShiftPedal.cpp
 
 
 # Must include the VCV plugin Makefile framework

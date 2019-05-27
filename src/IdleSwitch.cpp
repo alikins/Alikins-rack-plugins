@@ -241,6 +241,9 @@ struct IdleSwitchMsDisplayWidget : TransparentWidget {
   void draw(NVGcontext *vg) override {
     // Background
     // these go to...
+    if (!value) {
+        return;
+    }
     NVGcolor backgroundColor = nvgRGB(0x11, 0x11, 0x11);
 
     NVGcolor borderColor = nvgRGB(0xff, 0xff, 0xff);
@@ -293,7 +296,9 @@ IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     IdleSwitchMsDisplayWidget *idle_time_display = new IdleSwitchMsDisplayWidget();
     idle_time_display->box.pos = Vec(20, 115);
     idle_time_display->box.size = Vec(70, 24);
-    idle_time_display->value = &module->idleTimeoutMS;
+    if (module) {
+        idle_time_display->value = &module->idleTimeoutMS;
+       }
     addChild(idle_time_display);
 
     addInput(createPort<PJ301MPort>(Vec(10, 155.0), PortWidget::INPUT, module, IdleSwitch::TIME_INPUT));
@@ -303,7 +308,9 @@ IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     IdleSwitchMsDisplayWidget *time_remaining_display = new IdleSwitchMsDisplayWidget();
     time_remaining_display->box.pos = Vec(20, 225);
     time_remaining_display->box.size = Vec(70, 24);
-    time_remaining_display->value = &module->idleTimeLeftMS;
+    if (module) {
+        time_remaining_display->value = &module->idleTimeLeftMS;
+    }
     addChild(time_remaining_display);
 
     addOutput(createPort<PJ301MPort>(Vec(10, 263.0), PortWidget::OUTPUT, module, IdleSwitch::IDLE_START_OUTPUT));

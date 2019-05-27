@@ -99,7 +99,9 @@ GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
         MsDisplayWidget *gate_length_display = new MsDisplayWidget();
         gate_length_display->box.pos = Vec(x_pos, y_pos + 1.0f);
         gate_length_display->box.size = Vec(84, 24);
-        gate_length_display->value = &module->gate_length[i];
+        if (module) {
+            gate_length_display->value = &module->gate_length[i];
+        }
         addChild(gate_length_display);
 
         // FIXME: use new sequential box hbox/vbox thing

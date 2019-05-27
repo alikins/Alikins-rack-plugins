@@ -13,6 +13,9 @@ struct MsDisplayWidget : TransparentWidget {
   }
 
   void draw(NVGcontext *vg) override {
+    if (!value) {
+        return;
+    }
     // Background
     // these go to...
     NVGcolor backgroundColor = nvgRGB(0x11, 0x11, 0x11);

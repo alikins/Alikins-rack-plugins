@@ -68,6 +68,14 @@
       ]
     },
     {
+      "slug": "ValueSaver",
+      "name": "Value Saver",
+      "description": "Save last used value",
+      "tags": [
+        "Utility"
+      ]
+    },
+    {
       "slug": "IdleSwitch",
       "name": "Idle Switch",
       "description": "If a signal goes idle, flip a switch",

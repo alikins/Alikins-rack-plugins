@@ -188,8 +188,8 @@ struct ColorPanelWidget : ModuleWidget {
 
     void step() override;
 
-    json_t *dataToJson() override;
-    void dataFromJson(json_t *rootJ) override;
+    json_t *toJson() override;
+    void fromJson(json_t *rootJ) override;
 };
 
 
@@ -242,14 +242,14 @@ void ColorPanelWidget::step() {
     ModuleWidget::step();
 }
 
-json_t *ColorPanelWidget::dataToJson() {
-	json_t *rootJ = ModuleWidget::dataToJson();
+json_t *ColorPanelWidget::toJson() {
+	json_t *rootJ = ModuleWidget::toJson();
 	json_object_set_new(rootJ, "width", json_real(box.size.x));
 	return rootJ;
 }
 
 void ColorPanelWidget::dataFromJson(json_t *rootJ) {
-	ModuleWidget::dataFromJson(rootJ);
+	ModuleWidget::fromJson(rootJ);
 	json_t *widthJ = json_object_get(rootJ, "width");
     if (widthJ)
         box.size.x = json_number_value(widthJ);

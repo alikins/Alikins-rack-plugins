@@ -105,7 +105,7 @@ void BigMuteButton::step() {
     // TODO: to eliminate worse case DC thump, also apply a RC filter of some sort?
 }
 
-struct BigSwitch : SVGSwitch, ToggleSwitch {
+struct BigSwitch : SVGSwitch {
     BigSwitch() {
         addFrame(SVG::load(assetPlugin(pluginInstance, "res/BigMuteButtonMute.svg")));
         addFrame(SVG::load(assetPlugin(pluginInstance, "res/BigMuteButtonUnmute.svg")));

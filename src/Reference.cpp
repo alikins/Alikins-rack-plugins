@@ -110,5 +110,4 @@ ReferenceWidget::ReferenceWidget(Reference *module) : ModuleWidget(module) {
 
 }
 
-Model *modelReference = createModel<Reference, ReferenceWidget>(
-        "Alikins", "Reference", "Reference Voltages", UTILITY_TAG);
+Model *modelReference = createModel<Reference, ReferenceWidget>("Reference");

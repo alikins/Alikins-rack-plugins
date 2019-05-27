@@ -28,6 +28,14 @@
       ]
     },
     {
+      "slug": "Reference",
+      "name": "Reference Voltages",
+      "description": "Fixed output voltages for -10V,-5V, -1V, 0V, 1V, 5V, 10V",
+      "tags": [
+        "Utility"
+      ]
+    },
+    {
       "slug": "IdleSwitch",
       "name": "Idle Switch",
       "description": "If a signal goes idle, flip a switch",

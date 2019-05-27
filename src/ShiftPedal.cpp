@@ -301,5 +301,4 @@ void ShiftPedalWidget::step() {
     ModuleWidget::step();
 }
 
-Model *modelShiftPedal = createModel<ShiftPedal, ShiftPedalWidget>(
-        "Alikins", "ShiftPedal", "Shift Pedal - Gen gates on mod key presses", UTILITY_TAG);
+Model *modelShiftPedal = createModel<ShiftPedal, ShiftPedalWidget>("ShiftPedal");

@@ -13,7 +13,8 @@ LDFLAGS +=
 # Add .cpp and .c files to the build
 # SOURCES = $(wildcard src/*.cpp)
 SOURCES = src/GateLength.cpp src/IdleSwitch.cpp src/Reference.cpp \
-		  src/MomentaryOnButtons.cpp
+		  src/MomentaryOnButtons.cpp \
+		 # src/ShiftPedal.cpp
 		 # src/ColorPanel.cpp
 
 

@@ -52,6 +52,14 @@
       ]
     },
     {
+      "slug": "ShiftPedal",
+      "name": "Shift Pedal",
+      "description": "Generate gates on mod key presses",
+      "tags": [
+        "Utility"
+      ]
+    },
+    {
       "slug": "IdleSwitch",
       "name": "Idle Switch",
       "description": "If a signal goes idle, flip a switch",

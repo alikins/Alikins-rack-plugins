@@ -248,7 +248,7 @@ json_t *ColorPanelWidget::toJson() {
 	return rootJ;
 }
 
-void ColorPanelWidget::dataFromJson(json_t *rootJ) {
+void ColorPanelWidget::fromJson(json_t *rootJ) {
 	ModuleWidget::fromJson(rootJ);
 	json_t *widthJ = json_object_get(rootJ, "width");
     if (widthJ)

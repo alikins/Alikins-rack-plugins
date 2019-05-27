@@ -184,7 +184,7 @@ struct ColorPanelWidget : ModuleWidget {
 	Widget *rightHandle;
     ColorFrame *panel;
 
-    Menu *createContextMenu() override;
+    Menu *createContextMenu();
 
     void step() override;
 
@@ -287,9 +287,10 @@ struct InputRangeItem : MenuItem {
 
 };
 
-Menu *ColorPanelcreateWidgetContextMenu() {
+Menu *ColorPanelWidget::createContextMenu() {
 
-    Menu *menu = ModulecreateWidgetContextMenu();
+	ui::Menu *menu = createMenu();
+    // Menu *menu = ModuleWidget::createContextMenu();
 
     MenuLabel *spacerLabel = new MenuLabel();
     menu->addChild(spacerLabel);

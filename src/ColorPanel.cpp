@@ -99,20 +99,22 @@ struct ColorPanelModuleResizeHandle : Widget {
         dragX = 0.0f;
     }
 
-    void onMouseDown(EventMouseDown &e) override {
-        if (e.button == 0) {
-            e.consumed = true;
-            e.target = this;
+    // void onMouseDown(EventMouseDown &e) override {
+    void onButton(const event::Button &e) override {
+        if ((e.button == 0) && (e.action == GLFW_PRESS)) {
+            // e.consumed = true;
+            //ie.target = this;
+            e.consume(this);
         }
     }
 
-    void onDragStart(EventDragStart &e) override {
+    void onDragStart(const event::DragStart &e) override {
         dragX = gRackWidget->lastMousePos.x;
         ModuleWidget *m = getAncestorOfType<ModuleWidget>();
         originalBox = m->box;
     }
 
-    void onDragMove(EventDragMove &e) override {
+    void onDragMove(const event::DragMove &e) override {
         ModuleWidget *m = getAncestorOfType<ModuleWidget>();
 
         float newDragX = gRackWidget->lastMousePos.x;

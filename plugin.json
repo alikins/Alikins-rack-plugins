@@ -36,6 +36,14 @@
       ]
     },
     {
+      "slug": "ColorPanel",
+      "name": "Color Panel",
+      "description": "Control the color of the panel with CV",
+      "tags": [
+        "Visual"
+      ]
+    },
+    {
       "slug": "IdleSwitch",
       "name": "Idle Switch",
       "description": "If a signal goes idle, flip a switch",

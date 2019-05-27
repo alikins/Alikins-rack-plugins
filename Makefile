@@ -12,7 +12,8 @@ LDFLAGS +=
 
 # Add .cpp and .c files to the build
 # SOURCES = $(wildcard src/*.cpp)
-SOURCES = src/GateLength.cpp src/IdleSwitch.cpp src/Reference.cpp
+SOURCES = src/GateLength.cpp src/IdleSwitch.cpp src/Reference.cpp \
+		  # src/ColorPanel.cpp
 
 # Must include the VCV plugin Makefile framework
 include $(RACK_DIR)/plugin.mk

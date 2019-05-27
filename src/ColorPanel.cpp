@@ -1,6 +1,6 @@
 #include "alikins.hpp"
 
-#include "util/math.hpp"
+#include "math.hpp"
 
 struct ColorPanel : Module {
     enum ParamIds {
@@ -333,5 +333,4 @@ Menu *ColorPanelcreateWidgetContextMenu() {
 }
 
 
-Model *modelColorPanel = createModel<ColorPanel, ColorPanelWidget>(
-        "Alikins", "ColorPanel", "Color Panel", VISUAL_TAG);
+Model *modelColorPanel = createModel<ColorPanel, ColorPanelWidget>("ColorPanel");

@@ -140,12 +140,13 @@ struct ValueSaverWidget : ModuleWidget {
 
     LabelTextField *labelTextFields[VALUE_COUNT];
 
-    json_t *dataToJson() override;
-    void dataFromJson(json_t *rootJ) override;
+    json_t *toJson() override;
+
+    void fromJson(json_t *rootJ) override;
 };
 
-json_t *ValueSaverWidget::dataToJson() {
-    json_t *rootJ = ModuleWidget::dataToJson();
+json_t *ValueSaverWidget::toJson() {
+    json_t *rootJ = ModuleWidget::toJson();
 
     json_t *labelsJ = json_array();
     for (int i = 0; i < VALUE_COUNT; i++) {
@@ -157,8 +158,8 @@ json_t *ValueSaverWidget::dataToJson() {
 	return rootJ;
 }
 
-void ValueSaverWidget::dataFromJson(json_t *rootJ) {
-    ModuleWidget::dataFromJson(rootJ);
+void ValueSaverWidget::fromJson(json_t *rootJ) {
+    ModuleWidget::fromJson(rootJ);
 
     json_t *labelsJ = json_object_get(rootJ, "labels");
     if (labelsJ) {

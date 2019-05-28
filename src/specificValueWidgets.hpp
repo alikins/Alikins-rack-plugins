@@ -1,4 +1,4 @@
-#include "rack.hpp"
+#include "rack0.hpp"
 
 struct PurpleTrimpot : Trimpot {
 	Module *module;

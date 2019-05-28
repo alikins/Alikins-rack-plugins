@@ -108,7 +108,7 @@ struct IdleSwitch : Module {
 
     float idleGateOutput = 0.0;
 
-    float deltaTime = 0;
+    float deltaTime = 0.0f;
 
     bool is_idle = false;
 
@@ -231,7 +231,7 @@ void IdleSwitch::step() {
 //  From AS DelayPlus.cpp https://github.com/AScustomWorks/AS
 struct IdleSwitchMsDisplayWidget : TransparentWidget {
 
-  int *value;
+  int *value = NULL;
   std::shared_ptr<Font> font;
 
   IdleSwitchMsDisplayWidget() {
@@ -241,9 +241,6 @@ struct IdleSwitchMsDisplayWidget : TransparentWidget {
   void draw(NVGcontext *vg) override {
     // Background
     // these go to...
-    if (!value) {
-        return;
-    }
     NVGcolor backgroundColor = nvgRGB(0x11, 0x11, 0x11);
 
     NVGcolor borderColor = nvgRGB(0xff, 0xff, 0xff);
@@ -264,14 +261,16 @@ struct IdleSwitchMsDisplayWidget : TransparentWidget {
     nvgFontFaceId(vg, font->handle);
     nvgTextLetterSpacing(vg, 2.5);
 
-    std::stringstream to_display;
-    to_display << std::right  << std::setw(5) << *value;
+    if (value) {
+        std::stringstream to_display;
+        to_display << std::right  << std::setw(5) << *value;
 
-    Vec textPos = Vec(0.5f, 19.0f);
+        Vec textPos = Vec(0.5f, 19.0f);
 
-    NVGcolor textColor = nvgRGB(0x65, 0xf6, 0x78);
-    nvgFillColor(vg, textColor);
-    nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
+        NVGcolor textColor = nvgRGB(0x65, 0xf6, 0x78);
+        nvgFillColor(vg, textColor);
+        nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
+    }
   }
 };
 
@@ -296,6 +295,7 @@ IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     IdleSwitchMsDisplayWidget *idle_time_display = new IdleSwitchMsDisplayWidget();
     idle_time_display->box.pos = Vec(20, 115);
     idle_time_display->box.size = Vec(70, 24);
+    // idle_time_display->value = &100;
     if (module) {
         idle_time_display->value = &module->idleTimeoutMS;
        }
@@ -308,6 +308,7 @@ IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     IdleSwitchMsDisplayWidget *time_remaining_display = new IdleSwitchMsDisplayWidget();
     time_remaining_display->box.pos = Vec(20, 225);
     time_remaining_display->box.size = Vec(70, 24);
+    //time_remaining_display->value = 100;
     if (module) {
         time_remaining_display->value = &module->idleTimeLeftMS;
     }

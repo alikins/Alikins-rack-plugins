@@ -107,8 +107,8 @@ void BigMuteButton::process(const ProcessArgs &args) {
 
 struct BigSwitch : SVGSwitch {
     BigSwitch() {
-        addFrame(SVG::load(assetPlugin(pluginInstance, "res/BigMuteButtonMute.svg")));
-        addFrame(SVG::load(assetPlugin(pluginInstance, "res/BigMuteButtonUnmute.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BigMuteButtonMute.svg")));
+        addFrame(APP->window->loadSvg(asset::lugin(pluginInstance, "res/BigMuteButtonUnmute.svg")));
     }
 };
 
@@ -121,7 +121,7 @@ struct BigMuteButtonWidget : ModuleWidget {
 BigMuteButtonWidget::BigMuteButtonWidget(BigMuteButton *module) : ModuleWidget(module) {
 
     box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-    setPanel(SVG::load(assetPlugin(pluginInstance, "res/BigMuteButton.svg")));
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BigMuteButton.svg")));
 
     addParam(createParam<BigSwitch>(Vec(0.0f, 0.0f),
                 module,

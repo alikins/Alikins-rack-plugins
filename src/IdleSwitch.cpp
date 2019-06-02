@@ -88,19 +88,19 @@ struct IdleSwitch : Module {
     float idleTimeoutMS = 140.0f;
     float idleTimeLeftMS = 0.0f;
 
-    SchmittTrigger inputTrigger;
+    dsp::SchmittTrigger inputTrigger;
 
     // FIXME: these names are confusing
-    SchmittTrigger heartbeatTrigger;
+    dsp::SchmittTrigger heartbeatTrigger;
 
     // clock mode stuff
-    SchmittTrigger pulseTrigger;
+    dsp::SchmittTrigger pulseTrigger;
     int pulseFrame = 0;
     bool waiting_for_pulse = false;
     bool pulse_mode = false;
 
-    PulseGenerator idleStartPulse;
-    PulseGenerator idleEndPulse;
+    dsp::PulseGenerator idleStartPulse;
+    dsp::PulseGenerator idleEndPulse;
 
     // FIXME: not really counts
     int frameCount = 0;

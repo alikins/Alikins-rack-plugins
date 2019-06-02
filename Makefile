@@ -4,7 +4,7 @@ RACK_DIR ?= ../..
 # FLAGS +=
 FLAGS += -w -g
 CFLAGS +=
-CXXFLAGS +=
+CXXFLAGS += -Werror
 
 # Careful about linking to libraries, since you can't assume much about the user's environment and library search path.
 # Static libraries are fine.
@@ -13,9 +13,9 @@ LDFLAGS +=
 # Add .cpp and .c files to the build
 # SOURCES = $(wildcard src/*.cpp)
 SOURCES = src/alikins.cpp \
-		  src/BigMuteButton.cpp \
-		  src/GateLength.cpp \
 		  src/IdleSwitch.cpp \
+#		  src/BigMuteButton.cpp \
+#		  src/GateLength.cpp \
 		  src/MomentaryOnButtons.cpp \
 		  src/Reference.cpp \
 		  src/ValueSaver.cpp

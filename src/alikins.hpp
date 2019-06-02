@@ -1,6 +1,7 @@
 #include <math.h>
 
-#include "rack0.hpp"
+#include "rack.hpp"
+// #include "rack0.hpp"
 
 const int MOMENTARY_BUTTONS = 13;
 const int INPUT_SOURCES = 1;
@@ -24,13 +25,13 @@ extern Plugin *pluginInstance;
 // module widgets
 ////////////////////
 
-extern Model *modelBigMuteButton;
-extern Model *modelGateLength;
+//extern Model *modelBigMuteButton;
+//extern Model *modelGateLength;
 extern Model *modelIdleSwitch;
-extern Model *modelMomentaryOnButtons;
-extern Model *modelReference;
+//extern Model *modelMomentaryOnButtons;
+//extern Model *modelReference;
 // extern Model *modelShiftPedal;
-extern Model *modelValueSaver;
+//extern Model *modelValueSaver;
 
 /*
 extern Model *modelHoveredValue;

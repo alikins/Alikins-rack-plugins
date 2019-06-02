@@ -115,7 +115,7 @@ struct IdleSwitch : Module {
 //    IdleSwitch() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
     IdleSwitch() {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-        configParam(TIME_PARAM, 0.f, 10.f, 0.25f);
+        configParam(TIME_PARAM, 0.f, 10.f, 0.25f, "Idle time");
     }
     // void step() override;
 	void process(const ProcessArgs &args) override;
@@ -289,6 +289,9 @@ struct IdleSwitchWidget : ModuleWidget {
 
 
 IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
+
+    addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM));
+
     setModule(module);
     setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/IdleSwitch.svg")));
 

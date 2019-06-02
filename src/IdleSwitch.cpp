@@ -321,7 +321,7 @@ IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     }
     addChild(time_remaining_display);
 
-    addOutput(createInput<PJ301MPort>(Vec(10, 263.0), module, IdleSwitch::IDLE_START_OUTPUT));
+    addOutput(createOutput<PJ301MPort>(Vec(10, 263.0), module, IdleSwitch::IDLE_START_OUTPUT));
     addOutput(createOutput<PJ301MPort>(Vec(47.5, 263.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
     addOutput(createOutput<PJ301MPort>(Vec(85, 263.0), module, IdleSwitch::IDLE_END_OUTPUT));
 

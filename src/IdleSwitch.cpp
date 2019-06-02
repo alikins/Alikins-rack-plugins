@@ -241,7 +241,7 @@ struct IdleSwitchMsDisplayWidget : TransparentWidget {
   std::shared_ptr<Font> font;
 
   IdleSwitchMsDisplayWidget() {
-    font = APP->window->loadFont(assetPlugin(pluginInstance, "res/Segment7Standard.ttf"));
+    font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
   }
 
   void draw(NVGcontext *vg) override {
@@ -290,7 +290,7 @@ struct IdleSwitchWidget : ModuleWidget {
 
 IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
     setModule(module);
-    setPanel(APP->window->loadSvg(assetPlugin(pluginInstance, "res/IdleSwitch.svg")));
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/IdleSwitch.svg")));
 
     addChild(createWidget<ScrewSilver>(Vec(5, 0)));
     addChild(createWidget<ScrewSilver>(Vec(box.size.x - 20, 365)));

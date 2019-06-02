@@ -117,18 +117,19 @@ struct IdleSwitch : Module {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(TIME_PARAM, 0.f, 10.f, 0.25f);
     }
-    void step() override;
+    // void step() override;
+	void process(const ProcessArgs &args) override;
 };
 
 
-void IdleSwitch::step() {
+void IdleSwitch::process(const ProcessArgs &args) {
     bool pulse_seen = false;
     bool time_exceeded = false;
     // pulse_mode = inputs[PULSE_INPUT].active;
     pulse_mode = inputs[PULSE_INPUT].isConnected();
 
-    float sampleRate = engineGetSampleRate();
-
+    // float sampleRate = engineGetSampleRate();
+    float sampleRate = args.sampleRate;
     // Compute the length of our idle time based on the knob + time cv
     // -or-
     // base it one the time since the last clock pulse
@@ -227,8 +228,8 @@ void IdleSwitch::step() {
     outputs[TIME_OUTPUT].value = clamp(deltaTime, 0.0f, 10.0f);
     outputs[IDLE_GATE_OUTPUT].value = idleGateOutput;
 
-    outputs[IDLE_START_OUTPUT].value = idleStartPulse.process(1.0/engineGetSampleRate()) ? 10.0 : 0.0;
-    outputs[IDLE_END_OUTPUT].value = idleEndPulse.process(1.0/engineGetSampleRate()) ? 10.0 : 0.0;
+    outputs[IDLE_START_OUTPUT].value = idleStartPulse.process(1.0/args.sampleRate) ? 10.0 : 0.0;
+    outputs[IDLE_END_OUTPUT].value = idleEndPulse.process(1.0/args.sampleRate) ? 10.0 : 0.0;
 
 }
 

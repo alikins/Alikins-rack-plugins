@@ -31,8 +31,8 @@ struct BigMuteButton : Module {
 
     // FadeState state = UNMUTED_STEADY;
     FadeState state = INITIAL;
-    SchmittTrigger muteOnTrigger;
-    SchmittTrigger muteOffTrigger;
+    dsp::SchmittTrigger muteOnTrigger;
+    dsp::SchmittTrigger muteOffTrigger;
 
     float gmult2 = 1.0f;
 

@@ -38,7 +38,11 @@ struct BigMuteButton : Module {
 
     float crossfade_mix = 0.005f;
 
-    BigMuteButton() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    BigMuteButton() {
+        config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        configParam(BIG_MUTE_BUTTON_PARAM, 0.0f, 1.0f, 0.0f);
+    }
+
 	void process(const ProcessArgs &args) override;
 
     void onReset() override {
@@ -119,14 +123,13 @@ struct BigMuteButtonWidget : ModuleWidget {
 
 
 BigMuteButtonWidget::BigMuteButtonWidget(BigMuteButton *module) : ModuleWidget(module) {
-
+    setModule(module);
     box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BigMuteButton.svg")));
 
     addParam(createParam<BigSwitch>(Vec(0.0f, 0.0f),
                 module,
-                BigMuteButton::BIG_MUTE_BUTTON_PARAM,
-                0.0f, 1.0f, 0.0f));
+                BigMuteButton::BIG_MUTE_BUTTON_PARAM));
 
     addInput(createInput<PJ301MPort>(Vec(4.0f, 302.0f),
                 module,

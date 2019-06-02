@@ -134,7 +134,7 @@ void IdleSwitch::process(const ProcessArgs &args) {
     // -or-
     // base it one the time since the last clock pulse
     if (pulse_mode) {
-        if (inputTrigger.process(inputs[PULSE_INPUT].value)) {
+        if (inputTrigger.process(inputs[PULSE_INPUT].getVoltage())) {
             // keep track of which frame we got a pulse
             // FIXME: without a max time, frameCount can wrap?
             // update pulseFrame to point to current frame count
@@ -150,9 +150,9 @@ void IdleSwitch::process(const ProcessArgs &args) {
         maxFrameCount = frameCount;
 
     } else {
-        deltaTime = params[TIME_PARAM].value;
+        deltaTime = params[TIME_PARAM].getValue();
         if (inputs[TIME_INPUT].isConnected()) {
-            deltaTime += clamp(inputs[TIME_INPUT].value, 0.0f, 10.0f);
+            deltaTime += clamp(inputs[TIME_INPUT].getVoltage(), 0.0f, 10.0f);
         }
 
         // TODO: refactor into submethods if not subclass
@@ -166,7 +166,7 @@ void IdleSwitch::process(const ProcessArgs &args) {
     //        is_idle, pulse_mode, waiting_for_pulse, pulse_seen, pulseFrame, frameCount, deltaTime);
 
     if (inputs[HEARTBEAT_INPUT].isConnected() &&
-          heartbeatTrigger.process(inputs[HEARTBEAT_INPUT].value)) {
+          heartbeatTrigger.process(inputs[HEARTBEAT_INPUT].getVoltage())) {
             frameCount = 0;
     }
 
@@ -190,13 +190,13 @@ void IdleSwitch::process(const ProcessArgs &args) {
 
     if (is_idle) {
         idleGateOutput = 10.0;
-        outputs[ON_WHEN_IDLE_OUTPUT].value = inputs[SWITCHED_INPUT].value;
-        outputs[OFF_WHEN_IDLE_OUTPUT].value = 0.0f;
+        outputs[ON_WHEN_IDLE_OUTPUT].setVoltage(inputs[SWITCHED_INPUT].getVoltage());
+        outputs[OFF_WHEN_IDLE_OUTPUT].setVoltage(0.0f);
 
     } else {
         idleGateOutput = 0.0;
-        outputs[ON_WHEN_IDLE_OUTPUT].value = 0.0f;
-        outputs[OFF_WHEN_IDLE_OUTPUT].value = inputs[SWITCHED_INPUT].value;
+        outputs[ON_WHEN_IDLE_OUTPUT].setVoltage(0.0f);
+        outputs[OFF_WHEN_IDLE_OUTPUT].setVoltage(inputs[SWITCHED_INPUT].getVoltage());
 
         is_idle = false;
 
@@ -208,7 +208,7 @@ void IdleSwitch::process(const ProcessArgs &args) {
     frameCount++;
 
     if (inputs[INPUT_SOURCE_INPUT].isConnected() &&
-            inputTrigger.process(inputs[INPUT_SOURCE_INPUT].value)) {
+            inputTrigger.process(inputs[INPUT_SOURCE_INPUT].getVoltage())) {
 
         // only end idle if we are already idle (idle->not idle transition)
         if (is_idle) {
@@ -225,11 +225,11 @@ void IdleSwitch::process(const ProcessArgs &args) {
     // once clock input works, could add an output to indicate how long between clock
     // If in pulse mode, deltaTime can be larger than 10s internal, but the max output
     // to "Time output" is 10V. ie, after 10s the "Time Output" stops increasing.
-    outputs[TIME_OUTPUT].value = clamp(deltaTime, 0.0f, 10.0f);
-    outputs[IDLE_GATE_OUTPUT].value = idleGateOutput;
+    outputs[TIME_OUTPUT].setVoltage(clamp(deltaTime, 0.0f, 10.0f));
+    outputs[IDLE_GATE_OUTPUT].setVoltage(idleGateOutput);
 
-    outputs[IDLE_START_OUTPUT].value = idleStartPulse.process(1.0/args.sampleRate) ? 10.0 : 0.0;
-    outputs[IDLE_END_OUTPUT].value = idleEndPulse.process(1.0/args.sampleRate) ? 10.0 : 0.0;
+    outputs[IDLE_START_OUTPUT].setVoltage(idleStartPulse.process(1.0/args.sampleRate) ? 10.0 : 0.0);
+    outputs[IDLE_END_OUTPUT].setVoltage(idleEndPulse.process(1.0/args.sampleRate) ? 10.0 : 0.0);
 
 }
 

@@ -6,7 +6,7 @@ Plugin *pluginInstance;
 void init(rack::Plugin *p) {
     pluginInstance = p;
 
-    //p->addModel(modelBigMuteButton);
+    p->addModel(modelBigMuteButton);
     //p->addModel(modelGateLength);
     p->addModel(modelIdleSwitch);
     //p->addModel(modelMomentaryOnButtons);

@@ -39,7 +39,7 @@ struct BigMuteButton : Module {
     float crossfade_mix = 0.005f;
 
     BigMuteButton() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-    void step() override;
+	void process(const ProcessArgs &args) override;
 
     void onReset() override {
         state = UNMUTED_STEADY;
@@ -47,7 +47,7 @@ struct BigMuteButton : Module {
 
 };
 
-void BigMuteButton::step() {
+void BigMuteButton::process(const ProcessArgs &args) {
 
     // INITIAL state, choose next state based on current value of BIG_MUTE_BUTTON_PARAM
     //  since BIG_MUTE_BUTTON_PARAM should be based on either the default, or for a saved

@@ -120,7 +120,8 @@ struct IdleSwitch : Module {
 void IdleSwitch::step() {
     bool pulse_seen = false;
     bool time_exceeded = false;
-    pulse_mode = inputs[PULSE_INPUT].active;
+    // pulse_mode = inputs[PULSE_INPUT].active;
+    pulse_mode = inputs[PULSE_INPUT].isConnected();
 
     float sampleRate = engineGetSampleRate();
 
@@ -145,7 +146,7 @@ void IdleSwitch::step() {
 
     } else {
         deltaTime = params[TIME_PARAM].value;
-        if (inputs[TIME_INPUT].active) {
+        if (inputs[TIME_INPUT].isConnected()) {
             deltaTime += clamp(inputs[TIME_INPUT].value, 0.0f, 10.0f);
         }
 
@@ -159,7 +160,7 @@ void IdleSwitch::step() {
     // debug("is_idle: %d pulse_mode: %d w_f_pulse: %d pulse_seen: %d pulseFrame: %d frameCount: %d deltaTime: %f",
     //        is_idle, pulse_mode, waiting_for_pulse, pulse_seen, pulseFrame, frameCount, deltaTime);
 
-    if (inputs[HEARTBEAT_INPUT].active &&
+    if (inputs[HEARTBEAT_INPUT].isConnected() &&
           heartbeatTrigger.process(inputs[HEARTBEAT_INPUT].value)) {
             frameCount = 0;
     }
@@ -201,7 +202,7 @@ void IdleSwitch::step() {
 
     frameCount++;
 
-    if (inputs[INPUT_SOURCE_INPUT].active &&
+    if (inputs[INPUT_SOURCE_INPUT].isConnected() &&
             inputTrigger.process(inputs[INPUT_SOURCE_INPUT].value)) {
 
         // only end idle if we are already idle (idle->not idle transition)
@@ -263,6 +264,7 @@ struct IdleSwitchMsDisplayWidget : TransparentWidget {
 
     if (value) {
         std::stringstream to_display;
+        // DEBUG("idleswitch about to display *value");
         to_display << std::right  << std::setw(5) << *value;
 
         Vec textPos = Vec(0.5f, 19.0f);

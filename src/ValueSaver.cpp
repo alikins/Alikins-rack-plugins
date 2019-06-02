@@ -52,7 +52,7 @@ void ValueSaver::step()
     //
     for (int i = 0; i < VALUE_COUNT; i++) {
         // Just output the "saved" value if NO ACTIVE input
-        if (!inputs[VALUE_INPUT + i].active) {
+        if (!inputs[VALUE_INPUT + i].isConnected()) {
             outputs[VALUE_OUTPUT + i].value = prevInputs[i];
             continue;
         }

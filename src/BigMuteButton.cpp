@@ -53,13 +53,13 @@ void BigMuteButton::process(const ProcessArgs &args) {
     //  since BIG_MUTE_BUTTON_PARAM should be based on either the default, or for a saved
     // patch, the value saved to the params JSON.
 
-    if (muteOnTrigger.process(params[BIG_MUTE_BUTTON_PARAM].value)) {
+    if (muteOnTrigger.process(params[BIG_MUTE_BUTTON_PARAM].getValue())) {
         // debug("MUTE ON");
         state = MUTED_FADE_DOWN;
         gmult2 = 1.0f;
     }
 
-    if (muteOffTrigger.process(!params[BIG_MUTE_BUTTON_PARAM].value)) {
+    if (muteOffTrigger.process(!params[BIG_MUTE_BUTTON_PARAM].getValue())) {
         // debug("MUTE OFF");
         state = UNMUTED_FADE_UP;
         gmult2 = 0.0f;
@@ -67,7 +67,7 @@ void BigMuteButton::process(const ProcessArgs &args) {
 
     switch(state) {
         case INITIAL:
-            state = (params[BIG_MUTE_BUTTON_PARAM].value == 0.0f) ? UNMUTED_STEADY : MUTED_STEADY;
+            state = (params[BIG_MUTE_BUTTON_PARAM].getValue() == 0.0f) ? UNMUTED_STEADY : MUTED_STEADY;
             break;
         case MUTED_STEADY:
             gmult2 = 0.0f;
@@ -97,8 +97,8 @@ void BigMuteButton::process(const ProcessArgs &args) {
 
     gmult2 = clamp(gmult2, 0.0f, 1.0f);
 
-    outputs[LEFT_OUTPUT].value = inputs[LEFT_INPUT].value * gmult2;
-    outputs[RIGHT_OUTPUT].value = inputs[RIGHT_INPUT].value * gmult2;
+    outputs[LEFT_OUTPUT].setVoltage(inputs[LEFT_INPUT].getVoltage() * gmult2);
+    outputs[RIGHT_OUTPUT].setVoltage(inputs[RIGHT_INPUT].getVoltage() * gmult2);
 
     // debug("state: %d, gmult2: %f", state, gmult2);
 
@@ -108,7 +108,7 @@ void BigMuteButton::process(const ProcessArgs &args) {
 struct BigSwitch : SVGSwitch {
     BigSwitch() {
         addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BigMuteButtonMute.svg")));
-        addFrame(APP->window->loadSvg(asset::lugin(pluginInstance, "res/BigMuteButtonUnmute.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BigMuteButtonUnmute.svg")));
     }
 };
 

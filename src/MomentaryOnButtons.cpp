@@ -70,16 +70,12 @@ struct MomentaryOnButtons : Module {
 
 
     MomentaryOnButtons() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-    void step() override;
+	void process(const ProcessArgs &args) override;
 
-    // For more advanced Module features, read Rack's engine.hpp header file
-    // - dataToJson, dataFromJson: serialization of internal data
-    // - onSampleRateChange: event triggered by a change of sample rate
-    // - reset, randomize: implements special behavior when user clicks these from the context menu
 };
 
 
-void MomentaryOnButtons::step() {
+void MomentaryOnButtons::process(const ProcessArgs &args) {
 
     for (int i = 0; i < MOMENTARY_BUTTONS; i++) {
 

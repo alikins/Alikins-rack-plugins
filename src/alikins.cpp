@@ -9,7 +9,7 @@ void init(rack::Plugin *p) {
     p->addModel(modelBigMuteButton);
     p->addModel(modelGateLength);
     p->addModel(modelIdleSwitch);
-    //p->addModel(modelMomentaryOnButtons);
+    p->addModel(modelMomentaryOnButtons);
     //p->addModel(modelReference);
     // p->addModel(modelShiftPedal);
     // p->addModel(modelValueSaver);

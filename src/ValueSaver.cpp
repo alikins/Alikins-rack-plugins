@@ -22,7 +22,8 @@ struct ValueSaver : Module {
 
     ValueSaver() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 
-    void step() override;
+
+	void process(const ProcessArgs &args) override;
 
     void onReset() override {
     }
@@ -42,7 +43,7 @@ struct ValueSaver : Module {
 
 };
 
-void ValueSaver::step()
+void ValueSaver::process(const ProcessArgs &args)
 {
     // states:
     //  - active inputs, meaningful current input -> output

@@ -18,7 +18,7 @@ SOURCES = src/alikins.cpp \
 		  src/GateLength.cpp \
 		  src/MomentaryOnButtons.cpp \
 		  src/Reference.cpp \
-		 # src/ValueSaver.cpp
+		  src/ValueSaver.cpp
 		 # src/ShiftPedal.cpp \
 		 # src/ColorPanel.cpp
 		 # src/SpecificValue.cpp

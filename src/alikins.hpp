@@ -26,7 +26,7 @@ extern Plugin *pluginInstance;
 ////////////////////
 
 extern Model *modelBigMuteButton;
-//extern Model *modelGateLength;
+extern Model *modelGateLength;
 extern Model *modelIdleSwitch;
 //extern Model *modelMomentaryOnButtons;
 //extern Model *modelReference;

@@ -15,10 +15,10 @@ LDFLAGS +=
 SOURCES = src/alikins.cpp \
 		  src/IdleSwitch.cpp \
 		  src/BigMuteButton.cpp \
-#		  src/GateLength.cpp \
-		  src/MomentaryOnButtons.cpp \
-		  src/Reference.cpp \
-		  src/ValueSaver.cpp
+		  src/GateLength.cpp \
+		 # src/MomentaryOnButtons.cpp \
+		 # src/Reference.cpp \
+		 # src/ValueSaver.cpp
 		 # src/ShiftPedal.cpp \
 		 # src/ColorPanel.cpp
 		 # src/SpecificValue.cpp

@@ -50,17 +50,17 @@ struct GateLength : Module {
 
     GateLength() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 
-    void step() override;
+	void process(const ProcessArgs &args) override;
 
     void onReset() override {
     }
 
 };
 
-void GateLength::step() {
+void GateLength::process(const ProcessArgs &args) {
     // FIXME: add way to support >10.0s gate length
 
-    float sample_time = engineGetSampleTime();
+    float sample_time = args.sampleTime;
 
     for (int i = 0; i < GATE_LENGTH_INPUTS; i++) {
         gate_length[i] = clamp(params[GATE_LENGTH_PARAM1 + i].value + inputs[GATE_LENGTH_INPUT1 + i].value, 0.0f, 10.0f);

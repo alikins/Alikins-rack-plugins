@@ -118,37 +118,33 @@ struct BigSwitch : SVGSwitch {
 
 
 struct BigMuteButtonWidget : ModuleWidget {
-    BigMuteButtonWidget(BigMuteButton *module);
+    BigMuteButtonWidget(BigMuteButton *module) {
+        setModule(module);
+        // box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+        setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BigMuteButton.svg")));
+
+        addParam(createParam<BigSwitch>(Vec(0.0f, 0.0f),
+                    module,
+                    BigMuteButton::BIG_MUTE_BUTTON_PARAM));
+
+        addInput(createInput<PJ301MPort>(Vec(4.0f, 302.0f),
+                    module,
+                    BigMuteButton::LEFT_INPUT));
+        addInput(createInput<PJ301MPort>(Vec(4.0f, 330.0f),
+                    module,
+                    BigMuteButton::RIGHT_INPUT));
+
+        addOutput(createOutput<PJ301MPort>(Vec(60.0f, 302.0f),
+                    module,
+                    BigMuteButton::LEFT_OUTPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(60.0f, 330.0f),
+                    module,
+                    BigMuteButton::RIGHT_OUTPUT));
+
+        addChild(createWidget<ScrewSilver>(Vec(0.0, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x-15, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(30, 365)));
+    }
 };
-
-
-BigMuteButtonWidget::BigMuteButtonWidget(BigMuteButton *module) : ModuleWidget(module) {
-    setModule(module);
-    box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BigMuteButton.svg")));
-
-    addParam(createParam<BigSwitch>(Vec(0.0f, 0.0f),
-                module,
-                BigMuteButton::BIG_MUTE_BUTTON_PARAM));
-
-    addInput(createInput<PJ301MPort>(Vec(4.0f, 302.0f),
-                module,
-                BigMuteButton::LEFT_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(4.0f, 330.0f),
-                module,
-                BigMuteButton::RIGHT_INPUT));
-
-    addOutput(createOutput<PJ301MPort>(Vec(60.0f, 302.0f),
-                module,
-                BigMuteButton::LEFT_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(60.0f, 330.0f),
-                module,
-                BigMuteButton::RIGHT_OUTPUT));
-
-    addChild(createWidget<ScrewSilver>(Vec(0.0, 0)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x-15, 0)));
-    addChild(createWidget<ScrewSilver>(Vec(30, 365)));
-
-}
 
 Model *modelBigMuteButton = createModel<BigMuteButton, BigMuteButtonWidget>("BigMuteButton");

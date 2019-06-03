@@ -115,7 +115,7 @@ struct IdleSwitch : Module {
 //    IdleSwitch() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
     IdleSwitch() {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-        configParam(TIME_PARAM, 0.f, 10.f, 0.25f, "Idle time");
+        configParam(TIME_PARAM, 0.f, 10.f, 0.25f);
     }
     // void step() override;
 	void process(const ProcessArgs &args) override;
@@ -284,54 +284,52 @@ struct IdleSwitchMsDisplayWidget : TransparentWidget {
 
 
 struct IdleSwitchWidget : ModuleWidget {
-    IdleSwitchWidget(IdleSwitch *module);
+    IdleSwitchWidget(IdleSwitch *module) {
+        addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM));
+
+        setModule(module);
+        setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/IdleSwitch.svg")));
+
+        addChild(createWidget<ScrewSilver>(Vec(5, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 20, 365)));
+
+        addInput(createInput<PJ301MPort>(Vec(37, 20.0), module, IdleSwitch::INPUT_SOURCE_INPUT));
+        addInput(createInput<PJ301MPort>(Vec(37, 60.0), module, IdleSwitch::HEARTBEAT_INPUT));
+        addInput(createInput<PJ301MPort>(Vec(70, 60.0), module, IdleSwitch::PULSE_INPUT));
+
+        // idle time display
+        // FIXME: handle large IdleTimeoutMs (> 99999ms) better
+        IdleSwitchMsDisplayWidget *idle_time_display = new IdleSwitchMsDisplayWidget();
+        idle_time_display->box.pos = Vec(20, 115);
+        idle_time_display->box.size = Vec(70, 24);
+        // &idle_time_display->value = 100;
+        if (module) {
+            idle_time_display->value = &module->idleTimeoutMS;
+           }
+        addChild(idle_time_display);
+
+        addInput(createInput<PJ301MPort>(Vec(10, 155.0), module, IdleSwitch::TIME_INPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(80, 155.0), module, IdleSwitch::TIME_OUTPUT));
+
+        IdleSwitchMsDisplayWidget *time_remaining_display = new IdleSwitchMsDisplayWidget();
+        time_remaining_display->box.pos = Vec(20, 225);
+        time_remaining_display->box.size = Vec(70, 24);
+        //time_remaining_display->value = 100;
+        if (module) {
+            time_remaining_display->value = &module->idleTimeLeftMS;
+        }
+        addChild(time_remaining_display);
+
+        addOutput(createOutput<PJ301MPort>(Vec(10, 263.0), module, IdleSwitch::IDLE_START_OUTPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(47.5, 263.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(85, 263.0), module, IdleSwitch::IDLE_END_OUTPUT));
+
+        addInput(createInput<PJ301MPort>(Vec(10.0f, 315.0f), module, IdleSwitch::SWITCHED_INPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(47.5f, 315.0f), module, IdleSwitch::ON_WHEN_IDLE_OUTPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(85.0f, 315.0f), module, IdleSwitch::OFF_WHEN_IDLE_OUTPUT));
+
+    }
 };
 
-
-IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
-
-    addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM));
-
-    setModule(module);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/IdleSwitch.svg")));
-
-    addChild(createWidget<ScrewSilver>(Vec(5, 0)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 20, 365)));
-
-    addInput(createInput<PJ301MPort>(Vec(37, 20.0), module, IdleSwitch::INPUT_SOURCE_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(37, 60.0), module, IdleSwitch::HEARTBEAT_INPUT));
-    addInput(createInput<PJ301MPort>(Vec(70, 60.0), module, IdleSwitch::PULSE_INPUT));
-
-    // idle time display
-    // FIXME: handle large IdleTimeoutMs (> 99999ms) better
-    IdleSwitchMsDisplayWidget *idle_time_display = new IdleSwitchMsDisplayWidget();
-    idle_time_display->box.pos = Vec(20, 115);
-    idle_time_display->box.size = Vec(70, 24);
-    // &idle_time_display->value = 100;
-    if (module) {
-        idle_time_display->value = &module->idleTimeoutMS;
-       }
-    addChild(idle_time_display);
-
-    addInput(createInput<PJ301MPort>(Vec(10, 155.0), module, IdleSwitch::TIME_INPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(80, 155.0), module, IdleSwitch::TIME_OUTPUT));
-
-    IdleSwitchMsDisplayWidget *time_remaining_display = new IdleSwitchMsDisplayWidget();
-    time_remaining_display->box.pos = Vec(20, 225);
-    time_remaining_display->box.size = Vec(70, 24);
-    //time_remaining_display->value = 100;
-    if (module) {
-        time_remaining_display->value = &module->idleTimeLeftMS;
-    }
-    addChild(time_remaining_display);
-
-    addOutput(createOutput<PJ301MPort>(Vec(10, 263.0), module, IdleSwitch::IDLE_START_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(47.5, 263.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(85, 263.0), module, IdleSwitch::IDLE_END_OUTPUT));
-
-    addInput(createInput<PJ301MPort>(Vec(10.0f, 315.0f), module, IdleSwitch::SWITCHED_INPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(47.5f, 315.0f), module, IdleSwitch::ON_WHEN_IDLE_OUTPUT));
-    addOutput(createOutput<PJ301MPort>(Vec(85.0f, 315.0f), module, IdleSwitch::OFF_WHEN_IDLE_OUTPUT));
-}
 
 Model *modelIdleSwitch = createModel<IdleSwitch, IdleSwitchWidget>("IdleSwitch");

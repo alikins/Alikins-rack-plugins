@@ -44,9 +44,9 @@ struct GateLength : Module {
 
     float gate_length[GATE_LENGTH_INPUTS];
 
-    SchmittTrigger inputOnTrigger[GATE_LENGTH_INPUTS];
+    dsp::SchmittTrigger inputOnTrigger[GATE_LENGTH_INPUTS];
 
-    PulseGenerator gateGenerator[GATE_LENGTH_INPUTS];
+    dsp::PulseGenerator gateGenerator[GATE_LENGTH_INPUTS];
 
     GateLength() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 

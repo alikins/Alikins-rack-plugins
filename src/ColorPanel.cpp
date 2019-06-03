@@ -227,20 +227,17 @@ ColorPanelWidget::ColorPanelWidget(ColorPanel *module) : ModuleWidget(module) {
     float interstitial = empty_space / 5.0f;
 
     float x_pos = interstitial;
-    addInput(createPort<PJ301MPort>(Vec(x_pos, 340.0f),
-                PortWidget::INPUT,
+    addInput(createInput<PJ301MPort>(Vec(x_pos, 340.0f),
                 module,
                 ColorPanel::RED_INPUT));
 
     x_pos = x_pos + interstitial + port_width;;
-    addInput(createPort<PJ301MPort>(Vec(x_pos, 340.0f),
-                PortWidget::INPUT,
+    addInput(createInput<PJ301MPort>(Vec(x_pos, 340.0f),
                 module,
                 ColorPanel::GREEN_INPUT));
 
     x_pos = x_pos + interstitial + port_width;;
-    addInput(createPort<PJ301MPort>(Vec(x_pos, 340.0f),
-                PortWidget::INPUT,
+    addInput(createInput<PJ301MPort>(Vec(x_pos, 340.0f),
                 module,
                 ColorPanel::BLUE_INPUT));
 }

@@ -32,10 +32,10 @@ extern Model *modelMomentaryOnButtons;
 extern Model *modelReference;
 // extern Model *modelShiftPedal;
 extern Model *modelValueSaver;
+extern Model *modelColorPanel;
 
 /*
 extern Model *modelHoveredValue;
 extern Model *modelInjectValue;
-extern Model *modelColorPanel;
 extern Model *modelSpecificValue;
 */

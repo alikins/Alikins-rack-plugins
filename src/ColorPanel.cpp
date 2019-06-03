@@ -43,7 +43,8 @@ struct ColorPanel : Module {
     ColorMode colorMode = HSL_MODE;
 
     ColorPanel() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-    void step() override;
+
+    void process(const ProcessArgs &args) override;
 
     json_t *dataToJson() override;
     void dataFromJson(json_t *rootJ) override;
@@ -72,8 +73,8 @@ void ColorPanel::dataFromJson(json_t *rootJ) {
 
 }
 
-
-void ColorPanel::step() {
+void ColorPanel::process(const ProcessArgs &args)
+{
     if (inputs[RED_INPUT].active) {
         float in_value = clamp(inputs[RED_INPUT].value, in_min[inputRange], in_max[inputRange]);
         red = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
@@ -89,9 +90,11 @@ void ColorPanel::step() {
 }
 
 // From Rack/src/core/Blank.cpp
-struct ColorPanelModuleResizeHandle : Widget {
+struct ColorPanelModuleResizeHandle : OpaqueWidget {
     bool right = false;
     float dragX;
+    Vec dragPos;
+
     Rect originalBox;
 
     ColorPanelModuleResizeHandle() {
@@ -109,7 +112,8 @@ struct ColorPanelModuleResizeHandle : Widget {
     }
 
     void onDragStart(const event::DragStart &e) override {
-        dragX = gRackWidget->lastMousePos.x;
+        // dragX = gRackWidget->lastMousePos.x;
+        dragX = APP->scene->rack->mousePos.x;
         ModuleWidget *m = getAncestorOfType<ModuleWidget>();
         originalBox = m->box;
     }
@@ -117,24 +121,29 @@ struct ColorPanelModuleResizeHandle : Widget {
     void onDragMove(const event::DragMove &e) override {
         ModuleWidget *m = getAncestorOfType<ModuleWidget>();
 
-        float newDragX = gRackWidget->lastMousePos.x;
+        float newDragX = APP->scene->rack->mousePos.x;
         float deltaX = newDragX - dragX;
 
         Rect newBox = originalBox;
+		Rect oldBox = m->box;
 
         const float minWidth = 6 * RACK_GRID_WIDTH;
 
         if (right) {
             newBox.size.x += deltaX;
-            newBox.size.x = fmaxf(newBox.size.x, minWidth);
-            newBox.size.x = roundf(newBox.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
+            newBox.size.x = std::fmax(newBox.size.x, minWidth);
+            newBox.size.x = std::round(newBox.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
         } else {
             newBox.size.x -= deltaX;
-            newBox.size.x = fmaxf(newBox.size.x, minWidth);
-            newBox.size.x = roundf(newBox.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
+            newBox.size.x = std::fmax(newBox.size.x, minWidth);
+            newBox.size.x = std::round(newBox.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
             newBox.pos.x = originalBox.pos.x + originalBox.size.x - newBox.size.x;
         }
-        gRackWidget->requestModuleBox(m, newBox);
+        m->box = newBox;
+        if (!APP->scene->rack->requestModulePos(m, newBox.pos)) {
+            m->box = oldBox;
+        }
+        // gRackWidget->requestModuleBox(m, newBox);
     }
 };
 

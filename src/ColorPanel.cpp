@@ -77,16 +77,16 @@ void ColorPanel::dataFromJson(json_t *rootJ) {
 
 void ColorPanel::process(const ProcessArgs &args)
 {
-    if (inputs[RED_INPUT].active) {
-        float in_value = clamp(inputs[RED_INPUT].value, in_min[inputRange], in_max[inputRange]);
+    if (inputs[RED_INPUT].isConnected()) {
+        float in_value = clamp(inputs[RED_INPUT].getVoltage(), in_min[inputRange], in_max[inputRange]);
         red = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
     }
-    if (inputs[GREEN_INPUT].active) {
-        float in_value = clamp(inputs[GREEN_INPUT].value, in_min[inputRange], in_max[inputRange]);
+    if (inputs[GREEN_INPUT].isConnected()) {
+        float in_value = clamp(inputs[GREEN_INPUT].getVoltage(), in_min[inputRange], in_max[inputRange]);
         green = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
     }
-    if (inputs[BLUE_INPUT].active) {
-        float in_value = clamp(inputs[BLUE_INPUT].value, in_min[inputRange], in_max[inputRange]);
+    if (inputs[BLUE_INPUT].isConnected()) {
+        float in_value = clamp(inputs[BLUE_INPUT].getVoltage(), in_min[inputRange], in_max[inputRange]);
         blue = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
     }
 }

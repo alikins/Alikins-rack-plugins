@@ -63,14 +63,14 @@ void GateLength::process(const ProcessArgs &args) {
     float sample_time = args.sampleTime;
 
     for (int i = 0; i < GATE_LENGTH_INPUTS; i++) {
-        gate_length[i] = clamp(params[GATE_LENGTH_PARAM1 + i].value + inputs[GATE_LENGTH_INPUT1 + i].value, 0.0f, 10.0f);
+        gate_length[i] = clamp(params[GATE_LENGTH_PARAM1 + i].getValue() + inputs[GATE_LENGTH_INPUT1 + i].getVoltage(), 0.0f, 10.0f);
 
-        if (inputOnTrigger[i].process(inputs[TRIGGER_INPUT1 + i].value)) {
+        if (inputOnTrigger[i].process(inputs[TRIGGER_INPUT1 + i].getVoltage())) {
             // debug("GL INPUT ON TRIGGER %d gate_length: %f", i, gate_length[i]);
             gateGenerator[i].trigger(gate_length[i]);
         }
 
-        outputs[GATE_OUTPUT1 + i].value = gateGenerator[i].process(sample_time) ? 10.0f : 0.0f;
+        outputs[GATE_OUTPUT1 + i].setVoltage(gateGenerator[i].process(sample_time) ? 10.0f : 0.0f);
     }
 }
 

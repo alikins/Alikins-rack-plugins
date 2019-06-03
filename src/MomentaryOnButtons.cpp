@@ -97,50 +97,50 @@ void MomentaryOnButtons::process(const ProcessArgs &args) {
 
 
 struct MomentaryOnButtonsWidget : ModuleWidget {
-    MomentaryOnButtonsWidget(MomentaryOnButtons *module);
+    MomentaryOnButtonsWidget(MomentaryOnButtons *module) {
+        setModule(module);
+        box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+
+        int x_offset = 0;
+        int y_offset = 26;
+
+        int x_start = 0;
+        int y_start = 24;
+
+        int x_pos = 0;
+        int y_pos = 0;
+
+        int light_radius = 7;
+
+        {
+            SVGPanel *panel = new SVGPanel();
+            panel->box.size = box.size;
+            panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/MomentaryOnButtons.svg")));
+            addChild(panel);
+        }
+
+        /*
+           addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+           addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+           addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+           addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+           */
+
+        for (int i = 0; i < MOMENTARY_BUTTONS; i++) {
+
+            x_pos = x_start + x_offset;
+            y_pos = y_start + (i * y_offset);
+
+            addParam(createParam<LEDButton>(Vec(x_pos + light_radius, y_pos + 3), module, MomentaryOnButtons::BUTTON1_PARAM + i));
+            addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + 5 + light_radius, y_pos + light_radius), module, MomentaryOnButtons::BLINK1_LIGHT + i));
+
+            addOutput(createOutput<PJ301MPort>(Vec(x_pos + 20 + light_radius, y_pos),
+                      module,
+                      MomentaryOnButtons::BUTTON1_OUTPUT + i));
+        }
+
+    }
 };
 
-
-MomentaryOnButtonsWidget::MomentaryOnButtonsWidget(MomentaryOnButtons *module) : ModuleWidget(module) {
-    box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-
-    int x_offset = 0;
-    int y_offset = 26;
-
-    int x_start = 0;
-    int y_start = 24;
-
-    int x_pos = 0;
-    int y_pos = 0;
-
-    int light_radius = 7;
-
-    {
-        SVGPanel *panel = new SVGPanel();
-        panel->box.size = box.size;
-        panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/MomentaryOnButtons.svg")));
-        addChild(panel);
-    }
-
-    /*
-       addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-       addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-       addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-       addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-       */
-
-    for (int i = 0; i < MOMENTARY_BUTTONS; i++) {
-
-        x_pos = x_start + x_offset;
-        y_pos = y_start + (i * y_offset);
-
-        addParam(createParam<LEDButton>(Vec(x_pos + light_radius, y_pos + 3), module, MomentaryOnButtons::BUTTON1_PARAM + i));
-        addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + 5 + light_radius, y_pos + light_radius), module, MomentaryOnButtons::BLINK1_LIGHT + i));
-
-        addOutput(createOutput<PJ301MPort>(Vec(x_pos + 20 + light_radius, y_pos),
-                  module,
-                  MomentaryOnButtons::BUTTON1_OUTPUT + i));
-    }
-}
 
 Model *modelMomentaryOnButtons = createModel<MomentaryOnButtons, MomentaryOnButtonsWidget>("MomentaryOnButtons");

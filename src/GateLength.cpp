@@ -80,59 +80,57 @@ void GateLength::process(const ProcessArgs &args) {
 }
 
 struct GateLengthWidget : ModuleWidget {
-    GateLengthWidget(GateLength *module);
-};
+    GateLengthWidget(GateLength *module) {
+        setModule(module);
+        box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+        setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/GateLength.svg")));
 
-GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
+        float y_pos = 2.0f;
 
-    box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/GateLength.svg")));
+        for (int i = 0; i < GATE_LENGTH_INPUTS; i++) {
+            float x_pos = 4.0f;
+            y_pos += 39.0f;
 
-    float y_pos = 2.0f;
-
-    for (int i = 0; i < GATE_LENGTH_INPUTS; i++) {
-        float x_pos = 4.0f;
-        y_pos += 39.0f;
-
-        addInput(createInput<PJ301MPort>(Vec(x_pos, y_pos),
-                                          module,
-                                          GateLength::TRIGGER_INPUT1 + i));
-
-        x_pos += 30.0f;
-
-        MsDisplayWidget *gate_length_display = new MsDisplayWidget();
-        gate_length_display->box.pos = Vec(x_pos, y_pos + 1.0f);
-        gate_length_display->box.size = Vec(84, 24);
-        if (module) {
-            gate_length_display->value = &module->gate_length[i];
-        }
-        addChild(gate_length_display);
-
-        // FIXME: use new sequential box hbox/vbox thing
-        x_pos += 84.0f;
-        x_pos += 4.0f;
-        addOutput(createOutput<PJ301MPort>(Vec(x_pos, y_pos),
-                                           module,
-                                           GateLength::GATE_OUTPUT1 + i));
-
-        x_pos = 4.0f;
-        y_pos += 26.0f;
-
-        addInput(createInput<PJ301MPort>(Vec(x_pos, y_pos),
-                                          module,
-                                          GateLength::GATE_LENGTH_INPUT1 + i));
-
-        x_pos += 30.0f;
-        addParam(createParam<Trimpot>(Vec(x_pos, y_pos + 3.0f),
+            addInput(createInput<PJ301MPort>(Vec(x_pos, y_pos),
                                               module,
-                                              GateLength::GATE_LENGTH_PARAM1 + i));
+                                              GateLength::TRIGGER_INPUT1 + i));
+
+            x_pos += 30.0f;
+
+            MsDisplayWidget *gate_length_display = new MsDisplayWidget();
+            gate_length_display->box.pos = Vec(x_pos, y_pos + 1.0f);
+            gate_length_display->box.size = Vec(84, 24);
+            if (module) {
+                gate_length_display->value = &module->gate_length[i];
+            }
+            addChild(gate_length_display);
+
+            // FIXME: use new sequential box hbox/vbox thing
+            x_pos += 84.0f;
+            x_pos += 4.0f;
+            addOutput(createOutput<PJ301MPort>(Vec(x_pos, y_pos),
+                                               module,
+                                               GateLength::GATE_OUTPUT1 + i));
+
+            x_pos = 4.0f;
+            y_pos += 26.0f;
+
+            addInput(createInput<PJ301MPort>(Vec(x_pos, y_pos),
+                                              module,
+                                              GateLength::GATE_LENGTH_INPUT1 + i));
+
+            x_pos += 30.0f;
+            addParam(createParam<Trimpot>(Vec(x_pos, y_pos + 3.0f),
+                                                  module,
+                                                  GateLength::GATE_LENGTH_PARAM1 + i));
+        }
+
+        addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
+
     }
-
-    addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
-
-}
+};
 
 Model *modelGateLength = createModel<GateLength, GateLengthWidget>("GateLength");

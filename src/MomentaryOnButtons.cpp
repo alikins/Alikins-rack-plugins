@@ -112,7 +112,7 @@ MomentaryOnButtonsWidget::MomentaryOnButtonsWidget(MomentaryOnButtons *module) :
     {
         SVGPanel *panel = new SVGPanel();
         panel->box.size = box.size;
-        panel->setBackground(SVG::load(assetPlugin(pluginInstance, "res/MomentaryOnButtons.svg")));
+        panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/MomentaryOnButtons.svg")));
         addChild(panel);
     }
 

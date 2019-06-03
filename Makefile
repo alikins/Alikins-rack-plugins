@@ -17,7 +17,7 @@ SOURCES = src/alikins.cpp \
 		  src/BigMuteButton.cpp \
 		  src/GateLength.cpp \
 		  src/MomentaryOnButtons.cpp \
-		 # src/Reference.cpp \
+		  src/Reference.cpp \
 		 # src/ValueSaver.cpp
 		 # src/ShiftPedal.cpp \
 		 # src/ColorPanel.cpp

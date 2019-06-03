@@ -10,7 +10,7 @@ void init(rack::Plugin *p) {
     p->addModel(modelGateLength);
     p->addModel(modelIdleSwitch);
     p->addModel(modelMomentaryOnButtons);
-    //p->addModel(modelReference);
+    p->addModel(modelReference);
     // p->addModel(modelShiftPedal);
     // p->addModel(modelValueSaver);
     // p->addModel(modelSpecificValue);

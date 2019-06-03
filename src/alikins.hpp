@@ -29,7 +29,7 @@ extern Model *modelBigMuteButton;
 extern Model *modelGateLength;
 extern Model *modelIdleSwitch;
 extern Model *modelMomentaryOnButtons;
-//extern Model *modelReference;
+extern Model *modelReference;
 // extern Model *modelShiftPedal;
 //extern Model *modelValueSaver;
 

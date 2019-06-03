@@ -35,15 +35,15 @@ struct Reference : Module {
 };
 
 void Reference::process(const ProcessArgs &args) {
-    outputs[MINUS_TEN_OUTPUT].value = -10.0f;
-    outputs[MINUS_FIVE_OUTPUT].value = -5.0f;
-    outputs[MINUS_ONE_OUTPUT].value = -1.0f;
+    outputs[MINUS_TEN_OUTPUT].setVoltage(-10.0f);
+    outputs[MINUS_FIVE_OUTPUT].setVoltage(-5.0f);
+    outputs[MINUS_ONE_OUTPUT].setVoltage(-1.0f);
 
-    outputs[ZERO_OUTPUT].value = 0.0f;
+    outputs[ZERO_OUTPUT].setVoltage(0.0f);
 
-    outputs[PLUS_ONE_OUTPUT].value = 1.0f;
-    outputs[PLUS_FIVE_OUTPUT].value = 5.0f;
-    outputs[PLUS_TEN_OUTPUT].value = 10.0f;
+    outputs[PLUS_ONE_OUTPUT].setVoltage(1.0f);
+    outputs[PLUS_FIVE_OUTPUT].setVoltage(5.0f);
+    outputs[PLUS_TEN_OUTPUT].setVoltage(10.0f);
 
 }
 

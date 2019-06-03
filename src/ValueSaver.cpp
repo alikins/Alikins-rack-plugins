@@ -184,15 +184,13 @@ ValueSaverWidget::ValueSaverWidget(ValueSaver *module) : ModuleWidget(module) {
     for (int i = 0; i < VALUE_COUNT; i++) {
         float x_pos = 4.0f;
 
-        addInput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                          PortWidget::INPUT,
+        addInput(createInput<PJ301MPort>(Vec(x_pos, y_pos),
                                           module,
                                           ValueSaver::VALUE_INPUT + i));
 
         x_pos += 30.0f;
 
-        addOutput(createPort<PJ301MPort>(Vec(box.size.x - 30.0f, y_pos),
-                                           PortWidget::OUTPUT,
+        addOutput(createOutput<PJ301MPort>(Vec(box.size.x - 30.0f, y_pos),
                                            module,
                                            ValueSaver::VALUE_OUTPUT + i));
 

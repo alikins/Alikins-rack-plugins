@@ -42,7 +42,9 @@ struct ColorPanel : Module {
 
     ColorMode colorMode = HSL_MODE;
 
-    ColorPanel() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    ColorPanel() {
+        config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+    }
 
     void process(const ProcessArgs &args) override;
 
@@ -170,7 +172,7 @@ struct ColorFrame : TransparentWidget {
         colorMode = module->colorMode;
     }
 
-    void draw(NVGcontext *vg) override {
+	void draw(const DrawArgs &args) override {
         // FIXME: not really red, green, blue anymore
         // could include alpha
         // debug("RgbPanel.draw red=%f, green=%f, blue=%f", red, green, blue);
@@ -179,11 +181,11 @@ struct ColorFrame : TransparentWidget {
             panelColor = nvgHSL(red, green, blue);
         }
 
-        nvgBeginPath(vg);
+        nvgBeginPath(args.vg);
 
-        nvgRect(vg, 0.0, 0.0, box.size.x, box.size.y);
-        nvgFillColor(vg, panelColor);
-        nvgFill(vg);
+        nvgRect(args.vg, 0.0, 0.0, box.size.x, box.size.y);
+        nvgFillColor(args.vg, panelColor);
+        nvgFill(args.vg);
   }
 };
 

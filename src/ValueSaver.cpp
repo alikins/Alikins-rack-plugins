@@ -20,7 +20,9 @@ struct ValueSaver : Module {
         NUM_LIGHTS
     };
 
-    ValueSaver() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    ValueSaver() {
+        config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+    }
 
 	void process(const ProcessArgs &args) override;
 
@@ -136,7 +138,45 @@ struct LabelTextField : LedDisplayTextField {
 };
 
 struct ValueSaverWidget : ModuleWidget {
-    ValueSaverWidget(ValueSaver *module);
+    ValueSaverWidget(ValueSaver *module) {
+        setModule(module);
+
+        box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+        setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/ValueSaverPanel.svg")));
+
+        float y_baseline = 48.0f;
+        float y_pos = y_baseline;
+
+        for (int i = 0; i < VALUE_COUNT; i++) {
+            float x_pos = 4.0f;
+
+            addInput(createInput<PJ301MPort>(Vec(x_pos, y_pos),
+                                              module,
+                                              ValueSaver::VALUE_INPUT + i));
+
+            x_pos += 30.0f;
+
+            addOutput(createOutput<PJ301MPort>(Vec(box.size.x - 30.0f, y_pos),
+                                               module,
+                                               ValueSaver::VALUE_OUTPUT + i));
+
+            y_pos += 28.0f;
+            labelTextFields[i] = new LabelTextField();
+
+            labelTextFields[i]->box.pos = (Vec(4.0f, y_pos));
+            labelTextFields[i]->box.size = Vec(box.size.x - 8.0f, 38.0f);
+            addChild(labelTextFields[i]);
+
+            y_pos += labelTextFields[i]->box.size.y;
+            y_pos += 14.0f;
+        }
+
+        addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
+
+    }
 
     LabelTextField *labelTextFields[VALUE_COUNT];
 
@@ -171,46 +211,5 @@ void ValueSaverWidget::fromJson(json_t *rootJ) {
         }
     }
 }
-
-
-ValueSaverWidget::ValueSaverWidget(ValueSaver *module) : ModuleWidget(module) {
-
-    box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/ValueSaverPanel.svg")));
-
-    float y_baseline = 48.0f;
-    float y_pos = y_baseline;
-
-    for (int i = 0; i < VALUE_COUNT; i++) {
-        float x_pos = 4.0f;
-
-        addInput(createInput<PJ301MPort>(Vec(x_pos, y_pos),
-                                          module,
-                                          ValueSaver::VALUE_INPUT + i));
-
-        x_pos += 30.0f;
-
-        addOutput(createOutput<PJ301MPort>(Vec(box.size.x - 30.0f, y_pos),
-                                           module,
-                                           ValueSaver::VALUE_OUTPUT + i));
-
-        y_pos += 28.0f;
-        labelTextFields[i] = new LabelTextField();
-
-        labelTextFields[i]->box.pos = (Vec(4.0f, y_pos));
-        labelTextFields[i]->box.size = Vec(box.size.x - 8.0f, 38.0f);
-		addChild(labelTextFields[i]);
-
-        y_pos += labelTextFields[i]->box.size.y;
-        y_pos += 14.0f;
-    }
-
-    addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
-
-}
-
 
 Model *modelValueSaver = createModel<ValueSaver, ValueSaverWidget>("ValueSaver");

@@ -53,7 +53,7 @@ void ValueSaver::process(const ProcessArgs &args)
     for (int i = 0; i < VALUE_COUNT; i++) {
         // Just output the "saved" value if NO ACTIVE input
         if (!inputs[VALUE_INPUT + i].isConnected()) {
-            outputs[VALUE_OUTPUT + i].value = prevInputs[i];
+            outputs[VALUE_OUTPUT + i].setVoltage(prevInputs[i]);
             continue;
         }
 
@@ -61,8 +61,8 @@ void ValueSaver::process(const ProcessArgs &args)
         // process(rescale(in, low, high, 0.f, 1.f))
         // if we haven't already figured out this is a useful changing input, check
         if (!changingInputs[i]) {
-            float down = rescale(inputs[VALUE_INPUT + i].value, 0.0f, -CLOSE_ENOUGH, 0.f, 1.f);
-            float up = rescale(inputs[VALUE_INPUT + i].value, 0.0f, CLOSE_ENOUGH, 0.f, 1.f);
+            float down = rescale(inputs[VALUE_INPUT + i].getVoltage(), 0.0f, -CLOSE_ENOUGH, 0.f, 1.f);
+            float up = rescale(inputs[VALUE_INPUT + i].getVoltage(), 0.0f, CLOSE_ENOUGH, 0.f, 1.f);
 
             // TODO: if input is changing from 0.0f
             //       if input is 0.0f but that is changing from prevInput (explicitly sent 0.0f)
@@ -76,12 +76,12 @@ void ValueSaver::process(const ProcessArgs &args)
             // active input but it is 0.0f, like a midi-1 on startup that hasn't sent any signal yet
             // debug("[%d] ACTIVE but input is ~0.0f, prevInputs[%d]=%f", i, i, prevInputs[i]);
             values[i] = prevInputs[i];
-            outputs[VALUE_OUTPUT + i].value = values[i];
+            outputs[VALUE_OUTPUT + i].setVoltage(values[i]);
         }
         else {
             // input value copied to output value and stored in values[]
-            values[i] = inputs[VALUE_INPUT + i].value;
-            outputs[VALUE_OUTPUT + i].value = values[i];
+            values[i] = inputs[VALUE_INPUT + i].getVoltage();;
+            outputs[VALUE_OUTPUT + i].setVoltage(values[i]);
             prevInputs[i] = values[i];
 
             // We are getting meaningful input values (ie, not just 0.0f), we can

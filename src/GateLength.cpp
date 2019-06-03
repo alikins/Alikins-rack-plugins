@@ -48,8 +48,13 @@ struct GateLength : Module {
 
     dsp::PulseGenerator gateGenerator[GATE_LENGTH_INPUTS];
 
-    GateLength() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-
+    GateLength() {
+        config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        for (int i = 0; i < GATE_LENGTH_INPUTS; i++) {
+            configParam(GATE_LENGTH_PARAM1 + i,
+                    0.0f, 10.0f, 0.1f);
+        }
+    }
 	void process(const ProcessArgs &args) override;
 
     void onReset() override {
@@ -120,8 +125,7 @@ GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
         x_pos += 30.0f;
         addParam(createParam<Trimpot>(Vec(x_pos, y_pos + 3.0f),
                                               module,
-                                              GateLength::GATE_LENGTH_PARAM1 + i,
-                                              0.0f, 10.0f, 0.1f));
+                                              GateLength::GATE_LENGTH_PARAM1 + i));
     }
 
     addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));

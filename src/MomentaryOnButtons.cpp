@@ -68,9 +68,15 @@ struct MomentaryOnButtons : Module {
         NUM_LIGHTS
     };
 
+    MomentaryOnButtons() {
+        config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        for (int i = 0; i < MOMENTARY_BUTTONS; i++) {
+            configParam(BUTTON1_PARAM + i,
+                        0.0, 1.0, 0.0);
+        }
+    }
 
-    MomentaryOnButtons() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-	void process(const ProcessArgs &args) override;
+    void process(const ProcessArgs &args) override;
 
 };
 
@@ -128,7 +134,7 @@ MomentaryOnButtonsWidget::MomentaryOnButtonsWidget(MomentaryOnButtons *module) :
         x_pos = x_start + x_offset;
         y_pos = y_start + (i * y_offset);
 
-        addParam(createParam<LEDButton>(Vec(x_pos + light_radius, y_pos + 3), module, MomentaryOnButtons::BUTTON1_PARAM + i, 0.0, 1.0, 0.0));
+        addParam(createParam<LEDButton>(Vec(x_pos + light_radius, y_pos + 3), module, MomentaryOnButtons::BUTTON1_PARAM + i));
         addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + 5 + light_radius, y_pos + light_radius), module, MomentaryOnButtons::BLINK1_LIGHT + i));
 
         addOutput(createOutput<PJ301MPort>(Vec(x_pos + 20 + light_radius, y_pos),

@@ -22,7 +22,6 @@ struct ValueSaver : Module {
 
     ValueSaver() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 
-
 	void process(const ProcessArgs &args) override;
 
     void onReset() override {
@@ -38,8 +37,8 @@ struct ValueSaver : Module {
 
     bool changingInputs[VALUE_COUNT] = {};
 
-    SchmittTrigger valueUpTrigger[VALUE_COUNT];
-    SchmittTrigger valueDownTrigger[VALUE_COUNT];
+    dsp::SchmittTrigger valueUpTrigger[VALUE_COUNT];
+    dsp::SchmittTrigger valueDownTrigger[VALUE_COUNT];
 
 };
 
@@ -129,7 +128,7 @@ void ValueSaver::dataFromJson(json_t *rootJ) {
 
 struct LabelTextField : LedDisplayTextField {
     LabelTextField() {
-        color = COLOR_CYAN;
+        color = rack::color::CYAN;
         textOffset = Vec(-2.0f, -3.0f);
         multiline = true;
         text = "";

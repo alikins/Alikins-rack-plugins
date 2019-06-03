@@ -198,12 +198,43 @@ struct ColorFrame : TransparentWidget {
   }
 };
 
+struct ColorModeItem : MenuItem {
+
+    ColorPanel *colorPanel;
+    ColorPanel::ColorMode colorMode;
+
+    void onAction(const event::Action &e) override {
+        colorPanel->colorMode = colorMode;
+    };
+
+    void step() override {
+        rightText = (colorPanel->colorMode == colorMode)? "✔" : "";
+    };
+
+};
+
+
+
+struct InputRangeItem : MenuItem {
+    ColorPanel *colorPanel;
+    ColorPanel::InputRange inputRange;
+
+    void onAction(const event::Action &e) override {
+        colorPanel->inputRange = inputRange;
+    };
+
+    void step() override {
+        rightText = (colorPanel->inputRange == inputRange)? "✔" : "";
+    };
+
+};
+
 
 struct ColorPanelWidget : ModuleWidget {
 	Widget *rightHandle;
     ColorFrame *panel;
 
-    Menu *createContextMenu();
+    // Menu *createContextMenu();
 
     void step() override;
 
@@ -249,6 +280,48 @@ struct ColorPanelWidget : ModuleWidget {
                     ColorPanel::BLUE_INPUT));
 
     }
+
+    void appendContextMenu(Menu *menu) override {
+        MenuLabel *spacerLabel = new MenuLabel();
+        menu->addChild(spacerLabel);
+
+        ColorPanel *colorPanel = dynamic_cast<ColorPanel*>(module);
+        assert(colorPanel);
+
+        MenuLabel *colorModeLabel = new MenuLabel();
+        colorModeLabel->text = "ColorMode";
+        menu->addChild(colorModeLabel);
+
+        // FIXME: colorModeItem looks too much like colorModelItem
+        ColorModeItem *colorModeItem = new ColorModeItem();
+        colorModeItem->text = "RGB";
+        colorModeItem->colorPanel = colorPanel;
+        colorModeItem->colorMode = ColorPanel::RGB_MODE;
+        menu->addChild(colorModeItem);
+
+        ColorModeItem *hslModeItem = new ColorModeItem();
+        hslModeItem->text = "HSL";
+        hslModeItem->colorPanel = colorPanel;
+        hslModeItem->colorMode = ColorPanel::HSL_MODE;
+        menu->addChild(hslModeItem);
+
+
+        MenuLabel *modeLabel2 = new MenuLabel();
+        modeLabel2->text = "Input Range";
+        menu->addChild(modeLabel2);
+
+        InputRangeItem *zeroTenItem = new InputRangeItem();
+        zeroTenItem->text = "0 - +10V (uni)";
+        zeroTenItem->colorPanel = colorPanel;
+        zeroTenItem->inputRange = ColorPanel::ZERO_TEN;
+        menu->addChild(zeroTenItem);
+
+        InputRangeItem *fiveFiveItem = new InputRangeItem();
+        fiveFiveItem->text = "-5 - +5V (bi)";
+        fiveFiveItem->colorPanel = colorPanel;
+        fiveFiveItem->inputRange = ColorPanel::MINUS_PLUS_FIVE;
+        menu->addChild(fiveFiveItem);
+    }
 };
 
 
@@ -272,86 +345,5 @@ void ColorPanelWidget::fromJson(json_t *rootJ) {
     if (widthJ)
         box.size.x = json_number_value(widthJ);
 }
-
-
-struct ColorModeItem : MenuItem {
-
-    ColorPanel *colorPanel;
-    ColorPanel::ColorMode colorMode;
-
-    void onAction(const event::Action &e) override {
-        colorPanel->colorMode = colorMode;
-    };
-
-    void step() override {
-        rightText = (colorPanel->colorMode == colorMode)? "✔" : "";
-    };
-
-};
-
-
-
-struct InputRangeItem : MenuItem {
-    ColorPanel *colorPanel;
-    ColorPanel::InputRange inputRange;
-
-    void onAction(const event::Action &e) override {
-        colorPanel->inputRange = inputRange;
-    };
-
-    void step() override {
-        rightText = (colorPanel->inputRange == inputRange)? "✔" : "";
-    };
-
-};
-
-Menu *ColorPanelWidget::createContextMenu() {
-
-	ui::Menu *menu = createMenu();
-    // Menu *menu = ModuleWidget::createContextMenu();
-
-    MenuLabel *spacerLabel = new MenuLabel();
-    menu->addChild(spacerLabel);
-
-    ColorPanel *colorPanel = dynamic_cast<ColorPanel*>(module);
-    assert(colorPanel);
-
-    MenuLabel *colorModeLabel = new MenuLabel();
-    colorModeLabel->text = "ColorMode";
-    menu->addChild(colorModeLabel);
-
-    // FIXME: colorModeItem looks too much like colorModelItem
-    ColorModeItem *colorModeItem = new ColorModeItem();
-    colorModeItem->text = "RGB";
-    colorModeItem->colorPanel = colorPanel;
-    colorModeItem->colorMode = ColorPanel::RGB_MODE;
-    menu->addChild(colorModeItem);
-
-    ColorModeItem *hslModeItem = new ColorModeItem();
-    hslModeItem->text = "HSL";
-    hslModeItem->colorPanel = colorPanel;
-    hslModeItem->colorMode = ColorPanel::HSL_MODE;
-    menu->addChild(hslModeItem);
-
-
-    MenuLabel *modeLabel2 = new MenuLabel();
-    modeLabel2->text = "Input Range";
-    menu->addChild(modeLabel2);
-
-    InputRangeItem *zeroTenItem = new InputRangeItem();
-    zeroTenItem->text = "0 - +10V (uni)";
-    zeroTenItem->colorPanel = colorPanel;
-    zeroTenItem->inputRange = ColorPanel::ZERO_TEN;
-    menu->addChild(zeroTenItem);
-
-    InputRangeItem *fiveFiveItem = new InputRangeItem();
-    fiveFiveItem->text = "-5 - +5V (bi)";
-    fiveFiveItem->colorPanel = colorPanel;
-    fiveFiveItem->inputRange = ColorPanel::MINUS_PLUS_FIVE;
-    menu->addChild(fiveFiveItem);
-
-    return menu;
-}
-
 
 Model *modelColorPanel = createModel<ColorPanel, ColorPanelWidget>("ColorPanel");

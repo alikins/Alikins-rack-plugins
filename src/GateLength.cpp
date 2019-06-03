@@ -89,8 +89,7 @@ GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
         float x_pos = 4.0f;
         y_pos += 39.0f;
 
-        addInput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                          PortWidget::INPUT,
+        addInput(createInput<PJ301MPort>(Vec(x_pos, y_pos),
                                           module,
                                           GateLength::TRIGGER_INPUT1 + i));
 
@@ -107,16 +106,14 @@ GateLengthWidget::GateLengthWidget(GateLength *module) : ModuleWidget(module) {
         // FIXME: use new sequential box hbox/vbox thing
         x_pos += 84.0f;
         x_pos += 4.0f;
-        addOutput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                           PortWidget::OUTPUT,
+        addOutput(createOutput<PJ301MPort>(Vec(x_pos, y_pos),
                                            module,
                                            GateLength::GATE_OUTPUT1 + i));
 
         x_pos = 4.0f;
         y_pos += 26.0f;
 
-        addInput(createPort<PJ301MPort>(Vec(x_pos, y_pos),
-                                          PortWidget::INPUT,
+        addInput(createInput<PJ301MPort>(Vec(x_pos, y_pos),
                                           module,
                                           GateLength::GATE_LENGTH_INPUT1 + i));
 

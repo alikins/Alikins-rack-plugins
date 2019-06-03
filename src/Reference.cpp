@@ -27,14 +27,14 @@ struct Reference : Module {
 
     Reference() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 
-    void step() override;
+    void process(const ProcessArgs &args) override;
 
     void onReset() override {
     }
 
 };
 
-void Reference::step() {
+void Reference::process(const ProcessArgs &args) {
     outputs[MINUS_TEN_OUTPUT].value = -10.0f;
     outputs[MINUS_FIVE_OUTPUT].value = -5.0f;
     outputs[MINUS_ONE_OUTPUT].value = -1.0f;

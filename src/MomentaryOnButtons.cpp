@@ -80,10 +80,10 @@ void MomentaryOnButtons::process(const ProcessArgs &args) {
     for (int i = 0; i < MOMENTARY_BUTTONS; i++) {
 
         lights[BLINK1_LIGHT + i].setBrightness(0.0);
-        outputs[BUTTON1_OUTPUT + i].value = 0.0;
+        outputs[BUTTON1_OUTPUT + i].setVoltage(0.0f);
 
-        if (params[BUTTON1_PARAM + i].value) {
-            outputs[BUTTON1_OUTPUT + i].value = 5.0;
+        if (params[BUTTON1_PARAM + i].getValue()) {
+            outputs[BUTTON1_OUTPUT + i].setVoltage(5.0f);
             lights[BLINK1_LIGHT + i].setBrightness(1.0);
         }
     }

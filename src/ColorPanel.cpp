@@ -166,6 +166,11 @@ struct ColorFrame : TransparentWidget {
 
     void step() override {
         Widget::step();
+
+        if (!module) {
+            return;
+        }
+
         red = module->red;
         green = module->green;
         blue = module->blue;
@@ -176,6 +181,10 @@ struct ColorFrame : TransparentWidget {
         // FIXME: not really red, green, blue anymore
         // could include alpha
         // debug("RgbPanel.draw red=%f, green=%f, blue=%f", red, green, blue);
+        if (!module) {
+            return;
+        }
+
         NVGcolor panelColor = nvgRGBf(red, green, blue);
         if (module->colorMode == ColorPanel::HSL_MODE) {
             panelColor = nvgHSL(red, green, blue);
@@ -191,7 +200,6 @@ struct ColorFrame : TransparentWidget {
 
 
 struct ColorPanelWidget : ModuleWidget {
-    ColorPanelWidget(ColorPanel *module);
 	Widget *rightHandle;
     ColorFrame *panel;
 
@@ -201,46 +209,48 @@ struct ColorPanelWidget : ModuleWidget {
 
     json_t *toJson() override;
     void fromJson(json_t *rootJ) override;
+
+    ColorPanelWidget(ColorPanel *module) {
+        setModule(module);
+        box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+
+        {
+            panel = new ColorFrame();
+            panel->box.size = box.size;
+            panel->module = module;
+            addChild(panel);
+        }
+
+        ColorPanelModuleResizeHandle *leftHandle = new ColorPanelModuleResizeHandle();
+        ColorPanelModuleResizeHandle *rightHandle = new ColorPanelModuleResizeHandle();
+        rightHandle->right = true;
+        this->rightHandle = rightHandle;
+        addChild(leftHandle);
+        addChild(rightHandle);
+
+        // FIXME: how do I figure that out before creating the instance?
+        float port_width = 24.672108f;
+        float empty_space = box.size.x - (3.0f * port_width);
+        float interstitial = empty_space / 5.0f;
+
+        float x_pos = interstitial;
+        addInput(createInput<PJ301MPort>(Vec(x_pos, 340.0f),
+                    module,
+                    ColorPanel::RED_INPUT));
+
+        x_pos = x_pos + interstitial + port_width;;
+        addInput(createInput<PJ301MPort>(Vec(x_pos, 340.0f),
+                    module,
+                    ColorPanel::GREEN_INPUT));
+
+        x_pos = x_pos + interstitial + port_width;;
+        addInput(createInput<PJ301MPort>(Vec(x_pos, 340.0f),
+                    module,
+                    ColorPanel::BLUE_INPUT));
+
+    }
 };
 
-
-ColorPanelWidget::ColorPanelWidget(ColorPanel *module) : ModuleWidget(module) {
-    box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-
-    {
-        panel = new ColorFrame();
-        panel->box.size = box.size;
-        panel->module = module;
-        addChild(panel);
-    }
-
-    ColorPanelModuleResizeHandle *leftHandle = new ColorPanelModuleResizeHandle();
-    ColorPanelModuleResizeHandle *rightHandle = new ColorPanelModuleResizeHandle();
-    rightHandle->right = true;
-    this->rightHandle = rightHandle;
-    addChild(leftHandle);
-    addChild(rightHandle);
-
-    // FIXME: how do I figure that out before creating the instance?
-    float port_width = 24.672108f;
-    float empty_space = box.size.x - (3.0f * port_width);
-    float interstitial = empty_space / 5.0f;
-
-    float x_pos = interstitial;
-    addInput(createInput<PJ301MPort>(Vec(x_pos, 340.0f),
-                module,
-                ColorPanel::RED_INPUT));
-
-    x_pos = x_pos + interstitial + port_width;;
-    addInput(createInput<PJ301MPort>(Vec(x_pos, 340.0f),
-                module,
-                ColorPanel::GREEN_INPUT));
-
-    x_pos = x_pos + interstitial + port_width;;
-    addInput(createInput<PJ301MPort>(Vec(x_pos, 340.0f),
-                module,
-                ColorPanel::BLUE_INPUT));
-}
 
 void ColorPanelWidget::step() {
     panel->box.size = box.size;

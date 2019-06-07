@@ -37,7 +37,8 @@ struct ShiftPedal : Module {
     };
 
 
-    ShiftPedal() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    ShiftPedal() {
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);}
 	void process(const ProcessArgs &args) override;
 
     // TODO: should probably setup a pulse generator for the gate outs
@@ -118,6 +119,7 @@ struct ShiftPedalWidget : ModuleWidget {
 };
 
 ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
+    setModule(module);
     box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
     setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/ShiftPedal.svg")));
 

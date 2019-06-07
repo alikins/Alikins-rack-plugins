@@ -88,7 +88,7 @@ struct FloatField : TextField
 
     FloatField(SpecificValue *module);
     void onAction(const event::Action &e) override;
-    void onChange(EventChange &e) override;
+    void onChange(const event::Change &e) override;
     void onKey(EventKey &e) override;
 
 	void onMouseMove(EventMouseMove &e) override;
@@ -138,7 +138,7 @@ std::string FloatField::voltsToText(float param_volts){
     return string::f("%#.4g", param_volts);
 }
 
-void FloatField::onChange(EventChange &e) {
+void FloatField::onChange(const event::Change &e) {
     // debug("FloatField onChange  text=%s param=%f", text.c_str(),
     //    module->params[SpecificValue::VALUE1_PARAM].getValue());
     std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
@@ -274,7 +274,7 @@ struct HZFloatField : FloatField
 
     HZFloatField(SpecificValue *_module) ;
 
-    void onChange(EventChange &e) override;
+    void onChange(const event::Change &e) override;
     void onAction(const event::Action &e) override;
 
     void increment(float delta) override;
@@ -315,7 +315,7 @@ void HZFloatField::increment(float delta){
     text = string::f("%#.*g", field_value < 100 ? 6: 7, field_value);
 }
 
-void HZFloatField::onChange(EventChange &e) {
+void HZFloatField::onChange(const event::Change &e) {
     if (this != gFocusedWidget)
     {
         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
@@ -337,7 +337,7 @@ struct LFOHzFloatField : FloatField {
     LFOHzFloatField(SpecificValue *_module);
 
     void onAction(const event::Action &e) override;
-    void onChange(EventChange &e) override;
+    void onChange(const event::Change &e) override;
 
     void increment(float delta) override;
 
@@ -376,7 +376,7 @@ void LFOHzFloatField::increment(float delta) {
     text = string::f("%#0.*g", 6, field_value);
 }
 
-void LFOHzFloatField::onChange(EventChange &e) {
+void LFOHzFloatField::onChange(const event::Change &e) {
     if (this != gFocusedWidget)
     {
         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
@@ -397,7 +397,7 @@ struct LFOBpmFloatField : FloatField {
     LFOBpmFloatField(SpecificValue *_module);
 
     void onAction(const event::Action &e) override;
-    void onChange(EventChange &e) override;
+    void onChange(const event::Change &e) override;
 
     void increment(float delta) override;
     float textToVolts(std::string field_text);
@@ -436,7 +436,7 @@ void LFOBpmFloatField::increment(float delta) {
     text = string::f("%.6g", field_value);
 }
 
-void LFOBpmFloatField::onChange(EventChange &e) {
+void LFOBpmFloatField::onChange(const event::Change &e) {
     if (this != gFocusedWidget)
     {
         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
@@ -455,7 +455,7 @@ struct CentsField : FloatField {
     SpecificValue *module;
 
     CentsField(SpecificValue *_module);
-    void onChange(EventChange &e) override;
+    void onChange(const event::Change &e) override;
     void onAction(const event::Action &e) override;
 
     void increment(float delta) override;
@@ -482,7 +482,7 @@ void CentsField::increment(float delta) {
     text = string::f("%0.2f", field_value);
 }
 
-void CentsField::onChange(EventChange &e) {
+void CentsField::onChange(const event::Change &e) {
     float cents = volts_to_note_cents(module->params[SpecificValue::VALUE1_PARAM].getValue());
     cents = chop(cents, 0.01f);
     std::string new_text = string::f("%0.2f", cents);
@@ -513,7 +513,7 @@ struct NoteNameField : TextField {
 
     float orig_value;
 
-    void onChange(EventChange &e) override;
+    void onChange(const event::Change &e) override;
     void onAction(const event::Action &e) override;
     void onKey(EventKey &e) override;
 
@@ -597,7 +597,7 @@ void NoteNameField::onFocus(EventFocus &e) {
     TextField::onFocus(e);
 }
 
-void NoteNameField::onChange(EventChange &e) {
+void NoteNameField::onChange(const event::Change &e) {
     float cv_volts = module->params[SpecificValue::VALUE1_PARAM].getValue();
     int octave = volts_to_octave(cv_volts);
     int note_number = volts_to_note(cv_volts);
@@ -722,7 +722,7 @@ struct SpecificValueWidget : ModuleWidget
     SpecificValueWidget(SpecificValue *module);
 
     void step() override;
-    void onChange(EventChange &e) override;
+    void onChange(const event::Change &e) override;
 
     float prev_volts = 0.0f;
     float prev_input = 0.0f;
@@ -862,7 +862,7 @@ void SpecificValueWidget::step() {
     }
 }
 
-void SpecificValueWidget::onChange(EventChange &e) {
+void SpecificValueWidget::onChange(const event::Change &e) {
     ModuleWidget::onChange(e);
     volts_field->onChange(e);
     hz_field->onChange(e);

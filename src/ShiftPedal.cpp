@@ -38,7 +38,9 @@ struct ShiftPedal : Module {
 
 
     ShiftPedal() {
-		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);}
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        configParam(LEFT_SHIFT_PARAM, 0.0f, 10.0f, 0.0f);
+    }
 	void process(const ProcessArgs &args) override;
 
     // TODO: should probably setup a pulse generator for the gate outs
@@ -135,32 +137,24 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
 
     // first row, shift
     leftShiftButtonSwitch = createParam<ShiftSwitch>(Vec(0.0f, y_baseline),
-                module,
-                ShiftPedal::LEFT_SHIFT_PARAM,
-                0.0f, 10.0f, 0.0f);
+            module,
+            ShiftPedal::LEFT_SHIFT_PARAM);
     addParam(leftShiftButtonSwitch);
 
     buttonHeight = leftShiftButtonSwitch->box.size.y;
 
-    Port *leftShiftButtonPort =
-        createPort<PurplePort>(Vec(port_x_start, y_baseline + buttonHeight + y_spacing),
-                                PortWidget::OUTPUT,
+    addOutput(createOutput<PurplePort>(Vec(port_x_start, y_baseline + buttonHeight + y_spacing),
                                 module,
-                                ShiftPedal::LEFT_SHIFT_GATE_OUTPUT);
-
-    addOutput(leftShiftButtonPort);
+                                ShiftPedal::LEFT_SHIFT_GATE_OUTPUT));
 
     float portHeight = leftShiftButtonPort->box.size.y;
     float portWidth = leftShiftButtonPort->box.size.x;
 
     // Add the 'either' port
 
-    Port *eitherShiftPort =
-        createPort<PurplePort>(Vec(middle - (portWidth/2.0f), y_baseline + buttonHeight + y_spacing),
-                                PortWidget::OUTPUT,
+    addOutput(createOutput<PurplePort>(Vec(middle - (portWidth/2.0f), y_baseline + buttonHeight + y_spacing),
                                 module,
-                                ShiftPedal::EITHER_SHIFT_GATE_OUTPUT);
-    addOutput(eitherShiftPort);
+                                ShiftPedal::EITHER_SHIFT_GATE_OUTPUT));
 
     rightShiftButtonSwitch = createParam<ShiftSwitch>(Vec(buttonWidth, y_start),
                 module,
@@ -169,7 +163,6 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     addParam(rightShiftButtonSwitch);
 
     addOutput(createOutput<PurplePort>(Vec(box.size.x - portWidth - port_x_start, y_start + buttonHeight + y_spacing),
-                PortWidget::OUTPUT,
                 module,
                 ShiftPedal::RIGHT_SHIFT_GATE_OUTPUT));
 
@@ -186,17 +179,13 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     buttonHeight = leftCtrlButtonSwitch->box.size.y;
 
     addOutput(createOutput<PurplePort>(Vec(port_x_start, y_baseline + buttonHeight + y_spacing),
-                PortWidget::OUTPUT,
                 module,
                 ShiftPedal::LEFT_CTRL_GATE_OUTPUT));
 
     //either
-    Port *eitherCtrlPort =
-        createPort<PurplePort>(Vec(middle - (portWidth / 2.0f), y_baseline + buttonHeight + y_spacing),
-                                 PortWidget::OUTPUT,
+    addOutput(createOutput<PurplePort>(Vec(middle - (portWidth / 2.0f), y_baseline + buttonHeight + y_spacing),
                                  module,
-                                 ShiftPedal::EITHER_CTRL_GATE_OUTPUT);
-    addOutput(eitherCtrlPort);
+                                 ShiftPedal::EITHER_CTRL_GATE_OUTPUT));
 
     rightCtrlButtonSwitch = createParam<CtrlSwitch>(Vec(buttonWidth, y_baseline),
                 module,
@@ -206,7 +195,6 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
 
     addOutput(createOutput<PurplePort>(Vec(box.size.x - portWidth - port_x_start,
         y_baseline + buttonHeight + y_spacing),
-                PortWidget::OUTPUT,
                 module,
                 ShiftPedal::RIGHT_CTRL_GATE_OUTPUT));
 
@@ -222,17 +210,13 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     float altButtonHeight = leftAltButtonSwitch->box.size.y;
 
     addOutput(createOutput<PurplePort>(Vec(2.0f, y_baseline + altButtonHeight + y_spacing),
-                PortWidget::OUTPUT,
                 module,
                 ShiftPedal::LEFT_ALT_GATE_OUTPUT));
 
     //either
-    Port *eitherAltPort =
-        createPort<PurplePort>(Vec(middle - (portWidth / 2.0f), y_baseline + altButtonHeight + y_spacing),
-                                 PortWidget::OUTPUT,
+    addOutput(createOutput<PurplePort>(Vec(middle - (portWidth / 2.0f), y_baseline + altButtonHeight + y_spacing),
                                  module,
-                                 ShiftPedal::EITHER_ALT_GATE_OUTPUT);
-    addOutput(eitherAltPort);
+                                 ShiftPedal::EITHER_ALT_GATE_OUTPUT));
 
     rightAltButtonSwitch = createParam<AltSwitch>(Vec(buttonWidth, y_baseline),
                 module,
@@ -241,7 +225,6 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     addParam(rightAltButtonSwitch);
 
     addOutput(createOutput<PurplePort>(Vec(box.size.x - portWidth - port_x_start, y_baseline + altButtonHeight + y_spacing),
-                PortWidget::OUTPUT,
                 module,
                 ShiftPedal::RIGHT_ALT_GATE_OUTPUT));
 
@@ -257,17 +240,13 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     float superButtonHeight = leftSuperButtonSwitch->box.size.y;
 
     addOutput(createOutput<PurplePort>(Vec(2.0f, y_baseline + superButtonHeight + y_spacing),
-                PortWidget::OUTPUT,
                 module,
                 ShiftPedal::LEFT_SUPER_GATE_OUTPUT));
 
     //either
-    Port *eitherSuperPort =
-        createPort<PurplePort>(Vec(middle - (portWidth / 2.0f), y_baseline + superButtonHeight + y_spacing),
-                                 PortWidget::OUTPUT,
+    addOutput(createOutput<PurplePort>(Vec(middle - (portWidth / 2.0f), y_baseline + superButtonHeight + y_spacing),
                                  module,
-                                 ShiftPedal::EITHER_SUPER_GATE_OUTPUT);
-    addOutput(eitherSuperPort);
+                                 ShiftPedal::EITHER_SUPER_GATE_OUTPUT));
 
     rightSuperButtonSwitch = createParam<SuperSwitch>(Vec(buttonWidth, y_baseline),
                 module,
@@ -276,7 +255,6 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     addParam(rightSuperButtonSwitch);
 
     addOutput(createOutput<PurplePort>(Vec(box.size.x - portWidth - port_x_start, y_baseline + superButtonHeight + y_spacing),
-                PortWidget::OUTPUT,
                 module,
                 ShiftPedal::RIGHT_SUPER_GATE_OUTPUT));
 

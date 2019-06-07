@@ -113,7 +113,7 @@ struct MomentaryOnButtonsWidget : ModuleWidget {
         int light_radius = 7;
 
         {
-            SVGPanel *panel = new SVGPanel();
+            SvgPanel *panel = new SvgPanel();
             panel->box.size = box.size;
             panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/MomentaryOnButtons.svg")));
             addChild(panel);

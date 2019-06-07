@@ -39,14 +39,14 @@ struct ShiftPedal : Module {
 
     ShiftPedal() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-        configParam(LEFT_SHIFT_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(RIGHT_SHIFT_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(LEFT_CTRL_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(RIGHT_CTRL_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(RIGHT_ALT_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(LEFT_ALT_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(LEFT_SUPER_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(RIGHT_SUPER_PARAM, 0.0f, 10.0f, 0.0f, "");
+        configParam(LEFT_SHIFT_PARAM, 0.0f, 10.0f, 0.0f, "Left Shift is pressed");
+        configParam(RIGHT_SHIFT_PARAM, 0.0f, 10.0f, 0.0f, "Right Shift is pressed");
+        configParam(LEFT_CTRL_PARAM, 0.0f, 10.0f, 0.0f, "Left Ctrl key is pressed");
+        configParam(RIGHT_CTRL_PARAM, 0.0f, 10.0f, 0.0f, "Right Ctrl key is pressed");
+        configParam(LEFT_ALT_PARAM, 0.0f, 10.0f, 0.0f, "Left Alt key is pressed");
+        configParam(RIGHT_ALT_PARAM, 0.0f, 10.0f, 0.0f, "Right Alt key is pressed");
+        configParam(LEFT_SUPER_PARAM, 0.0f, 10.0f, 0.0f, "Left Super/Win/Command key is pressed");
+        configParam(RIGHT_SUPER_PARAM, 0.0f, 10.0f, 0.0f, "Right Super/Win/Command key is pressed");
     }
 	void process(const ProcessArgs &args) override;
 

@@ -534,8 +534,8 @@ struct NoteNameField : TextField {
     void onAction(const event::Action &e) override;
     void onHoverKey(const event::HoverKey &e) override;
 
-	void onMouseMove(EventMouseMove &e) override;
-    void onMouseUp(EventMouseUp &e) override;
+	// void onMouseMove(EventMouseMove &e) override;
+    // void onMouseUp(EventMouseUp &e) override;
 
     // void onDragMove(const event::DragMove &e) override;
     void onDragEnd(const event::DragEnd &e) override;
@@ -674,6 +674,7 @@ void NoteNameField::onAction(const event::Action &e) {
     }
 }
 
+/*
 void NoteNameField::onMouseMove(EventMouseMove &e) {
 	if (this == gDraggedWidget) {
         if (e.mouseRel.x != 0.0f && !y_dragging)  {
@@ -682,7 +683,9 @@ void NoteNameField::onMouseMove(EventMouseMove &e) {
         }
     }
 }
+*/
 
+/*
 // FIXME: refactor to share this and other bits better
 // with FloatField and friends
 void NoteNameField::onMouseUp(EventMouseUp &e) {
@@ -696,6 +699,7 @@ void NoteNameField::onMouseUp(EventMouseUp &e) {
 		cursor = text.size();
     }
 }
+*/
 
 /*
 void NoteNameField::onDragMove(const event::DragMove &e)
@@ -867,7 +871,7 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     addChild(trimpot);
 
     // fire off an event to refresh all the widgets
-    EventChange e;
+    event::Change e;
     onChange(e);
 }
 
@@ -880,7 +884,7 @@ void SpecificValueWidget::step() {
             //     prev_volts, module->params[SpecificValue::VALUE1_PARAM].getValue());
             prev_volts = module->params[SpecificValue::VALUE1_PARAM].getValue();
             prev_input = module->params[SpecificValue::VALUE1_INPUT].getValue();
-            EventChange e;
+            event::Change e;
 		    onChange(e);
     }
 }

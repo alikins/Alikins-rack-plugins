@@ -91,11 +91,11 @@ struct FloatField : TextField
     void onChange(const event::Change &e) override;
     void onHoverKey(const event::HoverKey &e) override;
 
-	void onMouseMove(EventMouseMove &e) override;
-    void onMouseUp(EventMouseUp &e) override;
+	// void onMouseMove(ventMouseMove &e) override;
+    // void onMouseUp(EventMouseUp &e) override;
 
-    void onDragMove(EventDragMove &e) override;
-    void onDragEnd(EventDragEnd &e) override;
+    void onDragMove(const event::DragMove &e) override;
+    void onDragEnd(const event::DragEnd &e) override;
 
     void onFocus(EventFocus &e) override;
 
@@ -158,6 +158,7 @@ void FloatField::onFocus(EventFocus &e) {
     TextField::onFocus(e);
 }
 
+/*
 void FloatField::onMouseUp(EventMouseUp &e) {
     double new_mouse_up_time = curtime();
     double delta = new_mouse_up_time - prev_mouse_up_time;
@@ -169,7 +170,9 @@ void FloatField::onMouseUp(EventMouseUp &e) {
 		cursor = text.size();
     }
 }
+*/
 
+/*
 void FloatField::onMouseMove(EventMouseMove &e) {
 	if (this == gDraggedWidget) {
         // debug("FloatField::onMouseMove y_dragging: %d", y_dragging);
@@ -179,14 +182,15 @@ void FloatField::onMouseMove(EventMouseMove &e) {
         }
     }
 }
+*/
 
-void FloatField::onDragMove(EventDragMove &e)
+void FloatField::onDragMove(const event::DragMove &e)
 {
     // wait until we are moving and can tell if up/down or left/right before locking the cursor
 
     // no vertical cursor movement, dont do anything. In particular, not
     // locking the cursor so text selection keeps working.
-    if (e.mouseRel.y == 0.0f || fabs(e.mouseRel.x) >= 1.0f) {
+    if (e.mouseDelta.y == 0.0f || fabs(e.mouseDelta.x) >= 1.0f) {
         if (this == gDraggedWidget) {
             return;
         }
@@ -194,7 +198,7 @@ void FloatField::onDragMove(EventDragMove &e)
     // debug("FloatField::onDragMove doing SOMETHING, start y_dragging");
     y_dragging = true;
 
-    // lock the 
+    // lock the
     windowCursorLock();
 
     bool shift_pressed = windowIsShiftPressed();
@@ -213,7 +217,7 @@ void FloatField::onDragMove(EventDragMove &e)
     onAction(ae);
 }
 
-void FloatField::onDragEnd(EventDragEnd &e) {
+void FloatField::onDragEnd(const event::DragEnd &e) {
     // mouse key released, stop dragging and release the cursor lock
     y_dragging = false;
     windowCursorUnlock();
@@ -521,8 +525,8 @@ struct NoteNameField : TextField {
 	void onMouseMove(EventMouseMove &e) override;
     void onMouseUp(EventMouseUp &e) override;
 
-    void onDragMove(EventDragMove &e) override;
-    void onDragEnd(EventDragEnd &e) override;
+    void onDragMove(const event::DragMove &e) override;
+    void onDragEnd(const event::DragEnd &e) override;
 
     void onFocus(EventFocus &e) override;
 
@@ -679,11 +683,11 @@ void NoteNameField::onMouseUp(EventMouseUp &e) {
     }
 }
 
-void NoteNameField::onDragMove(EventDragMove &e)
+void NoteNameField::onDragMove(const event::DragMove &e)
 {
     // TextField::onDragMove(e);
 
-    if (e.mouseRel.y == 0.0f || fabs(e.mouseRel.x) >= 1.0f) {
+    if (e.mouseDelta.y == 0.0f || fabs(e.mouseDelta.x) >= 1.0f) {
         if (this == gDraggedWidget) {
             return;
         }
@@ -714,7 +718,7 @@ void NoteNameField::onDragMove(EventDragMove &e)
     onChange(ce);
 }
 
-void NoteNameField::onDragEnd(EventDragEnd &e) {
+void NoteNameField::onDragEnd(const event::DragEnd &e) {
     windowCursorUnlock();
     y_dragging = false;
 }

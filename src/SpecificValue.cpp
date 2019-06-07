@@ -248,7 +248,7 @@ void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pre
 
     increment(inc);
 
-    EventAction e;
+    event::Action e;
     onAction(e);
 }
 
@@ -263,24 +263,24 @@ void FloatField::onHoverKey(const event::HoverKey &e) {
     if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
         switch (e.key) {
             case GLFW_KEY_UP: {
-                e.consumed = true;
+                e.consume(this);
                 handleKey(AdjustKey::UP, shift_pressed, mod_pressed);
             } break;
             case GLFW_KEY_DOWN: {
-                e.consumed = true;
+                e.consume(this);
                 handleKey(AdjustKey::DOWN, shift_pressed, mod_pressed);
             } break;
             case GLFW_KEY_ESCAPE: {
-                e.consumed = true;
+                e.consume(this);
                 // debug("escape key pressed, orig_string: %s", orig_string.c_str());
                 text = orig_string;
-                EventAction ea;
+                event::Action ea;
                 onAction(ea);
             } break;
         }
     }
 
-	if (!e.consumed) {
+	if (!e.isConsumed()) {
 		TextField::onHoverKey(e);
 	}
 }
@@ -327,7 +327,7 @@ std::string HZFloatField::voltsToText(float param_volts){
 void HZFloatField::increment(float delta){
     float field_value = atof(text.c_str());
     field_value += delta;
-    field_value = clamp2(field_value, minValue, maxValue);
+    field_value = clampSafe(field_value, minValue, maxValue);
 
     text = string::f("%#.*g", field_value < 100 ? 6: 7, field_value);
 }
@@ -345,7 +345,7 @@ void HZFloatField::onAction(const event::Action &e) {
 
     float volts = textToVolts(text);
 
-    module->params[SpecificValue::VALUE1_PARAM].getValue() = volts;
+    module->params[SpecificValue::VALUE1_PARAM].setValue(volts);
 }
 
 struct LFOHzFloatField : FloatField {
@@ -389,7 +389,7 @@ void LFOHzFloatField::increment(float delta) {
     float field_value = atof(text.c_str());
     field_value += delta;
 
-    field_value = clamp2(field_value, minValue, maxValue);
+    field_value = clampSafe(field_value, minValue, maxValue);
     text = string::f("%#0.*g", 6, field_value);
 }
 
@@ -405,7 +405,7 @@ void LFOHzFloatField::onAction(const event::Action &e)
 {
     TextField::onAction(e);
     float volts = textToVolts(text);
-    module->params[SpecificValue::VALUE1_PARAM].getValue() = volts;
+    module->params[SpecificValue::VALUE1_PARAM].setValue(volts);
 }
 
 struct LFOBpmFloatField : FloatField {
@@ -449,7 +449,7 @@ void LFOBpmFloatField::increment(float delta) {
     float field_value = atof(text.c_str());
     field_value += delta;
 
-    field_value = clamp2(field_value, minValue, maxValue);
+    field_value = clampSafe(field_value, minValue, maxValue);
     text = string::f("%.6g", field_value);
 }
 
@@ -465,7 +465,7 @@ void LFOBpmFloatField::onAction(const event::Action &e)
 {
     TextField::onAction(e);
     float volts = textToVolts(text);
-    module->params[SpecificValue::VALUE1_PARAM].getValue() = volts;
+    module->params[SpecificValue::VALUE1_PARAM].setValue(volts);
 }
 
 struct CentsField : FloatField {
@@ -492,7 +492,7 @@ void CentsField::increment(float delta) {
     float field_value = atof(text.c_str());
     field_value += delta;
 
-    field_value = clamp2(field_value, minValue, maxValue);
+    field_value = clampSafe(field_value, minValue, maxValue);
     // debug("field_value1: %f", field_value);
     field_value = chop(field_value, 0.01f);
     // debug("field_value2: %f", field_value);
@@ -516,7 +516,7 @@ void CentsField::onAction(const event::Action &e) {
     double delta_volt = cents * cent_volt;
     double nearest_note_voltage = volts_of_nearest_note(module->params[SpecificValue::VALUE1_PARAM].getValue());
 
-    module->params[SpecificValue::VALUE1_PARAM].getValue() = (float) (nearest_note_voltage + delta_volt);
+    module->params[SpecificValue::VALUE1_PARAM].setValue((float) (nearest_note_voltage + delta_volt));
 
 }
 
@@ -532,7 +532,7 @@ struct NoteNameField : TextField {
 
     void onChange(const event::Change &e) override;
     void onAction(const event::Action &e) override;
-    void onHoverKey(const event::EventKey &e) override;
+    void onHoverKey(const event::HoverKey &e) override;
 
 	void onMouseMove(EventMouseMove &e) override;
     void onMouseUp(EventMouseUp &e) override;
@@ -564,9 +564,9 @@ void NoteNameField::increment(float delta) {
     float field_value = module->params[SpecificValue::VALUE1_PARAM].getValue();
     field_value += (float) delta * 1.0 / 12.0;
 
-    field_value = clamp2(field_value, minValue, maxValue);
+    field_value = clampSafe(field_value, minValue, maxValue);
     field_value = chop(field_value, 0.001f);
-    module->params[SpecificValue::VALUE1_PARAM].getValue() = field_value;
+    module->params[SpecificValue::VALUE1_PARAM].setValue(field_value);
 }
 
 void NoteNameField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
@@ -577,7 +577,7 @@ void NoteNameField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_
 
     increment(inc);
 
-    EventChange e;
+    event::Change e;
     onChange(e);
 }
 
@@ -663,7 +663,7 @@ void NoteNameField::onAction(const event::Action &e) {
     if(search != note_name_to_volts_map.end()) {
         // float f = (float) orig;
         // module->params[SpecificValue::VALUE1_PARAM].getValue() = note_name_to_volts_map[can_note_id];
-        module->params[SpecificValue::VALUE1_PARAM].getValue() = (float) note_name_to_volts_map[can_note_id];
+        module->params[SpecificValue::VALUE1_PARAM].setValue((float) note_name_to_volts_map[can_note_id]);
 
         return;
     }

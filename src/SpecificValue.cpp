@@ -68,11 +68,11 @@ struct SpecificValue : Module
 
 void SpecificValue::process(const ProcessArgs &args)
 {
-    if (inputs[VALUE1_INPUT].active) {
-        params[VALUE1_PARAM].value = inputs[VALUE1_INPUT].value;
+    if (inputs[VALUE1_INPUT].isConnected()) {
+        params[VALUE1_PARAM].getValue() = inputs[VALUE1_INPUT].getVoltage();
     }
-    volt_value = params[VALUE1_PARAM].value;
-    outputs[VALUE1_OUTPUT].value = volt_value;
+    volt_value = params[VALUE1_PARAM].getValue();
+    outputs[VALUE1_OUTPUT].setVoltage(volt_value);
 }
 
 enum AdjustKey
@@ -141,8 +141,8 @@ std::string FloatField::voltsToText(float param_volts){
 
 void FloatField::onChange(EventChange &e) {
     // debug("FloatField onChange  text=%s param=%f", text.c_str(),
-    //    module->params[SpecificValue::VALUE1_PARAM].value);
-    std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+    //    module->params[SpecificValue::VALUE1_PARAM].getValue());
+    std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
     setText(new_text);
 }
 
@@ -151,7 +151,7 @@ void FloatField::onAction(EventAction &e)
     TextField::onAction(e);
     float volts = textToVolts(text);
 
-    module->params[SpecificValue::VALUE1_PARAM].value = volts;
+    module->params[SpecificValue::VALUE1_PARAM].getValue() = volts;
 }
 
 void FloatField::onFocus(EventFocus &e) {
@@ -319,7 +319,7 @@ void HZFloatField::increment(float delta){
 void HZFloatField::onChange(EventChange &e) {
     if (this != gFocusedWidget)
     {
-        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
         setText(new_text);
     }
 }
@@ -329,7 +329,7 @@ void HZFloatField::onAction(EventAction &e) {
 
     float volts = textToVolts(text);
 
-    module->params[SpecificValue::VALUE1_PARAM].value = volts;
+    module->params[SpecificValue::VALUE1_PARAM].getValue() = volts;
 }
 
 struct LFOHzFloatField : FloatField {
@@ -380,7 +380,7 @@ void LFOHzFloatField::increment(float delta) {
 void LFOHzFloatField::onChange(EventChange &e) {
     if (this != gFocusedWidget)
     {
-        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
         setText(new_text);
     }
 }
@@ -389,7 +389,7 @@ void LFOHzFloatField::onAction(EventAction &e)
 {
     TextField::onAction(e);
     float volts = textToVolts(text);
-    module->params[SpecificValue::VALUE1_PARAM].value = volts;
+    module->params[SpecificValue::VALUE1_PARAM].getValue() = volts;
 }
 
 struct LFOBpmFloatField : FloatField {
@@ -440,7 +440,7 @@ void LFOBpmFloatField::increment(float delta) {
 void LFOBpmFloatField::onChange(EventChange &e) {
     if (this != gFocusedWidget)
     {
-        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].value);
+        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
         setText(new_text);
     }
 }
@@ -449,7 +449,7 @@ void LFOBpmFloatField::onAction(EventAction &e)
 {
     TextField::onAction(e);
     float volts = textToVolts(text);
-    module->params[SpecificValue::VALUE1_PARAM].value = volts;
+    module->params[SpecificValue::VALUE1_PARAM].getValue() = volts;
 }
 
 struct CentsField : FloatField {
@@ -484,7 +484,7 @@ void CentsField::increment(float delta) {
 }
 
 void CentsField::onChange(EventChange &e) {
-    float cents = volts_to_note_cents(module->params[SpecificValue::VALUE1_PARAM].value);
+    float cents = volts_to_note_cents(module->params[SpecificValue::VALUE1_PARAM].getValue());
     cents = chop(cents, 0.01f);
     std::string new_text = string::f("%0.2f", cents);
     setText(new_text);
@@ -498,9 +498,9 @@ void CentsField::onAction(EventAction &e) {
     // figure what to tweak the current volts
     double cent_volt = 1.0 / 12.0 / 100.0;
     double delta_volt = cents * cent_volt;
-    double nearest_note_voltage = volts_of_nearest_note(module->params[SpecificValue::VALUE1_PARAM].value);
+    double nearest_note_voltage = volts_of_nearest_note(module->params[SpecificValue::VALUE1_PARAM].getValue());
 
-    module->params[SpecificValue::VALUE1_PARAM].value = (float) (nearest_note_voltage + delta_volt);
+    module->params[SpecificValue::VALUE1_PARAM].getValue() = (float) (nearest_note_voltage + delta_volt);
 
 }
 
@@ -545,12 +545,12 @@ NoteNameField::NoteNameField(SpecificValue *_module)
 }
 
 void NoteNameField::increment(float delta) {
-    float field_value = module->params[SpecificValue::VALUE1_PARAM].value;
+    float field_value = module->params[SpecificValue::VALUE1_PARAM].getValue();
     field_value += (float) delta * 1.0 / 12.0;
 
     field_value = clamp2(field_value, minValue, maxValue);
     field_value = chop(field_value, 0.001f);
-    module->params[SpecificValue::VALUE1_PARAM].value = field_value;
+    module->params[SpecificValue::VALUE1_PARAM].getValue() = field_value;
 }
 
 void NoteNameField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
@@ -581,7 +581,7 @@ void NoteNameField::onKey(EventKey &e) {
         case GLFW_KEY_ESCAPE: {
             e.consumed = true;
             // debug("escape key pressed, orig_value: %0.5f", orig_value);
-            module->params[SpecificValue::VALUE1_PARAM].value = orig_value;
+            module->params[SpecificValue::VALUE1_PARAM].getValue() = orig_value;
             EventChange ec;
             onChange(ec);
         } break;
@@ -593,13 +593,13 @@ void NoteNameField::onKey(EventKey &e) {
 }
 
 void NoteNameField::onFocus(EventFocus &e) {
-    orig_value = module->params[SpecificValue::VALUE1_PARAM].value;
+    orig_value = module->params[SpecificValue::VALUE1_PARAM].getValue();
     // debug("onFocus orig_value: %0.5f", orig_value);
     TextField::onFocus(e);
 }
 
 void NoteNameField::onChange(EventChange &e) {
-    float cv_volts = module->params[SpecificValue::VALUE1_PARAM].value;
+    float cv_volts = module->params[SpecificValue::VALUE1_PARAM].getValue();
     int octave = volts_to_octave(cv_volts);
     int note_number = volts_to_note(cv_volts);
     /* debug("cv_volts: %f, octave: %d, note_number: %d, can: %s",
@@ -642,8 +642,8 @@ void NoteNameField::onAction(EventAction &e) {
     auto search = note_name_to_volts_map.find(can_note_id);
     if(search != note_name_to_volts_map.end()) {
         // float f = (float) orig;
-        // module->params[SpecificValue::VALUE1_PARAM].value = note_name_to_volts_map[can_note_id];
-        module->params[SpecificValue::VALUE1_PARAM].value = (float) note_name_to_volts_map[can_note_id];
+        // module->params[SpecificValue::VALUE1_PARAM].getValue() = note_name_to_volts_map[can_note_id];
+        module->params[SpecificValue::VALUE1_PARAM].getValue() = (float) note_name_to_volts_map[can_note_id];
 
         return;
     }
@@ -701,7 +701,7 @@ void NoteNameField::onDragMove(EventDragMove &e)
 
     /*
     debug("v: %0.5f, dy: %0.5f, delta: %0.5f",
-        module->params[SpecificValue::VALUE1_PARAM].value,
+        module->params[SpecificValue::VALUE1_PARAM].getValue(),
         e.mouseRel.y,
         delta);
     */
@@ -852,12 +852,12 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
 void SpecificValueWidget::step() {
     ModuleWidget::step();
 
-    if (prev_volts != module->params[SpecificValue::VALUE1_PARAM].value ||
-        prev_input != module->params[SpecificValue::VALUE1_INPUT].value) {
+    if (prev_volts != module->params[SpecificValue::VALUE1_PARAM].getValue() ||
+        prev_input != module->params[SpecificValue::VALUE1_INPUT].getValue()) {
             // debug("SpVWidget step - emitting EventChange / onChange prev_volts=%f param=%f",
-            //     prev_volts, module->params[SpecificValue::VALUE1_PARAM].value);
-            prev_volts = module->params[SpecificValue::VALUE1_PARAM].value;
-            prev_input = module->params[SpecificValue::VALUE1_INPUT].value;
+            //     prev_volts, module->params[SpecificValue::VALUE1_PARAM].getValue());
+            prev_volts = module->params[SpecificValue::VALUE1_PARAM].getValue();
+            prev_input = module->params[SpecificValue::VALUE1_INPUT].getValue();
             EventChange e;
 		    onChange(e);
     }

@@ -22,14 +22,14 @@ PurpleTrimpot::PurpleTrimpot() : Trimpot() {
 // maybe run this via an onChange()?
 void PurpleTrimpot::step() {
 	// debug("paramId=%d this->initialized: %d initialized: %d this->value: %f value: %f param.value: %f",
-     // paramId,  this->initialized, initialized, this->value, value, module->params[paramId].value);
+     // paramId,  this->initialized, initialized, this->value, value, module->params[paramId].getValue());
 
-    if (this->value != module->params[paramId].value) {
+    if (this->value != module->params[paramId].getValue()) {
 		if (this != gHoveredWidget && this->initialized) {
-			// this->value = module->params[paramId].value;
-			setValue(module->params[paramId].value);
+			// this->value = module->params[paramId].getValue();
+			setValue(module->params[paramId].getValue());
 		} else {
-			module->params[paramId].value = this->value;
+			module->params[paramId].getValue() = this->value;
             this->initialized |= true;
 		}
 		EventChange e;

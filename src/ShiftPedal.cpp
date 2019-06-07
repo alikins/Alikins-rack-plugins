@@ -40,13 +40,13 @@ struct ShiftPedal : Module {
     ShiftPedal() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(LEFT_SHIFT_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(ShiftPedal::RIGHT_SHIFT_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(ShiftPedal::LEFT_CTRL_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(ShiftPedal::RIGHT_CTRL_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(ShiftPedal::RIGHT_ALT_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(ShiftPedal::LEFT_ALT_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(ShiftPedal::LEFT_SUPER_PARAM, 0.0f, 10.0f, 0.0f, "");
-        configParam(ShiftPedal::RIGHT_SUPER_PARAM, 0.0f, 10.0f, 0.0f, "");
+        configParam(RIGHT_SHIFT_PARAM, 0.0f, 10.0f, 0.0f, "");
+        configParam(LEFT_CTRL_PARAM, 0.0f, 10.0f, 0.0f, "");
+        configParam(RIGHT_CTRL_PARAM, 0.0f, 10.0f, 0.0f, "");
+        configParam(RIGHT_ALT_PARAM, 0.0f, 10.0f, 0.0f, "");
+        configParam(LEFT_ALT_PARAM, 0.0f, 10.0f, 0.0f, "");
+        configParam(LEFT_SUPER_PARAM, 0.0f, 10.0f, 0.0f, "");
+        configParam(RIGHT_SUPER_PARAM, 0.0f, 10.0f, 0.0f, "");
     }
 	void process(const ProcessArgs &args) override;
 

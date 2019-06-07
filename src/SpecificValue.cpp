@@ -810,9 +810,8 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
 
     y_baseline += 12.0f;
 
-    Port *value_in_port = createPort<PJ301MPort>(
+    Port *value_in_port = createInput<PJ301MPort>(
         Vec(in_port_x, y_baseline),
-        PortWidget::INPUT,
         module,
         SpecificValue::VALUE1_INPUT);
 
@@ -823,9 +822,8 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
 
     float out_port_x = middle + 24.0f;
 
-    Port *value_out_port = createPort<PJ301MPort>(
+    Port *value_out_port = createOutput<PJ301MPort>(
         Vec(out_port_x, y_baseline),
-        PortWidget::OUTPUT,
         module,
         SpecificValue::VALUE1_OUTPUT);
 

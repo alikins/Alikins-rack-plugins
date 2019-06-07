@@ -77,28 +77,28 @@ void ShiftPedal::process(const ProcessArgs &args) {
         params[RIGHT_SUPER_PARAM].getValue() >= 10.0f ? 10.0f : 0.0f;
 }
 
-struct ShiftSwitch : SVGSwitch {
+struct ShiftSwitch : SvgSwitch {
     ShiftSwitch() {
         addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/ShiftIsOff.svg")));
         addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/ShiftIsOn.svg")));
     }
 };
 
-struct CtrlSwitch : SVGSwitch  {
+struct CtrlSwitch : SvgSwitch  {
     CtrlSwitch() {
         addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/CtrlIsOff.svg")));
         addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/CtrlIsOn.svg")));
     }
 };
 
-struct AltSwitch : SVGSwitch {
+struct AltSwitch : SvgSwitch {
     AltSwitch() {
         addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/AltIsOff.svg")));
         addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/AltIsOn.svg")));
     }
 };
 
-struct SuperSwitch : SVGSwitch  {
+struct SuperSwitch : SvgSwitch  {
     SuperSwitch() {
         addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/SuperIsOff.svg")));
         addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/SuperIsOn.svg")));

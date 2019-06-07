@@ -96,7 +96,7 @@ struct FloatField : TextField
     // void onMouseUp(EventMouseUp &e) override;
 
     // void onDragMove(const event::DragMove &e) override;
-    void onDragEnd(const event::DragEnd &e) override;
+    // void onDragEnd(const event::DragEnd &e) override;
 
     // TODO: was used to implement 'esc' undo behavior,
     //       need to figure out how to do that in v1
@@ -225,17 +225,19 @@ void FloatField::onDragMove(const event::DragMove &e)
 }
 */
 
+/*
 void FloatField::onDragEnd(const event::DragEnd &e) {
     // mouse key released, stop dragging and release the cursor lock
     y_dragging = false;
     windowCursorUnlock();
 }
+*/
 
 void FloatField::increment(float delta) {
     float field_value = atof(text.c_str());
     field_value += delta;
 
-    field_value = clamp2(field_value, minValue, maxValue);
+    field_value = clampSafe(field_value, minValue, maxValue);
     text = voltsToText(field_value);
     // debug("orig_string: %s text: %s", orig_string.c_str(), text.c_str());
 }
@@ -582,30 +584,30 @@ void NoteNameField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_
 }
 
 void NoteNameField::onHoverKey(const event::HoverKey &e) {
-    bool shift_pressed = windowIsShiftPressed();
-    bool mod_pressed = windowIsModPressed();
+    bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
+    bool mod_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_ALT);
 
     if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
         switch (e.key) {
             case GLFW_KEY_UP: {
-                e.consumed = true;
+                e.consume(this);
                 handleKey(AdjustKey::UP, shift_pressed, mod_pressed );
             } break;
             case GLFW_KEY_DOWN: {
-                e.consumed = true;
+                e.consume(this);
                 handleKey(AdjustKey::DOWN, shift_pressed, mod_pressed);
             } break;
             case GLFW_KEY_ESCAPE: {
-                e.consumed = true;
+                e.consume(this);
                 // debug("escape key pressed, orig_value: %0.5f", orig_value);
-                module->params[SpecificValue::VALUE1_PARAM].getValue() = orig_value;
-                EventChange ec;
+                module->params[SpecificValue::VALUE1_PARAM].setValue(orig_value);
+                event::Change ec;
                 onChange(ec);
             } break;
         }
     }
 
-	if (!e.consumed) {
+	if (!e.isConsumed()) {
 		TextField::onHoverKey(e);
 	}
 }
@@ -640,7 +642,7 @@ void NoteNameField::onAction(const event::Action &e) {
     auto enharm_search = enharmonic_name_map.find(noteOct->name);
     if (enharm_search == enharmonic_name_map.end())
     {
-        debug("%s was  NOT A VALID note name", noteOct->name.c_str());
+        // debug("%s was  NOT A VALID note name", noteOct->name.c_str());
         return;
     }
 
@@ -669,7 +671,7 @@ void NoteNameField::onAction(const event::Action &e) {
     }
     else {
         // TODO: change the text color to indicate bogus name?
-        debug("%s was  NOT A VALID CANONICAL NOTE ID", can_note_id.c_str());
+        // debug("%s was  NOT A VALID CANONICAL NOTE ID", can_note_id.c_str());
         return;
     }
 }

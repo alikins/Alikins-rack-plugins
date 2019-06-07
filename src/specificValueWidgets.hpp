@@ -1,7 +1,7 @@
 #include "rack.hpp"
 
-struct PurpleTrimpot : Trimpot {
-	Module *module;
+struct PurpleTrimpot : rack::Trimpot {
+    rack::Module *module;
     bool initialized = false;
     PurpleTrimpot();
     void step() override;
@@ -10,7 +10,7 @@ struct PurpleTrimpot : Trimpot {
 };
 
 PurpleTrimpot::PurpleTrimpot() : Trimpot() {
-    setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/PurpleTrimpot.svg")));
+    setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/PurpleTrimpot.svg")));
     shadow->blurRadius = 0.0;
     shadow->opacity = 0.10;
     shadow->box.pos = Vec(0.0, box.size.y * 0.05);
@@ -32,7 +32,7 @@ void PurpleTrimpot::step() {
 			module->params[paramId].getValue() = this->value;
             this->initialized |= true;
 		}
-		EventChange e;
+        event::Change e;
 		onChange(e);
 	}
 
@@ -46,5 +46,5 @@ void PurpleTrimpot::reset() {
 
 void PurpleTrimpot::randomize() {
     reset();
-    setValue(rescale(randomUniform(), 0.0f, 1.0f, minValue, maxValue));
+    setValue(rescale(dsp::randomUniform(), 0.0f, 1.0f, minValue, maxValue));
 }

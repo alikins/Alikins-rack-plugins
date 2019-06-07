@@ -33,9 +33,9 @@ extern Model *modelReference;
 extern Model *modelShiftPedal;
 extern Model *modelValueSaver;
 extern Model *modelColorPanel;
+extern Model *modelSpecificValue;
 
 /*
 extern Model *modelHoveredValue;
 extern Model *modelInjectValue;
-extern Model *modelSpecificValue;
 */

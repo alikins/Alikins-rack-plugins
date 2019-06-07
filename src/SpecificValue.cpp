@@ -56,7 +56,7 @@ struct SpecificValue : Module
 
     SpecificValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 
-    void step() override;
+    void process(const ProcessArgs &args) override;
 
     float volt_value;
     float hz_value;
@@ -66,7 +66,7 @@ struct SpecificValue : Module
 
 };
 
-void SpecificValue::step()
+void SpecificValue::process(const ProcessArgs &args)
 {
     if (inputs[VALUE1_INPUT].active) {
         params[VALUE1_PARAM].value = inputs[VALUE1_INPUT].value;

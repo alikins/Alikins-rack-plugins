@@ -22,7 +22,9 @@ SOURCES = src/alikins.cpp \
 		  src/ValueSaver.cpp \
 		  src/ColorPanel.cpp \
 		  src/ShiftPedal.cpp \
-		 # src/SpecificValue.cpp
+		  src/SpecificValue.cpp \
+		 # src/HoveredValue.cpp
+		 # src/InjectValue.cpp
 
 
 # Must include the VCV plugin Makefile framework

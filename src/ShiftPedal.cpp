@@ -105,9 +105,9 @@ struct SuperSwitch : SvgSwitch  {
     }
 };
 
-struct PurplePort : SVGPort {
+struct PurplePort : SvgPort {
 	PurplePort() {
-		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/PurplePort.svg")));
+		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/PurplePort.svg")));
 	}
 };
 

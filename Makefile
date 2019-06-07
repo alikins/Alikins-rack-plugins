@@ -4,7 +4,7 @@ RACK_DIR ?= ../..
 # FLAGS +=
 FLAGS += -w -g
 CFLAGS +=
-CXXFLAGS += -Werror
+CXXFLAGS += -Wall -Werror
 
 # Careful about linking to libraries, since you can't assume much about the user's environment and library search path.
 # Static libraries are fine.

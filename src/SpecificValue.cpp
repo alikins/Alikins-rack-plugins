@@ -738,7 +738,7 @@ struct SpecificValueWidget : ModuleWidget
 
 SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(module)
 {
-    setPanel(SVG::load(assetPlugin(pluginInstance, "res/SpecificValue.svg")));
+    setPanel(APP->window->loadSvg(assetPlugin(pluginInstance, "res/SpecificValue.svg")));
 
     // TODO: widget with these children?
     float y_baseline = 45.0f;

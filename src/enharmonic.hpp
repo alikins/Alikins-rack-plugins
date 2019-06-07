@@ -58,7 +58,7 @@ std::map<std::string, float> gen_note_name_map() {
         for (int j = 0; j < 12; j++)
         {
             // debug("oct=%d note=%s volt=%f ", i, note_name_vec[j].c_str(), volt);
-            note_name_map[stringf("%s%d",
+            note_name_map[string::f("%s%d",
                                   note_name_vec[j].c_str(), i)] = volt;
             volt += semi;
         }
@@ -167,7 +167,7 @@ NoteOct* parseNote(std::string text) {
 std::string getCanNoteId(NoteOct *noteOct) {
     std::string can_note_name = enharmonic_name_map[noteOct->name];
 
-    std::string can_note_id = stringf("%s%s", can_note_name.c_str(), noteOct->octave.c_str());
+    std::string can_note_id = string::f("%s%s", can_note_name.c_str(), noteOct->octave.c_str());
 
     return can_note_id;
 }

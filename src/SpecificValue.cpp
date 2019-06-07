@@ -136,7 +136,7 @@ float FloatField::textToVolts(std::string field_text) {
 }
 
 std::string FloatField::voltsToText(float param_volts){
-    return stringf("%#.4g", param_volts);
+    return string::f("%#.4g", param_volts);
 }
 
 void FloatField::onChange(EventChange &e) {
@@ -302,8 +302,8 @@ float HZFloatField::textToVolts(std::string field_text) {
 
 std::string HZFloatField::voltsToText(float param_volts){
     float freq = cv_to_freq(param_volts);
-    // std::string new_text = stringf("%0.*g", freq < 100 ? 3 : 2, freq);
-    std::string new_text = stringf("%#.*g", freq < 100 ? 6: 7, freq);
+    // std::string new_text = string::f("%0.*g", freq < 100 ? 3 : 2, freq);
+    std::string new_text = string::f("%#.*g", freq < 100 ? 6: 7, freq);
 
     return new_text;
 }
@@ -313,7 +313,7 @@ void HZFloatField::increment(float delta){
     field_value += delta;
     field_value = clamp2(field_value, minValue, maxValue);
 
-    text = stringf("%#.*g", field_value < 100 ? 6: 7, field_value);
+    text = string::f("%#.*g", field_value < 100 ? 6: 7, field_value);
 }
 
 void HZFloatField::onChange(EventChange &e) {
@@ -364,8 +364,8 @@ float LFOHzFloatField::textToVolts(std::string field_text) {
 
 std::string LFOHzFloatField::voltsToText(float param_volts) {
     float lfo_freq_hz = lfo_cv_to_freq(param_volts);
-    // std::string new_text = stringf("%0.*f", lfo_freq_hz < 100 ? 4 : 3, lfo_freq_hz);
-    std::string new_text = stringf("%#0.*g", lfo_freq_hz < 100 ? 5 : 6, lfo_freq_hz);
+    // std::string new_text = string::f("%0.*f", lfo_freq_hz < 100 ? 4 : 3, lfo_freq_hz);
+    std::string new_text = string::f("%#0.*g", lfo_freq_hz < 100 ? 5 : 6, lfo_freq_hz);
     return new_text;
 }
 
@@ -374,7 +374,7 @@ void LFOHzFloatField::increment(float delta) {
     field_value += delta;
 
     field_value = clamp2(field_value, minValue, maxValue);
-    text = stringf("%#0.*g", 6, field_value);
+    text = string::f("%#0.*g", 6, field_value);
 }
 
 void LFOHzFloatField::onChange(EventChange &e) {
@@ -425,7 +425,7 @@ float LFOBpmFloatField::textToVolts(std::string field_text) {
 std::string LFOBpmFloatField::voltsToText(float param_volts){
     float lfo_freq_hz = lfo_cv_to_freq(param_volts);
     float lfo_bpm = lfo_freq_hz * 60.0f;
-    std::string new_text = stringf("%.6g", lfo_bpm);
+    std::string new_text = string::f("%.6g", lfo_bpm);
     return new_text;
 }
 
@@ -434,7 +434,7 @@ void LFOBpmFloatField::increment(float delta) {
     field_value += delta;
 
     field_value = clamp2(field_value, minValue, maxValue);
-    text = stringf("%.6g", field_value);
+    text = string::f("%.6g", field_value);
 }
 
 void LFOBpmFloatField::onChange(EventChange &e) {
@@ -480,13 +480,13 @@ void CentsField::increment(float delta) {
     // debug("field_value1: %f", field_value);
     field_value = chop(field_value, 0.01f);
     // debug("field_value2: %f", field_value);
-    text = stringf("%0.2f", field_value);
+    text = string::f("%0.2f", field_value);
 }
 
 void CentsField::onChange(EventChange &e) {
     float cents = volts_to_note_cents(module->params[SpecificValue::VALUE1_PARAM].value);
     cents = chop(cents, 0.01f);
-    std::string new_text = stringf("%0.2f", cents);
+    std::string new_text = string::f("%0.2f", cents);
     setText(new_text);
 }
 
@@ -604,7 +604,7 @@ void NoteNameField::onChange(EventChange &e) {
     int note_number = volts_to_note(cv_volts);
     /* debug("cv_volts: %f, octave: %d, note_number: %d, can: %s",
      cv_volts, octave, note_number, note_name_vec[note_number].c_str()); */
-    std::string new_text = stringf("%s%d", note_name_vec[note_number].c_str(), octave);
+    std::string new_text = string::f("%s%d", note_name_vec[note_number].c_str(), octave);
 
     setText(new_text);
 }
@@ -626,7 +626,7 @@ void NoteNameField::onAction(EventAction &e) {
 
     std::string can_note_name = enharmonic_name_map[noteOct->name];
 
-    std::string can_note_id = stringf("%s%s", can_note_name.c_str(), noteOct->octave.c_str());
+    std::string can_note_id = string::f("%s%s", can_note_name.c_str(), noteOct->octave.c_str());
 
     /*
     debug("text: %s", text.c_str());
@@ -738,7 +738,7 @@ struct SpecificValueWidget : ModuleWidget
 
 SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(module)
 {
-    setPanel(APP->window->loadSvg(assetPlugin(pluginInstance, "res/SpecificValue.svg")));
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/SpecificValue.svg")));
 
     // TODO: widget with these children?
     float y_baseline = 45.0f;

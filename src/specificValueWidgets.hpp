@@ -1,4 +1,4 @@
-#include "rack0.hpp"
+#include "rack.hpp"
 
 struct PurpleTrimpot : Trimpot {
 	Module *module;
@@ -10,7 +10,7 @@ struct PurpleTrimpot : Trimpot {
 };
 
 PurpleTrimpot::PurpleTrimpot() : Trimpot() {
-    setSVG(SVG::load(assetPlugin(pluginInstance, "res/PurpleTrimpot.svg")));
+    setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/PurpleTrimpot.svg")));
     shadow->blurRadius = 0.0;
     shadow->opacity = 0.10;
     shadow->box.pos = Vec(0.0, box.size.y * 0.05);

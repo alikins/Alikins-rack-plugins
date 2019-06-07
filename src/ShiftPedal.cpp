@@ -136,14 +136,15 @@ struct ShiftPedalWidget : ModuleWidget {
 
         buttonHeight = leftShiftButtonSwitch->box.size.y;
 
-        addOutput(createOutput<PurplePort>(Vec(port_x_start, y_baseline + buttonHeight + y_spacing),
-                                    module,
-                                    ShiftPedal::LEFT_SHIFT_GATE_OUTPUT));
+        PurplePort *leftShiftButtonPort = createOutput<PurplePort>(Vec(port_x_start, y_baseline + buttonHeight + y_spacing),
+                module,
+                ShiftPedal::LEFT_SHIFT_GATE_OUTPUT);
+        addOutput(leftShiftButtonPort);
 
-        float portHeight = 24.0f;
-        float portWidth = 24.0f;
-        //float portHeight = leftShiftButtonPort->box.size.y;
-        // float portWidth = leftShiftButtonPort->box.size.x;
+        // float portHeight = 24.0f;
+        // float portWidth = 24.0f;
+        float portHeight = leftShiftButtonPort->box.size.y;
+        float portWidth = leftShiftButtonPort->box.size.x;
 
         // Add the 'either' port
 

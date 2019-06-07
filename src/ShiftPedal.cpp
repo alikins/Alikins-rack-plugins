@@ -69,35 +69,35 @@ void ShiftPedal::process(const ProcessArgs &args) {
 
 struct ShiftSwitch : SVGSwitch {
     ShiftSwitch() {
-        addFrame(APP->window->loadSvg(assetPlugin(pluginInstance, "res/ShiftIsOff.svg")));
-        addFrame(APP->window->loadSvg(assetPlugin(pluginInstance, "res/ShiftIsOn.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/ShiftIsOff.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/ShiftIsOn.svg")));
     }
 };
 
 struct CtrlSwitch : SVGSwitch  {
     CtrlSwitch() {
-        addFrame(APP->window->loadSvg(assetPlugin(pluginInstance, "res/CtrlIsOff.svg")));
-        addFrame(APP->window->loadSvg(assetPlugin(pluginInstance, "res/CtrlIsOn.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/CtrlIsOff.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/CtrlIsOn.svg")));
     }
 };
 
 struct AltSwitch : SVGSwitch {
     AltSwitch() {
-        addFrame(APP->window->loadSvg(assetPlugin(pluginInstance, "res/AltIsOff.svg")));
-        addFrame(APP->window->loadSvg(assetPlugin(pluginInstance, "res/AltIsOn.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/AltIsOff.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/AltIsOn.svg")));
     }
 };
 
 struct SuperSwitch : SVGSwitch  {
     SuperSwitch() {
-        addFrame(APP->window->loadSvg(assetPlugin(pluginInstance, "res/SuperIsOff.svg")));
-        addFrame(APP->window->loadSvg(assetPlugin(pluginInstance, "res/SuperIsOn.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/SuperIsOff.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/SuperIsOn.svg")));
     }
 };
 
 struct PurplePort : SVGPort {
 	PurplePort() {
-		setSVG(APP->window->loadSvg(assetPlugin(pluginInstance, "res/PurplePort.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/PurplePort.svg")));
 	}
 };
 
@@ -119,7 +119,7 @@ struct ShiftPedalWidget : ModuleWidget {
 
 ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-    setPanel(APP->window->loadSvg(assetPlugin(pluginInstance, "res/ShiftPedal.svg")));
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/ShiftPedal.svg")));
 
     // FIXME: change to #defines
     float buttonWidth = 30.0f;

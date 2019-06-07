@@ -11,7 +11,7 @@ void init(rack::Plugin *p) {
     p->addModel(modelIdleSwitch);
     p->addModel(modelMomentaryOnButtons);
     p->addModel(modelReference);
-    // p->addModel(modelShiftPedal);
+    p->addModel(modelShiftPedal);
     p->addModel(modelValueSaver);
     // p->addModel(modelSpecificValue);
     p->addModel(modelColorPanel);

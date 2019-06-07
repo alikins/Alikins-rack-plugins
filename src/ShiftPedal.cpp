@@ -67,28 +67,28 @@ void ShiftPedal::step() {
         params[RIGHT_SUPER_PARAM].value >= 10.0f ? 10.0f : 0.0f;
 }
 
-struct ShiftSwitch : SVGSwitch, ToggleSwitch {
+struct ShiftSwitch : SVGSwitch {
     ShiftSwitch() {
         addFrame(SVG::load(assetPlugin(pluginInstance, "res/ShiftIsOff.svg")));
         addFrame(SVG::load(assetPlugin(pluginInstance, "res/ShiftIsOn.svg")));
     }
 };
 
-struct CtrlSwitch : SVGSwitch, ToggleSwitch {
+struct CtrlSwitch : SVGSwitch  {
     CtrlSwitch() {
         addFrame(SVG::load(assetPlugin(pluginInstance, "res/CtrlIsOff.svg")));
         addFrame(SVG::load(assetPlugin(pluginInstance, "res/CtrlIsOn.svg")));
     }
 };
 
-struct AltSwitch : SVGSwitch, ToggleSwitch {
+struct AltSwitch : SVGSwitch {
     AltSwitch() {
         addFrame(SVG::load(assetPlugin(pluginInstance, "res/AltIsOff.svg")));
         addFrame(SVG::load(assetPlugin(pluginInstance, "res/AltIsOn.svg")));
     }
 };
 
-struct SuperSwitch : SVGSwitch, ToggleSwitch {
+struct SuperSwitch : SVGSwitch  {
     SuperSwitch() {
         addFrame(SVG::load(assetPlugin(pluginInstance, "res/SuperIsOff.svg")));
         addFrame(SVG::load(assetPlugin(pluginInstance, "res/SuperIsOn.svg")));

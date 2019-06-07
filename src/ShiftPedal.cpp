@@ -38,12 +38,12 @@ struct ShiftPedal : Module {
 
 
     ShiftPedal() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-    void step() override;
+	void process(const ProcessArgs &args) override;
 
     // TODO: should probably setup a pulse generator for the gate outs
 };
 
-void ShiftPedal::step() {
+void ShiftPedal::process(const ProcessArgs &args) {
     // TODO: should probably setup a pulse generator for the gate outs
 
     outputs[LEFT_SHIFT_GATE_OUTPUT].value = params[LEFT_SHIFT_PARAM].value;

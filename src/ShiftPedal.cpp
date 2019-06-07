@@ -46,25 +46,25 @@ struct ShiftPedal : Module {
 void ShiftPedal::process(const ProcessArgs &args) {
     // TODO: should probably setup a pulse generator for the gate outs
 
-    outputs[LEFT_SHIFT_GATE_OUTPUT].value = params[LEFT_SHIFT_PARAM].value;
-    outputs[RIGHT_SHIFT_GATE_OUTPUT].value = params[RIGHT_SHIFT_PARAM].value;
-    outputs[EITHER_SHIFT_GATE_OUTPUT].value = params[LEFT_SHIFT_PARAM].value +
-        params[RIGHT_SHIFT_PARAM].value >= 10.0f ? 10.0f : 0.0f;
+    outputs[LEFT_SHIFT_GATE_OUTPUT].value = params[LEFT_SHIFT_PARAM].getValue();
+    outputs[RIGHT_SHIFT_GATE_OUTPUT].value = params[RIGHT_SHIFT_PARAM].getValue();
+    outputs[EITHER_SHIFT_GATE_OUTPUT].value = params[LEFT_SHIFT_PARAM].getValue() +
+        params[RIGHT_SHIFT_PARAM].getValue() >= 10.0f ? 10.0f : 0.0f;
 
-    outputs[LEFT_CTRL_GATE_OUTPUT].value = params[LEFT_CTRL_PARAM].value;
-    outputs[RIGHT_CTRL_GATE_OUTPUT].value = params[RIGHT_CTRL_PARAM].value;
-    outputs[EITHER_CTRL_GATE_OUTPUT].value = params[LEFT_CTRL_PARAM].value +
-        params[RIGHT_CTRL_PARAM].value >= 10.0f ? 10.0f : 0.0f;
+    outputs[LEFT_CTRL_GATE_OUTPUT].value = params[LEFT_CTRL_PARAM].getValue();
+    outputs[RIGHT_CTRL_GATE_OUTPUT].value = params[RIGHT_CTRL_PARAM].getValue();
+    outputs[EITHER_CTRL_GATE_OUTPUT].value = params[LEFT_CTRL_PARAM].getValue() +
+        params[RIGHT_CTRL_PARAM].getValue() >= 10.0f ? 10.0f : 0.0f;
 
-    outputs[LEFT_ALT_GATE_OUTPUT].value = params[LEFT_ALT_PARAM].value;
-    outputs[RIGHT_ALT_GATE_OUTPUT].value = params[RIGHT_ALT_PARAM].value;
-    outputs[EITHER_ALT_GATE_OUTPUT].value = params[LEFT_ALT_PARAM].value +
-        params[RIGHT_ALT_PARAM].value >= 10.0f ? 10.0f : 0.0f;
+    outputs[LEFT_ALT_GATE_OUTPUT].value = params[LEFT_ALT_PARAM].getValue();
+    outputs[RIGHT_ALT_GATE_OUTPUT].value = params[RIGHT_ALT_PARAM].getValue();
+    outputs[EITHER_ALT_GATE_OUTPUT].value = params[LEFT_ALT_PARAM].getValue() +
+        params[RIGHT_ALT_PARAM].getValue() >= 10.0f ? 10.0f : 0.0f;
 
-    outputs[LEFT_SUPER_GATE_OUTPUT].value = params[LEFT_SUPER_PARAM].value;
-    outputs[RIGHT_SUPER_GATE_OUTPUT].value = params[RIGHT_SUPER_PARAM].value;
-    outputs[EITHER_SUPER_GATE_OUTPUT].value = params[LEFT_SUPER_PARAM].value +
-        params[RIGHT_SUPER_PARAM].value >= 10.0f ? 10.0f : 0.0f;
+    outputs[LEFT_SUPER_GATE_OUTPUT].value = params[LEFT_SUPER_PARAM].getValue();
+    outputs[RIGHT_SUPER_GATE_OUTPUT].value = params[RIGHT_SUPER_PARAM].getValue();
+    outputs[EITHER_SUPER_GATE_OUTPUT].value = params[LEFT_SUPER_PARAM].getValue() +
+        params[RIGHT_SUPER_PARAM].getValue() >= 10.0f ? 10.0f : 0.0f;
 }
 
 struct ShiftSwitch : SVGSwitch {

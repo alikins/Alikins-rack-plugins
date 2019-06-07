@@ -13,6 +13,7 @@
 
 #include "alikins.hpp"
 #include "ui.hpp"
+#include "event.hpp"
 #include "enharmonic.hpp"
 #include "cv_utils.hpp"
 #include "specificValueWidgets.hpp"
@@ -69,7 +70,7 @@ struct SpecificValue : Module
 void SpecificValue::process(const ProcessArgs &args)
 {
     if (inputs[VALUE1_INPUT].isConnected()) {
-        params[VALUE1_PARAM].getValue() = inputs[VALUE1_INPUT].getVoltage();
+        params[VALUE1_PARAM].setValue(inputs[VALUE1_INPUT].getVoltage());
     }
     volt_value = params[VALUE1_PARAM].getValue();
     outputs[VALUE1_OUTPUT].setVoltage(volt_value);
@@ -94,7 +95,7 @@ struct FloatField : TextField
 	// void onMouseMove(ventMouseMove &e) override;
     // void onMouseUp(EventMouseUp &e) override;
 
-    void onDragMove(const event::DragMove &e) override;
+    // void onDragMove(const event::DragMove &e) override;
     void onDragEnd(const event::DragEnd &e) override;
 
     // TODO: was used to implement 'esc' undo behavior,
@@ -188,6 +189,7 @@ void FloatField::onMouseMove(EventMouseMove &e) {
 }
 */
 
+/*
 void FloatField::onDragMove(const event::DragMove &e)
 {
     // wait until we are moving and can tell if up/down or left/right before locking the cursor
@@ -195,6 +197,7 @@ void FloatField::onDragMove(const event::DragMove &e)
     // no vertical cursor movement, dont do anything. In particular, not
     // locking the cursor so text selection keeps working.
     if (e.mouseDelta.y == 0.0f || fabs(e.mouseDelta.x) >= 1.0f) {
+        APP->
         if (this == gDraggedWidget) {
             return;
         }
@@ -220,6 +223,7 @@ void FloatField::onDragMove(const event::DragMove &e)
     EventAction ae;
     onAction(ae);
 }
+*/
 
 void FloatField::onDragEnd(const event::DragEnd &e) {
     // mouse key released, stop dragging and release the cursor lock
@@ -250,8 +254,12 @@ void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pre
 
 void FloatField::onHoverKey(const event::HoverKey &e) {
     // debug("e.key: %d", e.key);
-    bool shift_pressed = windowIsShiftPressed();
-    bool mod_pressed = windowIsModPressed();
+    // bool shift_pressed = windowIsShiftPressed();
+    // bool mod_pressed = windowIsModPressed();
+
+    bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
+    bool mod_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_ALT);
+    // e.consume(this);
     if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
         switch (e.key) {
             case GLFW_KEY_UP: {
@@ -529,7 +537,7 @@ struct NoteNameField : TextField {
 	void onMouseMove(EventMouseMove &e) override;
     void onMouseUp(EventMouseUp &e) override;
 
-    void onDragMove(const event::DragMove &e) override;
+    // void onDragMove(const event::DragMove &e) override;
     void onDragEnd(const event::DragEnd &e) override;
 
     // void onFocus(EventFocus &e) override;
@@ -689,6 +697,7 @@ void NoteNameField::onMouseUp(EventMouseUp &e) {
     }
 }
 
+/*
 void NoteNameField::onDragMove(const event::DragMove &e)
 {
     // TextField::onDragMove(e);
@@ -711,18 +720,19 @@ void NoteNameField::onDragMove(const event::DragMove &e)
 
     float delta = inc * -e.mouseRel.y;
 
-    /*
-    debug("v: %0.5f, dy: %0.5f, delta: %0.5f",
-        module->params[SpecificValue::VALUE1_PARAM].getValue(),
-        e.mouseRel.y,
-        delta);
-    */
+
+    //debug("v: %0.5f, dy: %0.5f, delta: %0.5f",
+    //    module->params[SpecificValue::VALUE1_PARAM].getValue(),
+    //    e.mouseRel.y,
+    //    delta);
+
 
     increment(delta);
 
     EventChange ce;
     onChange(ce);
 }
+*/
 
 void NoteNameField::onDragEnd(const event::DragEnd &e) {
     windowCursorUnlock();

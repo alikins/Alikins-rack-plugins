@@ -89,7 +89,7 @@ struct FloatField : TextField
     FloatField(SpecificValue *module);
     void onAction(const event::Action &e) override;
     void onChange(const event::Change &e) override;
-    void onKey(EventKey &e) override;
+    void onHoverKey(const event::HoverKey &e) override;
 
 	void onMouseMove(EventMouseMove &e) override;
     void onMouseUp(EventMouseUp &e) override;
@@ -240,31 +240,32 @@ void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pre
     onAction(e);
 }
 
-void FloatField::onKey(EventKey &e) {
+void FloatField::onHoverKey(const event::HoverKey &e) {
     // debug("e.key: %d", e.key);
     bool shift_pressed = windowIsShiftPressed();
     bool mod_pressed = windowIsModPressed();
-
-	switch (e.key) {
-		case GLFW_KEY_UP: {
-			e.consumed = true;
-            handleKey(AdjustKey::UP, shift_pressed, mod_pressed);
-		} break;
-		case GLFW_KEY_DOWN: {
-			e.consumed = true;
-            handleKey(AdjustKey::DOWN, shift_pressed, mod_pressed);
-		} break;
-        case GLFW_KEY_ESCAPE: {
-            e.consumed = true;
-            // debug("escape key pressed, orig_string: %s", orig_string.c_str());
-            text = orig_string;
-            EventAction ea;
-            onAction(ea);
-        } break;
-	}
+    if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
+        switch (e.key) {
+            case GLFW_KEY_UP: {
+                e.consumed = true;
+                handleKey(AdjustKey::UP, shift_pressed, mod_pressed);
+            } break;
+            case GLFW_KEY_DOWN: {
+                e.consumed = true;
+                handleKey(AdjustKey::DOWN, shift_pressed, mod_pressed);
+            } break;
+            case GLFW_KEY_ESCAPE: {
+                e.consumed = true;
+                // debug("escape key pressed, orig_string: %s", orig_string.c_str());
+                text = orig_string;
+                EventAction ea;
+                onAction(ea);
+            } break;
+        }
+    }
 
 	if (!e.consumed) {
-		TextField::onKey(e);
+		TextField::onHoverKey(e);
 	}
 }
 
@@ -515,7 +516,7 @@ struct NoteNameField : TextField {
 
     void onChange(const event::Change &e) override;
     void onAction(const event::Action &e) override;
-    void onKey(EventKey &e) override;
+    void onHoverKey(const event::EventKey &e) override;
 
 	void onMouseMove(EventMouseMove &e) override;
     void onMouseUp(EventMouseUp &e) override;
@@ -564,30 +565,32 @@ void NoteNameField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_
     onChange(e);
 }
 
-void NoteNameField::onKey(EventKey &e) {
+void NoteNameField::onHoverKey(const event::HoverKey &e) {
     bool shift_pressed = windowIsShiftPressed();
     bool mod_pressed = windowIsModPressed();
 
-	switch (e.key) {
-		case GLFW_KEY_UP: {
-			e.consumed = true;
-            handleKey(AdjustKey::UP, shift_pressed, mod_pressed );
-		} break;
-		case GLFW_KEY_DOWN: {
-			e.consumed = true;
-            handleKey(AdjustKey::DOWN, shift_pressed, mod_pressed);
-		} break;
-        case GLFW_KEY_ESCAPE: {
-            e.consumed = true;
-            // debug("escape key pressed, orig_value: %0.5f", orig_value);
-            module->params[SpecificValue::VALUE1_PARAM].getValue() = orig_value;
-            EventChange ec;
-            onChange(ec);
-        } break;
-	}
+    if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
+        switch (e.key) {
+            case GLFW_KEY_UP: {
+                e.consumed = true;
+                handleKey(AdjustKey::UP, shift_pressed, mod_pressed );
+            } break;
+            case GLFW_KEY_DOWN: {
+                e.consumed = true;
+                handleKey(AdjustKey::DOWN, shift_pressed, mod_pressed);
+            } break;
+            case GLFW_KEY_ESCAPE: {
+                e.consumed = true;
+                // debug("escape key pressed, orig_value: %0.5f", orig_value);
+                module->params[SpecificValue::VALUE1_PARAM].getValue() = orig_value;
+                EventChange ec;
+                onChange(ec);
+            } break;
+        }
+    }
 
 	if (!e.consumed) {
-		TextField::onKey(e);
+		TextField::onHoverKey(e);
 	}
 }
 

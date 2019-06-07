@@ -257,22 +257,27 @@ void ShiftPedalWidget::step() {
         return;
     }
 
+    // TODO: switch to new key event api
     getParam(ShiftPedal::LEFT_SHIFT_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
                 GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 10.0f : 0.0f);
+    getParam(ShiftPedal::RIGHT_SHIFT_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+                GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS ? 10.0f : 0.0f);
 
-    /*
-    // leftShiftButtonSwitch->setValue(glfwGetKey(APP->window->win, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 10.0f : 0.0f);
-    rightShiftButtonSwitch->setValue(glfwGetKey(APP->window->win, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS ? 10.0f : 0.0f);
+    getParam(ShiftPedal::LEFT_CTRL_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+                GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ? 10.0f : 0.0f);
+    getParam(ShiftPedal::RIGHT_CTRL_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+                GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS ? 10.0f : 0.0f);
 
-    leftCtrlButtonSwitch->setValue(glfwGetKey(APP->window->win, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ? 10.0f : 0.0f);
-    rightCtrlButtonSwitch->setValue(glfwGetKey(APP->window->win, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS ? 10.0f : 0.0f);
+    getParam(ShiftPedal::LEFT_ALT_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+                GLFW_KEY_LEFT_ALT) == GLFW_PRESS ? 10.0f : 0.0f);
+    getParam(ShiftPedal::RIGHT_ALT_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+                GLFW_KEY_RIGHT_ALT) == GLFW_PRESS ? 10.0f : 0.0f);
 
-    leftAltButtonSwitch->setValue(glfwGetKey(APP->window->win, GLFW_KEY_LEFT_ALT) == GLFW_PRESS ? 10.0f : 0.0f);
-    rightAltButtonSwitch->setValue(glfwGetKey(APP->window->win, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS ? 10.0f : 0.0f);
+    getParam(ShiftPedal::LEFT_SUPER_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+                GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ? 10.0f : 0.0f);
+    getParam(ShiftPedal::RIGHT_SUPER_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+                GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS ? 10.0f : 0.0f);
 
-    leftSuperButtonSwitch->setValue(glfwGetKey(APP->window->win, GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ? 10.0f : 0.0f);
-    rightSuperButtonSwitch->setValue(glfwGetKey(APP->window->win, GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS ? 10.0f : 0.0f);
-    */
     ModuleWidget::step();
 }
 

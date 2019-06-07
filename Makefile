@@ -2,9 +2,10 @@ RACK_DIR ?= ../..
 
 # FLAGS will be passed to both the C and C++ compiler
 # FLAGS +=
-FLAGS += -w -g
+# FLAGS += -w -g
 CFLAGS +=
-CXXFLAGS += -Wall -Werror
+# CXXFLAGS += -Wdeprecated-declarations -Wall -Werror
+# FLAGS += -Wdeprecated-declarations -Wall -Werror
 
 # Careful about linking to libraries, since you can't assume much about the user's environment and library search path.
 # Static libraries are fine.

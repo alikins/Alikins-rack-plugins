@@ -87,8 +87,7 @@ struct FloatField : TextField
     SpecificValue *module;
 
     FloatField(SpecificValue *module);
-
-    void onAction(EventAction &e) override;
+    void onAction(const event::Action &e) override;
     void onChange(EventChange &e) override;
     void onKey(EventKey &e) override;
 
@@ -146,7 +145,7 @@ void FloatField::onChange(EventChange &e) {
     setText(new_text);
 }
 
-void FloatField::onAction(EventAction &e)
+void FloatField::onAction(const event::Action &e)
 {
     TextField::onAction(e);
     float volts = textToVolts(text);
@@ -276,7 +275,7 @@ struct HZFloatField : FloatField
     HZFloatField(SpecificValue *_module) ;
 
     void onChange(EventChange &e) override;
-    void onAction(EventAction &e) override;
+    void onAction(const event::Action &e) override;
 
     void increment(float delta) override;
 
@@ -324,7 +323,7 @@ void HZFloatField::onChange(EventChange &e) {
     }
 }
 
-void HZFloatField::onAction(EventAction &e) {
+void HZFloatField::onAction(const event::Action &e) {
     TextField::onAction(e);
 
     float volts = textToVolts(text);
@@ -337,7 +336,7 @@ struct LFOHzFloatField : FloatField {
 
     LFOHzFloatField(SpecificValue *_module);
 
-    void onAction(EventAction &e) override;
+    void onAction(const event::Action &e) override;
     void onChange(EventChange &e) override;
 
     void increment(float delta) override;
@@ -385,7 +384,7 @@ void LFOHzFloatField::onChange(EventChange &e) {
     }
 }
 
-void LFOHzFloatField::onAction(EventAction &e)
+void LFOHzFloatField::onAction(const event::Action &e)
 {
     TextField::onAction(e);
     float volts = textToVolts(text);
@@ -397,7 +396,7 @@ struct LFOBpmFloatField : FloatField {
 
     LFOBpmFloatField(SpecificValue *_module);
 
-    void onAction(EventAction &e) override;
+    void onAction(const event::Action &e) override;
     void onChange(EventChange &e) override;
 
     void increment(float delta) override;
@@ -445,7 +444,7 @@ void LFOBpmFloatField::onChange(EventChange &e) {
     }
 }
 
-void LFOBpmFloatField::onAction(EventAction &e)
+void LFOBpmFloatField::onAction(const event::Action &e)
 {
     TextField::onAction(e);
     float volts = textToVolts(text);
@@ -457,7 +456,7 @@ struct CentsField : FloatField {
 
     CentsField(SpecificValue *_module);
     void onChange(EventChange &e) override;
-    void onAction(EventAction &e) override;
+    void onAction(const event::Action &e) override;
 
     void increment(float delta) override;
 };
@@ -490,7 +489,7 @@ void CentsField::onChange(EventChange &e) {
     setText(new_text);
 }
 
-void CentsField::onAction(EventAction &e) {
+void CentsField::onAction(const event::Action &e) {
 
     TextField::onAction(e);
     double cents = strtod(text.c_str(), NULL);
@@ -515,7 +514,7 @@ struct NoteNameField : TextField {
     float orig_value;
 
     void onChange(EventChange &e) override;
-    void onAction(EventAction &e) override;
+    void onAction(const event::Action &e) override;
     void onKey(EventKey &e) override;
 
 	void onMouseMove(EventMouseMove &e) override;
@@ -609,7 +608,7 @@ void NoteNameField::onChange(EventChange &e) {
     setText(new_text);
 }
 
-void NoteNameField::onAction(EventAction &e) {
+void NoteNameField::onAction(const event::Action &e) {
     TextField::onAction(e);
 
     // canoicalize the entered note name into a canonical note id

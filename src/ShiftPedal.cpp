@@ -44,6 +44,7 @@ struct ShiftPedal : Module {
         configParam(ShiftPedal::LEFT_CTRL_PARAM, 0.0f, 10.0f, 0.0f, "");
         configParam(ShiftPedal::RIGHT_CTRL_PARAM, 0.0f, 10.0f, 0.0f, "");
         configParam(ShiftPedal::RIGHT_ALT_PARAM, 0.0f, 10.0f, 0.0f, "");
+        configParam(ShiftPedal::LEFT_ALT_PARAM, 0.0f, 10.0f, 0.0f, "");
         configParam(ShiftPedal::LEFT_SUPER_PARAM, 0.0f, 10.0f, 0.0f, "");
         configParam(ShiftPedal::RIGHT_SUPER_PARAM, 0.0f, 10.0f, 0.0f, "");
     }
@@ -200,7 +201,7 @@ ShiftPedalWidget::ShiftPedalWidget(ShiftPedal *module) : ModuleWidget(module) {
     // third row Alt
     y_baseline = y_baseline + buttonHeight + y_spacing + portHeight + y_row_spacing;
 
-    leftAltButtonSwitch = createParam<AltSwitch>(Vec(0.0f, y_baseline),module,ShiftPedal::LEFT_ALT_PARAM,0.0f, 10.0f, 0.0f);
+    leftAltButtonSwitch = createParam<AltSwitch>(Vec(0.0f, y_baseline), module, ShiftPedal::LEFT_ALT_PARAM);
     addParam(leftAltButtonSwitch);
 
     float altButtonHeight = leftAltButtonSwitch->box.size.y;

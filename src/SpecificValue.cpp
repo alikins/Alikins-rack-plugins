@@ -97,7 +97,9 @@ struct FloatField : TextField
     void onDragMove(const event::DragMove &e) override;
     void onDragEnd(const event::DragEnd &e) override;
 
-    void onFocus(EventFocus &e) override;
+    // TODO: was used to implement 'esc' undo behavior,
+    //       need to figure out how to do that in v1
+    // void onFocus(EventFocus &e) override;
 
     virtual void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
 
@@ -150,13 +152,15 @@ void FloatField::onAction(const event::Action &e)
     TextField::onAction(e);
     float volts = textToVolts(text);
 
-    module->params[SpecificValue::VALUE1_PARAM].getValue() = volts;
+    module->params[SpecificValue::VALUE1_PARAM].setValue(volts);
 }
 
+/*
 void FloatField::onFocus(EventFocus &e) {
     orig_string = text;
     TextField::onFocus(e);
 }
+*/
 
 /*
 void FloatField::onMouseUp(EventMouseUp &e) {
@@ -528,7 +532,7 @@ struct NoteNameField : TextField {
     void onDragMove(const event::DragMove &e) override;
     void onDragEnd(const event::DragEnd &e) override;
 
-    void onFocus(EventFocus &e) override;
+    // void onFocus(EventFocus &e) override;
 
     void increment(float delta);
     void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
@@ -598,11 +602,13 @@ void NoteNameField::onHoverKey(const event::HoverKey &e) {
 	}
 }
 
+/*
 void NoteNameField::onFocus(EventFocus &e) {
     orig_value = module->params[SpecificValue::VALUE1_PARAM].getValue();
     // debug("onFocus orig_value: %0.5f", orig_value);
     TextField::onFocus(e);
 }
+*/
 
 void NoteNameField::onChange(const event::Change &e) {
     float cv_volts = module->params[SpecificValue::VALUE1_PARAM].getValue();

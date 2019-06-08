@@ -147,7 +147,12 @@ std::string FloatField::voltsToText(float param_volts){
 void FloatField::onChange(const event::Change &e) {
     // debug("FloatField onChange  text=%s param=%f", text.c_str(),
     //    module->params[SpecificValue::VALUE1_PARAM].getValue());
+    if (!module) {
+        return;
+    }
+
     std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
+    // std::string new_text = voltsToText(getParam(SpecificValue::VALUE1_PARAM)->paramQuantity->getValue());
     setText(new_text);
 }
 
@@ -155,6 +160,9 @@ void FloatField::onAction(const event::Action &e)
 {
     TextField::onAction(e);
     float volts = textToVolts(text);
+
+    if (!module)
+        return;
 
     module->params[SpecificValue::VALUE1_PARAM].setValue(volts);
 }
@@ -338,6 +346,9 @@ void HZFloatField::increment(float delta){
 }
 
 void HZFloatField::onChange(const event::Change &e) {
+    if (!module)
+        return;
+
     if (this != APP->event->selectedWidget)
     {
         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
@@ -349,6 +360,9 @@ void HZFloatField::onAction(const event::Action &e) {
     TextField::onAction(e);
 
     float volts = textToVolts(text);
+
+    if (!module)
+        return;
 
     module->params[SpecificValue::VALUE1_PARAM].setValue(volts);
 }
@@ -399,6 +413,9 @@ void LFOHzFloatField::increment(float delta) {
 }
 
 void LFOHzFloatField::onChange(const event::Change &e) {
+    if (!module)
+        return;
+
     if (this != APP->event->selectedWidget)
     {
         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
@@ -410,6 +427,10 @@ void LFOHzFloatField::onAction(const event::Action &e)
 {
     TextField::onAction(e);
     float volts = textToVolts(text);
+
+    if (!module)
+        return;
+
     module->params[SpecificValue::VALUE1_PARAM].setValue(volts);
 }
 
@@ -459,6 +480,9 @@ void LFOBpmFloatField::increment(float delta) {
 }
 
 void LFOBpmFloatField::onChange(const event::Change &e) {
+    if (!module)
+        return;
+
     if (this != APP->event->selectedWidget)
     {
         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
@@ -470,6 +494,10 @@ void LFOBpmFloatField::onAction(const event::Action &e)
 {
     TextField::onAction(e);
     float volts = textToVolts(text);
+
+    if (!module)
+        return;
+
     module->params[SpecificValue::VALUE1_PARAM].setValue(volts);
 }
 
@@ -505,6 +533,9 @@ void CentsField::increment(float delta) {
 }
 
 void CentsField::onChange(const event::Change &e) {
+    if (!module)
+        return;
+
     float cents = volts_to_note_cents(module->params[SpecificValue::VALUE1_PARAM].getValue());
     cents = chop(cents, 0.01f);
     std::string new_text = string::f("%0.2f", cents);
@@ -519,6 +550,10 @@ void CentsField::onAction(const event::Action &e) {
     // figure what to tweak the current volts
     double cent_volt = 1.0 / 12.0 / 100.0;
     double delta_volt = cents * cent_volt;
+
+    if (!module)
+        return;
+
     double nearest_note_voltage = volts_of_nearest_note(module->params[SpecificValue::VALUE1_PARAM].getValue());
 
     module->params[SpecificValue::VALUE1_PARAM].setValue((float) (nearest_note_voltage + delta_volt));
@@ -566,6 +601,9 @@ NoteNameField::NoteNameField(SpecificValue *_module)
 }
 
 void NoteNameField::increment(float delta) {
+    if (!module)
+        return;
+
     float field_value = module->params[SpecificValue::VALUE1_PARAM].getValue();
     field_value += (float) delta * 1.0 / 12.0;
 
@@ -587,6 +625,7 @@ void NoteNameField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_
 }
 
 void NoteNameField::onHoverKey(const event::HoverKey &e) {
+
     bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
     bool mod_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_ALT);
 
@@ -603,7 +642,9 @@ void NoteNameField::onHoverKey(const event::HoverKey &e) {
             case GLFW_KEY_ESCAPE: {
                 e.consume(this);
                 // debug("escape key pressed, orig_value: %0.5f", orig_value);
-                module->params[SpecificValue::VALUE1_PARAM].setValue(orig_value);
+                if (module) {
+                    module->params[SpecificValue::VALUE1_PARAM].setValue(orig_value);
+                }
                 event::Change ec;
                 onChange(ec);
             } break;
@@ -624,6 +665,9 @@ void NoteNameField::onFocus(EventFocus &e) {
 */
 
 void NoteNameField::onChange(const event::Change &e) {
+    if (!module)
+        return;
+
     float cv_volts = module->params[SpecificValue::VALUE1_PARAM].getValue();
     int octave = volts_to_octave(cv_volts);
     int note_number = volts_to_note(cv_volts);
@@ -636,6 +680,9 @@ void NoteNameField::onChange(const event::Change &e) {
 
 void NoteNameField::onAction(const event::Action &e) {
     TextField::onAction(e);
+
+    if (!module)
+        return;
 
     // canoicalize the entered note name into a canonical note id
     // (ie, c4 -> C4, Db3 -> C#3, etc)
@@ -885,6 +932,9 @@ struct SpecificValueWidget : ModuleWidget
 void SpecificValueWidget::step() {
     ModuleWidget::step();
 
+    if (!module)
+        return;
+
     if (prev_volts != module->params[SpecificValue::VALUE1_PARAM].getValue() ||
         prev_input != module->params[SpecificValue::VALUE1_INPUT].getValue()) {
             // debug("SpVWidget step - emitting EventChange / onChange prev_volts=%f param=%f",
@@ -898,6 +948,10 @@ void SpecificValueWidget::step() {
 
 void SpecificValueWidget::onChange(const event::Change &e) {
     ModuleWidget::onChange(e);
+
+    if (!module)
+        return;
+
     volts_field->onChange(e);
     hz_field->onChange(e);
     lfo_hz_field->onChange(e);

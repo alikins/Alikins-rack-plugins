@@ -338,7 +338,7 @@ void HZFloatField::increment(float delta){
 }
 
 void HZFloatField::onChange(const event::Change &e) {
-    if (this != gFocusedWidget)
+    if (this != APP->event->selectedWidget)
     {
         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
         setText(new_text);
@@ -399,7 +399,7 @@ void LFOHzFloatField::increment(float delta) {
 }
 
 void LFOHzFloatField::onChange(const event::Change &e) {
-    if (this != gFocusedWidget)
+    if (this != APP->event->selectedWidget)
     {
         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
         setText(new_text);
@@ -459,7 +459,7 @@ void LFOBpmFloatField::increment(float delta) {
 }
 
 void LFOBpmFloatField::onChange(const event::Change &e) {
-    if (this != gFocusedWidget)
+    if (this != APP->event->selectedWidget)
     {
         std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
         setText(new_text);
@@ -543,7 +543,7 @@ struct NoteNameField : TextField {
     // void onMouseUp(EventMouseUp &e) override;
 
     // void onDragMove(const event::DragMove &e) override;
-    void onDragEnd(const event::DragEnd &e) override;
+    // void onDragEnd(const event::DragEnd &e) override;
 
     // void onFocus(EventFocus &e) override;
 
@@ -743,15 +743,15 @@ void NoteNameField::onDragMove(const event::DragMove &e)
 }
 */
 
+/*
 void NoteNameField::onDragEnd(const event::DragEnd &e) {
-    windowCursorUnlock();
+    APP->window->cursorUnlock();
     y_dragging = false;
 }
-
+*/
 
 struct SpecificValueWidget : ModuleWidget
 {
-    SpecificValueWidget(SpecificValue *module);
 
     void step() override;
     void onChange(const event::Change &e) override;
@@ -765,120 +765,122 @@ struct SpecificValueWidget : ModuleWidget
     NoteNameField *note_name_field;
     CentsField *cents_field;
     LFOBpmFloatField *lfo_bpm_field;
+
+    SpecificValueWidget(SpecificValue *module) {
+        setModule(module);
+        setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/SpecificValue.svg")));
+
+        // TODO: widget with these children?
+        float y_baseline = 45.0f;
+
+        Vec volt_field_size = Vec(70.0f, 22.0f);
+        Vec hz_field_size = Vec(70.0f, 22.0f);
+        Vec lfo_hz_field_size = Vec(70.0f, 22.0f);
+
+        float x_pos = 10.0f;
+
+        y_baseline = 38.0f;
+
+        volts_field = new FloatField(module);
+        volts_field->box.pos = Vec(x_pos, y_baseline);
+        volts_field->box.size = volt_field_size;
+
+        addChild(volts_field);
+
+        y_baseline = 78.0f;
+
+        float h_pos = x_pos;
+        hz_field = new HZFloatField(module);
+        hz_field->box.pos = Vec(x_pos, y_baseline);
+        hz_field->box.size = hz_field_size;
+
+        addChild(hz_field);
+
+        y_baseline = 120.0f;
+
+        lfo_hz_field = new LFOHzFloatField(module);
+        lfo_hz_field->box.pos = Vec(h_pos, y_baseline);
+        lfo_hz_field->box.size = lfo_hz_field_size;
+
+        addChild(lfo_hz_field);
+
+        y_baseline += lfo_hz_field->box.size.y;
+        y_baseline += 5.0f;
+        y_baseline += 12.0f;
+
+        lfo_bpm_field = new LFOBpmFloatField(module);
+        lfo_bpm_field->box.pos = Vec(x_pos, y_baseline);
+        lfo_bpm_field->box.size = Vec(70.0f, 22.0f);
+
+        addChild(lfo_bpm_field);
+
+        y_baseline += lfo_bpm_field->box.size.y;
+        y_baseline += 20.0f;
+
+        note_name_field = new NoteNameField(module);
+        note_name_field->box.pos = Vec(x_pos, y_baseline);
+        note_name_field->box.size = Vec(70.0f, 22.0f);
+
+        addChild(note_name_field);
+
+        y_baseline += note_name_field->box.size.y;
+        y_baseline += 5.0f;
+
+        cents_field = new CentsField(module);
+        cents_field->box.pos = Vec(x_pos, y_baseline);
+        cents_field->box.size = Vec(55.0f, 22.0f);
+
+        addChild(cents_field);
+
+        y_baseline += cents_field->box.size.y;
+        y_baseline += 5.0f;
+
+        float middle = box.size.x / 2.0f;
+        float in_port_x = 15.0f;
+
+        y_baseline += 12.0f;
+
+        PJ301MPort *value_in_port = createInput<PJ301MPort>(
+            Vec(in_port_x, y_baseline),
+            module,
+            SpecificValue::VALUE1_INPUT);
+
+        value_in_port->box.pos = Vec(2.0f, y_baseline);
+
+        inputs.push_back(value_in_port);
+        addChild(value_in_port);
+
+        float out_port_x = middle + 24.0f;
+
+        PJ301MPort *value_out_port = createOutput<PJ301MPort>(
+            Vec(out_port_x, y_baseline),
+            module,
+            SpecificValue::VALUE1_OUTPUT);
+
+        outputs.push_back(value_out_port);
+        value_out_port->box.pos = Vec(box.size.x - value_out_port->box.size.x - 2.0f, y_baseline);
+
+        addChild(value_out_port);
+
+        y_baseline += value_out_port->box.size.y;
+        y_baseline += 16.0f;
+
+        PurpleTrimpot *trimpot = createParam<PurpleTrimpot>(
+            Vec(middle - 24.0f, y_baseline + 4.5f),
+            module,
+            SpecificValue::VALUE1_PARAM);
+
+        addParam(trimpot);
+        // params.push_back(trimpot);
+        // addChild(trimpot);
+
+        // fire off an event to refresh all the widgets
+        event::Change e;
+        onChange(e);
+
+    }
 };
 
-SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(module)
-{
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/SpecificValue.svg")));
-
-    // TODO: widget with these children?
-    float y_baseline = 45.0f;
-
-    Vec volt_field_size = Vec(70.0f, 22.0f);
-    Vec hz_field_size = Vec(70.0f, 22.0f);
-    Vec lfo_hz_field_size = Vec(70.0f, 22.0f);
-
-    float x_pos = 10.0f;
-
-    y_baseline = 38.0f;
-
-    volts_field = new FloatField(module);
-    volts_field->box.pos = Vec(x_pos, y_baseline);
-    volts_field->box.size = volt_field_size;
-
-    addChild(volts_field);
-
-    y_baseline = 78.0f;
-
-    float h_pos = x_pos;
-    hz_field = new HZFloatField(module);
-    hz_field->box.pos = Vec(x_pos, y_baseline);
-    hz_field->box.size = hz_field_size;
-
-    addChild(hz_field);
-
-    y_baseline = 120.0f;
-
-    lfo_hz_field = new LFOHzFloatField(module);
-    lfo_hz_field->box.pos = Vec(h_pos, y_baseline);
-    lfo_hz_field->box.size = lfo_hz_field_size;
-
-    addChild(lfo_hz_field);
-
-    y_baseline += lfo_hz_field->box.size.y;
-    y_baseline += 5.0f;
-    y_baseline += 12.0f;
-
-    lfo_bpm_field = new LFOBpmFloatField(module);
-    lfo_bpm_field->box.pos = Vec(x_pos, y_baseline);
-    lfo_bpm_field->box.size = Vec(70.0f, 22.0f);
-
-    addChild(lfo_bpm_field);
-
-    y_baseline += lfo_bpm_field->box.size.y;
-    y_baseline += 20.0f;
-
-    note_name_field = new NoteNameField(module);
-    note_name_field->box.pos = Vec(x_pos, y_baseline);
-    note_name_field->box.size = Vec(70.0f, 22.0f);
-
-    addChild(note_name_field);
-
-    y_baseline += note_name_field->box.size.y;
-    y_baseline += 5.0f;
-
-    cents_field = new CentsField(module);
-    cents_field->box.pos = Vec(x_pos, y_baseline);
-    cents_field->box.size = Vec(55.0f, 22.0f);
-
-    addChild(cents_field);
-
-    y_baseline += cents_field->box.size.y;
-    y_baseline += 5.0f;
-
-    float middle = box.size.x / 2.0f;
-    float in_port_x = 15.0f;
-
-    y_baseline += 12.0f;
-
-    Port *value_in_port = createInput<PJ301MPort>(
-        Vec(in_port_x, y_baseline),
-        module,
-        SpecificValue::VALUE1_INPUT);
-
-    value_in_port->box.pos = Vec(2.0f, y_baseline);
-
-    inputs.push_back(value_in_port);
-    addChild(value_in_port);
-
-    float out_port_x = middle + 24.0f;
-
-    Port *value_out_port = createOutput<PJ301MPort>(
-        Vec(out_port_x, y_baseline),
-        module,
-        SpecificValue::VALUE1_OUTPUT);
-
-    outputs.push_back(value_out_port);
-    value_out_port->box.pos = Vec(box.size.x - value_out_port->box.size.x - 2.0f, y_baseline);
-
-    addChild(value_out_port);
-
-    y_baseline += value_out_port->box.size.y;
-    y_baseline += 16.0f;
-
-    PurpleTrimpot *trimpot = createParam<PurpleTrimpot>(
-        Vec(middle - 24.0f, y_baseline + 4.5f),
-        module,
-        SpecificValue::VALUE1_PARAM);
-
-    addParam(trimpot);
-    // params.push_back(trimpot);
-    // addChild(trimpot);
-
-    // fire off an event to refresh all the widgets
-    event::Change e;
-    onChange(e);
-}
 
 void SpecificValueWidget::step() {
     ModuleWidget::step();

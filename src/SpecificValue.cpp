@@ -55,7 +55,10 @@ struct SpecificValue : Module
     };
 
 
-    SpecificValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    SpecificValue() {
+        config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        configParam(VALUE1_PARAM, -10.0f, 10.0f, 0.0f);
+    }
 
     void process(const ProcessArgs &args) override;
 
@@ -866,11 +869,11 @@ SpecificValueWidget::SpecificValueWidget(SpecificValue *module) : ModuleWidget(m
     PurpleTrimpot *trimpot = createParam<PurpleTrimpot>(
         Vec(middle - 24.0f, y_baseline + 4.5f),
         module,
-        SpecificValue::VALUE1_PARAM,
-        -10.0f, 10.0f, 0.0f);
+        SpecificValue::VALUE1_PARAM);
 
-    params.push_back(trimpot);
-    addChild(trimpot);
+    addParam(trimpot);
+    // params.push_back(trimpot);
+    // addChild(trimpot);
 
     // fire off an event to refresh all the widgets
     event::Change e;

@@ -1,12 +1,16 @@
-#include "rack.hpp"
+#pragma once
 
-struct PurpleTrimpot : rack::Trimpot {
-    rack::Module *module;
+// #include "rack.hpp"
+#include "alikins.hpp"
+// using namespace rack;
+
+struct PurpleTrimpot : Trimpot {
+    Module *module;
     bool initialized = false;
     PurpleTrimpot();
     void step() override;
-    void reset() override;
-    void randomize() override;
+    // void reset() override;
+    // void randomize() override;
 };
 
 PurpleTrimpot::PurpleTrimpot() : Trimpot() {
@@ -23,7 +27,7 @@ PurpleTrimpot::PurpleTrimpot() : Trimpot() {
 void PurpleTrimpot::step() {
 	// debug("paramId=%d this->initialized: %d initialized: %d this->value: %f value: %f param.value: %f",
      // paramId,  this->initialized, initialized, this->value, value, module->params[paramId].getValue());
-
+    /*
     if (this->value != module->params[paramId].getValue()) {
 		if (this != gHoveredWidget && this->initialized) {
 			// this->value = module->params[paramId].getValue();
@@ -35,16 +39,22 @@ void PurpleTrimpot::step() {
         event::Change e;
 		onChange(e);
 	}
-
+   */
 	Trimpot::step();
 }
 
+/*
 void PurpleTrimpot::reset() {
     this->initialized = false;
     Trimpot::reset();
     }
+*/
 
+/*
 void PurpleTrimpot::randomize() {
     reset();
-    setValue(rescale(dsp::randomUniform(), 0.0f, 1.0f, minValue, maxValue));
+    float value = math::rescale(random::uniform(), 0.f, 1.f, paramQuantity->getMinValue(), paramQuantity->getMaxValue());
+    paramQuantity->setValue(value);
+    // setValue(rescale(random::uniform(), 0.0f, 1.0f, minValue, maxValue));
 }
+*/

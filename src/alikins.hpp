@@ -1,7 +1,8 @@
+#pragma once
+
 #include <math.h>
 
 #include "rack.hpp"
-// #include "rack0.hpp"
 
 const int MOMENTARY_BUTTONS = 13;
 const int INPUT_SOURCES = 1;

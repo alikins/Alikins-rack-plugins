@@ -1,7 +1,5 @@
 #include "alikins.hpp"
 
-#include "dsp/digital.hpp"
-
 struct BigMuteButton : Module {
     enum ParamIds {
         BIG_MUTE_BUTTON_PARAM,
@@ -33,15 +31,19 @@ struct BigMuteButton : Module {
 
     // FadeState state = UNMUTED_STEADY;
     FadeState state = INITIAL;
-    SchmittTrigger muteOnTrigger;
-    SchmittTrigger muteOffTrigger;
+    dsp::SchmittTrigger muteOnTrigger;
+    dsp::SchmittTrigger muteOffTrigger;
 
     float gmult2 = 1.0f;
 
     float crossfade_mix = 0.005f;
 
-    BigMuteButton() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-    void step() override;
+    BigMuteButton() {
+        config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        configParam(BIG_MUTE_BUTTON_PARAM, 0.0f, 1.0f, 0.0f);
+    }
+
+	void process(const ProcessArgs &args) override;
 
     void onReset() override {
         state = UNMUTED_STEADY;
@@ -49,19 +51,19 @@ struct BigMuteButton : Module {
 
 };
 
-void BigMuteButton::step() {
+void BigMuteButton::process(const ProcessArgs &args) {
 
     // INITIAL state, choose next state based on current value of BIG_MUTE_BUTTON_PARAM
     //  since BIG_MUTE_BUTTON_PARAM should be based on either the default, or for a saved
     // patch, the value saved to the params JSON.
 
-    if (muteOnTrigger.process(params[BIG_MUTE_BUTTON_PARAM].value)) {
+    if (muteOnTrigger.process(params[BIG_MUTE_BUTTON_PARAM].getValue())) {
         // debug("MUTE ON");
         state = MUTED_FADE_DOWN;
         gmult2 = 1.0f;
     }
 
-    if (muteOffTrigger.process(!params[BIG_MUTE_BUTTON_PARAM].value)) {
+    if (muteOffTrigger.process(!params[BIG_MUTE_BUTTON_PARAM].getValue())) {
         // debug("MUTE OFF");
         state = UNMUTED_FADE_UP;
         gmult2 = 0.0f;
@@ -69,7 +71,7 @@ void BigMuteButton::step() {
 
     switch(state) {
         case INITIAL:
-            state = (params[BIG_MUTE_BUTTON_PARAM].value == 0.0f) ? UNMUTED_STEADY : MUTED_STEADY;
+            state = (params[BIG_MUTE_BUTTON_PARAM].getValue() == 0.0f) ? UNMUTED_STEADY : MUTED_STEADY;
             break;
         case MUTED_STEADY:
             gmult2 = 0.0f;
@@ -99,60 +101,50 @@ void BigMuteButton::step() {
 
     gmult2 = clamp(gmult2, 0.0f, 1.0f);
 
-    outputs[LEFT_OUTPUT].value = inputs[LEFT_INPUT].value * gmult2;
-    outputs[RIGHT_OUTPUT].value = inputs[RIGHT_INPUT].value * gmult2;
+    outputs[LEFT_OUTPUT].setVoltage(inputs[LEFT_INPUT].getVoltage() * gmult2);
+    outputs[RIGHT_OUTPUT].setVoltage(inputs[RIGHT_INPUT].getVoltage() * gmult2);
 
     // debug("state: %d, gmult2: %f", state, gmult2);
 
     // TODO: to eliminate worse case DC thump, also apply a RC filter of some sort?
 }
 
-struct BigSwitch : SVGSwitch, ToggleSwitch {
+struct BigSwitch : SvgSwitch {
     BigSwitch() {
-        addFrame(SVG::load(assetPlugin(plugin, "res/BigMuteButtonMute.svg")));
-        addFrame(SVG::load(assetPlugin(plugin, "res/BigMuteButtonUnmute.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BigMuteButtonMute.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BigMuteButtonUnmute.svg")));
     }
 };
 
 
 struct BigMuteButtonWidget : ModuleWidget {
-    BigMuteButtonWidget(BigMuteButton *module);
+    BigMuteButtonWidget(BigMuteButton *module) {
+        setModule(module);
+        // box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+        setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BigMuteButton.svg")));
+
+        addParam(createParam<BigSwitch>(Vec(0.0f, 0.0f),
+                    module,
+                    BigMuteButton::BIG_MUTE_BUTTON_PARAM));
+
+        addInput(createInput<PJ301MPort>(Vec(4.0f, 302.0f),
+                    module,
+                    BigMuteButton::LEFT_INPUT));
+        addInput(createInput<PJ301MPort>(Vec(4.0f, 330.0f),
+                    module,
+                    BigMuteButton::RIGHT_INPUT));
+
+        addOutput(createOutput<PJ301MPort>(Vec(60.0f, 302.0f),
+                    module,
+                    BigMuteButton::LEFT_OUTPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(60.0f, 330.0f),
+                    module,
+                    BigMuteButton::RIGHT_OUTPUT));
+
+        addChild(createWidget<ScrewSilver>(Vec(0.0, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x-15, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(30, 365)));
+    }
 };
 
-
-BigMuteButtonWidget::BigMuteButtonWidget(BigMuteButton *module) : ModuleWidget(module) {
-
-    box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-    setPanel(SVG::load(assetPlugin(plugin, "res/BigMuteButton.svg")));
-
-    addParam(ParamWidget::create<BigSwitch>(Vec(0.0f, 0.0f),
-                module,
-                BigMuteButton::BIG_MUTE_BUTTON_PARAM,
-                0.0f, 1.0f, 0.0f));
-
-    addInput(Port::create<PJ301MPort>(Vec(4.0f, 302.0f),
-                Port::INPUT,
-                module,
-                BigMuteButton::LEFT_INPUT));
-    addInput(Port::create<PJ301MPort>(Vec(4.0f, 330.0f),
-                Port::INPUT,
-                module,
-                BigMuteButton::RIGHT_INPUT));
-
-    addOutput(Port::create<PJ301MPort>(Vec(60.0f, 302.0f),
-                Port::OUTPUT,
-                module,
-                BigMuteButton::LEFT_OUTPUT));
-    addOutput(Port::create<PJ301MPort>(Vec(60.0f, 330.0f),
-                Port::OUTPUT,
-                module,
-                BigMuteButton::RIGHT_OUTPUT));
-
-    addChild(Widget::create<ScrewSilver>(Vec(0.0, 0)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x-15, 0)));
-    addChild(Widget::create<ScrewSilver>(Vec(30, 365)));
-
-}
-
-Model *modelBigMuteButton = Model::create<BigMuteButton, BigMuteButtonWidget>(
-        "Alikins", "BigMuteButton", "Big Mute Button", UTILITY_TAG);
+Model *modelBigMuteButton = createModel<BigMuteButton, BigMuteButtonWidget>("BigMuteButton");

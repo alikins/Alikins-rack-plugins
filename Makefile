@@ -1,19 +1,31 @@
-SLUG = Alikins
-VERSION = 0.6.6
-
 RACK_DIR ?= ../..
 
 # FLAGS will be passed to both the C and C++ compiler
-FLAGS +=
+# FLAGS +=
+# FLAGS += -w -g
 CFLAGS +=
-CXXFLAGS +=
+# CXXFLAGS += -Wdeprecated-declarations -Wall -Werror
+# FLAGS += -Wdeprecated-declarations -Wall -Werror
 
 # Careful about linking to libraries, since you can't assume much about the user's environment and library search path.
 # Static libraries are fine.
 LDFLAGS +=
 
 # Add .cpp and .c files to the build
-SOURCES = $(wildcard src/*.cpp)
+# SOURCES = $(wildcard src/*.cpp)
+SOURCES = src/alikins.cpp \
+		  src/IdleSwitch.cpp \
+		  src/BigMuteButton.cpp \
+		  src/GateLength.cpp \
+		  src/MomentaryOnButtons.cpp \
+		  src/Reference.cpp \
+		  src/ValueSaver.cpp \
+		  src/ColorPanel.cpp \
+		  src/ShiftPedal.cpp \
+		  src/SpecificValue.cpp \
+		 # src/HoveredValue.cpp
+		 # src/InjectValue.cpp
+
 
 # Must include the VCV plugin Makefile framework
 include $(RACK_DIR)/plugin.mk

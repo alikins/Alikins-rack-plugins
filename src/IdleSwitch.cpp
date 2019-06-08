@@ -3,7 +3,6 @@
 #include <iomanip>
 
 #include "alikins.hpp"
-#include "dsp/digital.hpp"
 // #include "util.hpp"
 
 
@@ -86,22 +85,22 @@ struct IdleSwitch : Module {
         NUM_LIGHTS
     };
 
-    int idleTimeoutMS = 140;
-    int idleTimeLeftMS = 0;
+    float idleTimeoutMS = 140.0f;
+    float idleTimeLeftMS = 0.0f;
 
-    SchmittTrigger inputTrigger;
+    dsp::SchmittTrigger inputTrigger;
 
     // FIXME: these names are confusing
-    SchmittTrigger heartbeatTrigger;
+    dsp::SchmittTrigger heartbeatTrigger;
 
     // clock mode stuff
-    SchmittTrigger pulseTrigger;
+    dsp::SchmittTrigger pulseTrigger;
     int pulseFrame = 0;
     bool waiting_for_pulse = false;
     bool pulse_mode = false;
 
-    PulseGenerator idleStartPulse;
-    PulseGenerator idleEndPulse;
+    dsp::PulseGenerator idleStartPulse;
+    dsp::PulseGenerator idleEndPulse;
 
     // FIXME: not really counts
     int frameCount = 0;
@@ -109,27 +108,33 @@ struct IdleSwitch : Module {
 
     float idleGateOutput = 0.0;
 
-    float deltaTime = 0;
+    float deltaTime = 0.0f;
 
     bool is_idle = false;
 
-    IdleSwitch() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-    void step() override;
+//    IdleSwitch() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    IdleSwitch() {
+        config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        configParam(TIME_PARAM, 0.f, 10.f, 0.25f);
+    }
+    // void step() override;
+	void process(const ProcessArgs &args) override;
 };
 
 
-void IdleSwitch::step() {
+void IdleSwitch::process(const ProcessArgs &args) {
     bool pulse_seen = false;
     bool time_exceeded = false;
-    pulse_mode = inputs[PULSE_INPUT].active;
+    // pulse_mode = inputs[PULSE_INPUT].active;
+    pulse_mode = inputs[PULSE_INPUT].isConnected();
 
-    float sampleRate = engineGetSampleRate();
-
+    // float sampleRate = engineGetSampleRate();
+    float sampleRate = args.sampleRate;
     // Compute the length of our idle time based on the knob + time cv
     // -or-
     // base it one the time since the last clock pulse
     if (pulse_mode) {
-        if (inputTrigger.process(inputs[PULSE_INPUT].value)) {
+        if (inputTrigger.process(inputs[PULSE_INPUT].getVoltage())) {
             // keep track of which frame we got a pulse
             // FIXME: without a max time, frameCount can wrap?
             // update pulseFrame to point to current frame count
@@ -145,9 +150,9 @@ void IdleSwitch::step() {
         maxFrameCount = frameCount;
 
     } else {
-        deltaTime = params[TIME_PARAM].value;
-        if (inputs[TIME_INPUT].active) {
-            deltaTime += clamp(inputs[TIME_INPUT].value, 0.0f, 10.0f);
+        deltaTime = params[TIME_PARAM].getValue();
+        if (inputs[TIME_INPUT].isConnected()) {
+            deltaTime += clamp(inputs[TIME_INPUT].getVoltage(), 0.0f, 10.0f);
         }
 
         // TODO: refactor into submethods if not subclass
@@ -160,8 +165,8 @@ void IdleSwitch::step() {
     // debug("is_idle: %d pulse_mode: %d w_f_pulse: %d pulse_seen: %d pulseFrame: %d frameCount: %d deltaTime: %f",
     //        is_idle, pulse_mode, waiting_for_pulse, pulse_seen, pulseFrame, frameCount, deltaTime);
 
-    if (inputs[HEARTBEAT_INPUT].active &&
-          heartbeatTrigger.process(inputs[HEARTBEAT_INPUT].value)) {
+    if (inputs[HEARTBEAT_INPUT].isConnected() &&
+          heartbeatTrigger.process(inputs[HEARTBEAT_INPUT].getVoltage())) {
             frameCount = 0;
     }
 
@@ -185,13 +190,13 @@ void IdleSwitch::step() {
 
     if (is_idle) {
         idleGateOutput = 10.0;
-        outputs[ON_WHEN_IDLE_OUTPUT].value = inputs[SWITCHED_INPUT].value;
-        outputs[OFF_WHEN_IDLE_OUTPUT].value = 0.0f;
+        outputs[ON_WHEN_IDLE_OUTPUT].setVoltage(inputs[SWITCHED_INPUT].getVoltage());
+        outputs[OFF_WHEN_IDLE_OUTPUT].setVoltage(0.0f);
 
     } else {
         idleGateOutput = 0.0;
-        outputs[ON_WHEN_IDLE_OUTPUT].value = 0.0f;
-        outputs[OFF_WHEN_IDLE_OUTPUT].value = inputs[SWITCHED_INPUT].value;
+        outputs[ON_WHEN_IDLE_OUTPUT].setVoltage(0.0f);
+        outputs[OFF_WHEN_IDLE_OUTPUT].setVoltage(inputs[SWITCHED_INPUT].getVoltage());
 
         is_idle = false;
 
@@ -202,8 +207,8 @@ void IdleSwitch::step() {
 
     frameCount++;
 
-    if (inputs[INPUT_SOURCE_INPUT].active &&
-            inputTrigger.process(inputs[INPUT_SOURCE_INPUT].value)) {
+    if (inputs[INPUT_SOURCE_INPUT].isConnected() &&
+            inputTrigger.process(inputs[INPUT_SOURCE_INPUT].getVoltage())) {
 
         // only end idle if we are already idle (idle->not idle transition)
         if (is_idle) {
@@ -220,11 +225,11 @@ void IdleSwitch::step() {
     // once clock input works, could add an output to indicate how long between clock
     // If in pulse mode, deltaTime can be larger than 10s internal, but the max output
     // to "Time output" is 10V. ie, after 10s the "Time Output" stops increasing.
-    outputs[TIME_OUTPUT].value = clamp(deltaTime, 0.0f, 10.0f);
-    outputs[IDLE_GATE_OUTPUT].value = idleGateOutput;
+    outputs[TIME_OUTPUT].setVoltage(clamp(deltaTime, 0.0f, 10.0f));
+    outputs[IDLE_GATE_OUTPUT].setVoltage(idleGateOutput);
 
-    outputs[IDLE_START_OUTPUT].value = idleStartPulse.process(1.0/engineGetSampleRate()) ? 10.0 : 0.0;
-    outputs[IDLE_END_OUTPUT].value = idleEndPulse.process(1.0/engineGetSampleRate()) ? 10.0 : 0.0;
+    outputs[IDLE_START_OUTPUT].setVoltage(idleStartPulse.process(1.0/args.sampleRate) ? 10.0 : 0.0);
+    outputs[IDLE_END_OUTPUT].setVoltage(idleEndPulse.process(1.0/args.sampleRate) ? 10.0 : 0.0);
 
 }
 
@@ -232,15 +237,18 @@ void IdleSwitch::step() {
 //  From AS DelayPlus.cpp https://github.com/AScustomWorks/AS
 struct IdleSwitchMsDisplayWidget : TransparentWidget {
 
-  int *value;
+  float *value = NULL;
   std::shared_ptr<Font> font;
 
   IdleSwitchMsDisplayWidget() {
-    font = Font::load(assetPlugin(plugin, "res/Segment7Standard.ttf"));
+    font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
   }
 
   void draw(NVGcontext *vg) override {
-    // Background
+    if (!value) {
+        return;
+    }
+      // Background
     // these go to...
     NVGcolor backgroundColor = nvgRGB(0x11, 0x11, 0x11);
 
@@ -263,6 +271,7 @@ struct IdleSwitchMsDisplayWidget : TransparentWidget {
     nvgTextLetterSpacing(vg, 2.5);
 
     std::stringstream to_display;
+    // DEBUG("idleswitch about to display *value");
     to_display << std::right  << std::setw(5) << *value;
 
     Vec textPos = Vec(0.5f, 19.0f);
@@ -275,46 +284,52 @@ struct IdleSwitchMsDisplayWidget : TransparentWidget {
 
 
 struct IdleSwitchWidget : ModuleWidget {
-    IdleSwitchWidget(IdleSwitch *module);
+    IdleSwitchWidget(IdleSwitch *module) {
+        addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM));
+
+        setModule(module);
+        setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/IdleSwitch.svg")));
+
+        addChild(createWidget<ScrewSilver>(Vec(5, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 20, 365)));
+
+        addInput(createInput<PJ301MPort>(Vec(37, 20.0), module, IdleSwitch::INPUT_SOURCE_INPUT));
+        addInput(createInput<PJ301MPort>(Vec(37, 60.0), module, IdleSwitch::HEARTBEAT_INPUT));
+        addInput(createInput<PJ301MPort>(Vec(70, 60.0), module, IdleSwitch::PULSE_INPUT));
+
+        // idle time display
+        // FIXME: handle large IdleTimeoutMs (> 99999ms) better
+        IdleSwitchMsDisplayWidget *idle_time_display = new IdleSwitchMsDisplayWidget();
+        idle_time_display->box.pos = Vec(20, 115);
+        idle_time_display->box.size = Vec(70, 24);
+        // &idle_time_display->value = 100;
+        if (module) {
+            idle_time_display->value = &module->idleTimeoutMS;
+           }
+        addChild(idle_time_display);
+
+        addInput(createInput<PJ301MPort>(Vec(10, 155.0), module, IdleSwitch::TIME_INPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(80, 155.0), module, IdleSwitch::TIME_OUTPUT));
+
+        IdleSwitchMsDisplayWidget *time_remaining_display = new IdleSwitchMsDisplayWidget();
+        time_remaining_display->box.pos = Vec(20, 225);
+        time_remaining_display->box.size = Vec(70, 24);
+        //time_remaining_display->value = 100;
+        if (module) {
+            time_remaining_display->value = &module->idleTimeLeftMS;
+        }
+        addChild(time_remaining_display);
+
+        addOutput(createOutput<PJ301MPort>(Vec(10, 263.0), module, IdleSwitch::IDLE_START_OUTPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(47.5, 263.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(85, 263.0), module, IdleSwitch::IDLE_END_OUTPUT));
+
+        addInput(createInput<PJ301MPort>(Vec(10.0f, 315.0f), module, IdleSwitch::SWITCHED_INPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(47.5f, 315.0f), module, IdleSwitch::ON_WHEN_IDLE_OUTPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(85.0f, 315.0f), module, IdleSwitch::OFF_WHEN_IDLE_OUTPUT));
+
+    }
 };
 
 
-IdleSwitchWidget::IdleSwitchWidget(IdleSwitch *module) : ModuleWidget(module) {
-    setPanel(SVG::load(assetPlugin(plugin, "res/IdleSwitch.svg")));
-
-    addChild(Widget::create<ScrewSilver>(Vec(5, 0)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 20, 365)));
-
-    addInput(Port::create<PJ301MPort>(Vec(37, 20.0), Port::INPUT, module, IdleSwitch::INPUT_SOURCE_INPUT));
-    addInput(Port::create<PJ301MPort>(Vec(37, 60.0), Port::INPUT, module, IdleSwitch::HEARTBEAT_INPUT));
-    addInput(Port::create<PJ301MPort>(Vec(70, 60.0), Port::INPUT, module, IdleSwitch::PULSE_INPUT));
-
-    // idle time display
-    // FIXME: handle large IdleTimeoutMs (> 99999ms) better
-    IdleSwitchMsDisplayWidget *idle_time_display = new IdleSwitchMsDisplayWidget();
-    idle_time_display->box.pos = Vec(20, 115);
-    idle_time_display->box.size = Vec(70, 24);
-    idle_time_display->value = &module->idleTimeoutMS;
-    addChild(idle_time_display);
-
-    addInput(Port::create<PJ301MPort>(Vec(10, 155.0), Port::INPUT, module, IdleSwitch::TIME_INPUT));
-    addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM, 0.0, 10.0, 0.25));
-    addOutput(Port::create<PJ301MPort>(Vec(80, 155.0), Port::OUTPUT, module, IdleSwitch::TIME_OUTPUT));
-
-    IdleSwitchMsDisplayWidget *time_remaining_display = new IdleSwitchMsDisplayWidget();
-    time_remaining_display->box.pos = Vec(20, 225);
-    time_remaining_display->box.size = Vec(70, 24);
-    time_remaining_display->value = &module->idleTimeLeftMS;
-    addChild(time_remaining_display);
-
-    addOutput(Port::create<PJ301MPort>(Vec(10, 263.0), Port::OUTPUT, module, IdleSwitch::IDLE_START_OUTPUT));
-    addOutput(Port::create<PJ301MPort>(Vec(47.5, 263.0), Port::OUTPUT, module, IdleSwitch::IDLE_GATE_OUTPUT));
-    addOutput(Port::create<PJ301MPort>(Vec(85, 263.0), Port::OUTPUT, module, IdleSwitch::IDLE_END_OUTPUT));
-
-    addInput(Port::create<PJ301MPort>(Vec(10.0f, 315.0f), Port::INPUT, module, IdleSwitch::SWITCHED_INPUT));
-    addOutput(Port::create<PJ301MPort>(Vec(47.5f, 315.0f), Port::OUTPUT, module, IdleSwitch::ON_WHEN_IDLE_OUTPUT));
-    addOutput(Port::create<PJ301MPort>(Vec(85.0f, 315.0f), Port::OUTPUT, module, IdleSwitch::OFF_WHEN_IDLE_OUTPUT));
-}
-
-Model *modelIdleSwitch = Model::create<IdleSwitch, IdleSwitchWidget>(
-        "Alikins", "IdleSwitch", "Idle Switch", SWITCH_TAG  , UTILITY_TAG);
+Model *modelIdleSwitch = createModel<IdleSwitch, IdleSwitchWidget>("IdleSwitch");

@@ -1,18 +1,20 @@
 #include <sstream>
 #include <iomanip>
 
-
 //  From AS DelayPlus.cpp https://github.com/AScustomWorks/AS
 struct MsDisplayWidget : TransparentWidget {
 
-  float *value;
+  float *value = NULL;
   std::shared_ptr<Font> font;
 
   MsDisplayWidget() {
-    font = Font::load(assetPlugin(plugin, "res/Segment7Standard.ttf"));
+    font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
   }
 
   void draw(NVGcontext *vg) override {
+    if (!value) {
+        return;
+    }
     // Background
     // these go to...
     NVGcolor backgroundColor = nvgRGB(0x11, 0x11, 0x11);
@@ -36,6 +38,7 @@ struct MsDisplayWidget : TransparentWidget {
     nvgTextLetterSpacing(vg, 2.5);
 
     std::stringstream to_display;
+    // DEBUG("about to format *value");
     // to_display << std::setiosflags(std::ios::fixed) << std::right  << std::setw(5) << std::setprecision(4) << *value;
     to_display << std::setiosflags(std::ios::fixed) << std::left << std::setprecision(4) << *value;
 

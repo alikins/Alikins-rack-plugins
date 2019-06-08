@@ -1,3 +1,5 @@
+#pragma once
+
 #include <math.h>
 
 #include "rack.hpp"
@@ -18,20 +20,23 @@ const float voltage_max[3] = {10.0f, 10.0f, 5.0f};
 using namespace rack;
 
 
-extern Plugin *plugin;
+extern Plugin *pluginInstance;
 
 ////////////////////
 // module widgets
 ////////////////////
 
+extern Model *modelBigMuteButton;
+extern Model *modelGateLength;
 extern Model *modelIdleSwitch;
 extern Model *modelMomentaryOnButtons;
-extern Model *modelBigMuteButton;
-extern Model *modelColorPanel;
-extern Model *modelGateLength;
-extern Model *modelSpecificValue;
 extern Model *modelReference;
-extern Model *modelHoveredValue;
-extern Model *modelInjectValue;
 extern Model *modelShiftPedal;
 extern Model *modelValueSaver;
+extern Model *modelColorPanel;
+extern Model *modelSpecificValue;
+
+/*
+extern Model *modelHoveredValue;
+extern Model *modelInjectValue;
+*/

@@ -15,6 +15,6 @@ void ParamFloatField::setValue(float value) {
 }
 
 void ParamFloatField::onChange(EventChange &e) {
-    std::string new_text = stringf("%#.4g", hovered_value);
+    std::string new_text = string::f("%#.4g", hovered_value);
     setText(new_text);
 }

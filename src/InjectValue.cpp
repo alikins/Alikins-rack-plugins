@@ -2,7 +2,6 @@
 #include <math.h>
 #include "ui.hpp"
 #include "window.hpp"
-#include "dsp/digital.hpp"
 
 #include "ParamFloatField.hpp"
 
@@ -82,7 +81,7 @@ struct InjectValueWidget : ModuleWidget
 
 InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 {
-    setPanel(SVG::load(assetPlugin(plugin, "res/InjectValue.svg")));
+    setPanel(SVG::load(assetPlugin(pluginInstance, "res/InjectValue.svg")));
 
     float y_baseline = 45.0f;
 
@@ -129,20 +128,20 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     y_baseline = box.size.y - 128.0f;
 
-    inputVoltageSwitch = ParamWidget::create<CKSSThree>(Vec(5.0f, y_baseline ), module,
+    inputVoltageSwitch = createParam<CKSSThree>(Vec(5.0f, y_baseline ), module,
         InjectValue::INPUT_VOLTAGE_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(inputVoltageSwitch);
 
-    Port *value_in_port = Port::create<PJ301MPort>(
+    Port *value_in_port = createPort<PJ301MPort>(
         Vec(60.0f, y_baseline - 2.0),
-        Port::INPUT,
+        PortWidget::INPUT,
         module,
         InjectValue::VALUE_INPUT);
 
     y_baseline = box.size.y - 65.0f;
 
-    enableInjectSwitch = ParamWidget::create<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
+    enableInjectSwitch = createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
         InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(enableInjectSwitch);
@@ -150,10 +149,10 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
     inputs.push_back(value_in_port);
     addChild(value_in_port);
 
-    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 365.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
 
     // fire off an event to refresh all the widgets
     EventChange e;
@@ -246,5 +245,5 @@ void InjectValueWidget::onChange(EventChange &e) {
     param_value_field->onChange(e);
 }
 
-Model *modelInjectValue = Model::create<InjectValue, InjectValueWidget>(
+Model *modelInjectValue = createModel<InjectValue, InjectValueWidget>(
     "Alikins", "InjectValue", "Inject Value - inject value into param under cursor", UTILITY_TAG, CONTROLLER_TAG);

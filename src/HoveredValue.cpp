@@ -5,7 +5,6 @@
 
 #include "ui.hpp"
 #include "window.hpp"
-#include "dsp/digital.hpp"
 
 /* Notes:
 
@@ -52,8 +51,8 @@ struct HoveredValue : Module {
 
     void step() override;
 
-    json_t* toJson() override;
-    void fromJson(json_t *rootJ) override;
+    json_t* dataToJson() override;
+    void dataFromJson(json_t *rootJ) override;
 
     HoverEnabled enabled = WITH_SHIFT;
 
@@ -68,13 +67,13 @@ void HoveredValue::step() {
     outputs[SCALED_PARAM_VALUE_OUTPUT].value = params[HOVERED_SCALED_PARAM_VALUE_PARAM].value;
 }
 
-json_t* HoveredValue::toJson() {
+json_t* HoveredValue::dataToJson() {
     json_t *rootJ = json_object();
     json_object_set_new(rootJ, "useTooltip", json_boolean(useTooltip));
     return rootJ;
 }
 
-void HoveredValue::fromJson(json_t *rootJ) {
+void HoveredValue::dataFromJson(json_t *rootJ) {
     json_t *useTooltipJ = json_object_get(rootJ, "useTooltip");
     if (useTooltipJ) {
         useTooltip = json_boolean_value(useTooltipJ);
@@ -104,7 +103,7 @@ struct HoveredValueWidget : ModuleWidget {
 };
 
 HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(module) {
-    setPanel(SVG::load(assetPlugin(plugin, "res/HoveredValue.svg")));
+    setPanel(SVG::load(assetPlugin(pluginInstance, "res/HoveredValue.svg")));
 
     float y_baseline = 45.0f;
 
@@ -154,15 +153,15 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     // y_baseline = y_baseline + 25.0f;
     y_baseline = box.size.y - 128.0f;
 
-    outputRangeSwitch = ParamWidget::create<CKSSThree>(Vec(5, y_baseline), module,
+    outputRangeSwitch = createParam<CKSSThree>(Vec(5, y_baseline), module,
         HoveredValue::OUTPUT_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(outputRangeSwitch);
 
     // Scaled output port
-    Port *scaled_value_out_port = Port::create<PJ301MPort>(
+    Port *scaled_value_out_port = createPort<PJ301MPort>(
         Vec(60.0f, y_baseline - 2.0f),
-        Port::OUTPUT,
+        PortWidget::OUTPUT,
         module,
         HoveredValue::SCALED_PARAM_VALUE_OUTPUT);
 
@@ -173,14 +172,14 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
     // enabled/disable switch
     y_baseline = box.size.y - 65.0f;
 
-    enableHoverSwitch = ParamWidget::create<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
+    enableHoverSwitch = createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
         HoveredValue::HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(enableHoverSwitch);
 
-    Port *raw_value_out_port = Port::create<PJ301MPort>(
+    Port *raw_value_out_port = createPort<PJ301MPort>(
         Vec(60.0f, box.size.y - 67.0f),
-        Port::OUTPUT,
+        PortWidget::OUTPUT,
         module,
         HoveredValue::PARAM_VALUE_OUTPUT);
 
@@ -188,10 +187,10 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(modu
 
     addChild(raw_value_out_port);
 
-    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 0.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(0.0f, 365.0f)));
-    addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
 
     // fire off an event to refresh all the widgets
     EventChange e;
@@ -368,8 +367,8 @@ struct UseTooltipMenuItem : MenuItem {
 };
 
 
-Menu *HoveredValueWidget::createContextMenu() {
-    Menu *menu = ModuleWidget::createContextMenu();
+Menu *HoveredValuecreateWidgetContextMenu() {
+    Menu *menu = ModulecreateWidgetContextMenu();
 
     MenuLabel *spacerLabel = new MenuLabel();
     menu->addChild(spacerLabel);
@@ -378,7 +377,7 @@ Menu *HoveredValueWidget::createContextMenu() {
     assert(hoveredValue);
 
     UseTooltipMenuItem *useTooltipMenuItem =
-        MenuItem::create<UseTooltipMenuItem>("Show Tooltip",
+        createMenuItem<UseTooltipMenuItem>("Show Tooltip",
                                              CHECKMARK(hoveredValue->useTooltip > 2.0f));
 
     useTooltipMenuItem->module = hoveredValue;
@@ -388,5 +387,6 @@ Menu *HoveredValueWidget::createContextMenu() {
 }
 
 
-Model *modelHoveredValue = Model::create<HoveredValue, HoveredValueWidget>(
-    "Alikins", "HoveredValue", "Hovered Value - get value under cursor", UTILITY_TAG, CONTROLLER_TAG);
+Model *modelHoveredValue = createModel<HoveredValue, HoveredValueWidget>("HoveredValue");
+// Model *modelHoveredValue = createModel<HoveredValue, HoveredValueWidget>(
+//    "Alikins", "HoveredValue", "Hovered Value - get value under cursor", UTILITY_TAG, CONTROLLER_TAG);

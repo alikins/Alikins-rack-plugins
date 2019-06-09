@@ -81,6 +81,23 @@ void HoveredValue::dataFromJson(json_t *rootJ) {
     }
 }
 
+struct UseTooltipMenuItem : MenuItem {
+    HoveredValue *module;
+
+    void onAction(const event::Action &e) override {
+        if (module->useTooltip) {
+            module->useTooltip = false;
+        } else {
+            module->useTooltip = true;
+        }
+    }
+
+    void step() override {
+        rightText = CHECKMARK(module->useTooltip);
+    }
+};
+
+
 struct HoveredValueWidget : ModuleWidget {
     HoveredValueWidget(HoveredValue *module);
 
@@ -91,7 +108,24 @@ struct HoveredValueWidget : ModuleWidget {
     void tooltipShow(std::string tooltipText, Widget *hoveredWidget);
 */
 
-    Menu *createContextMenu() override;
+    void appendContextMenu(Menu *menu) override {
+
+        // Menu *menu = ModulecreateWidgetContextMenu();
+
+        MenuLabel *spacerLabel = new MenuLabel();
+        menu->addChild(spacerLabel);
+
+        HoveredValue *hoveredValue = dynamic_cast<HoveredValue*>(module);
+        assert(hoveredValue);
+
+        UseTooltipMenuItem *useTooltipMenuItem =
+            createMenuItem<UseTooltipMenuItem>("Show Tooltip",
+                                                CHECKMARK(hoveredValue->useTooltip > 2.0f));
+
+        useTooltipMenuItem->module = hoveredValue;
+        menu->addChild(useTooltipMenuItem);
+
+    }
 
     ParamWidget *enableHoverSwitch;
     ParamWidget *outputRangeSwitch;
@@ -361,41 +395,6 @@ void HoveredValueWidget::onChange(const event::Change &e) {
     param_value_field->onChange(e);
 }
 
-struct UseTooltipMenuItem : MenuItem {
-    HoveredValue *module;
-
-    void onAction(const event::Action &e) override {
-        if (module->useTooltip) {
-            module->useTooltip = false;
-        } else {
-            module->useTooltip = true;
-        }
-    }
-
-    void step() override {
-        rightText = CHECKMARK(module->useTooltip);
-    }
-};
-
-
-Menu *HoveredValuecreateWidgetContextMenu() {
-    Menu *menu = ModulecreateWidgetContextMenu();
-
-    MenuLabel *spacerLabel = new MenuLabel();
-    menu->addChild(spacerLabel);
-
-    HoveredValue *hoveredValue = dynamic_cast<HoveredValue*>(module);
-    assert(hoveredValue);
-
-    UseTooltipMenuItem *useTooltipMenuItem =
-        createMenuItem<UseTooltipMenuItem>("Show Tooltip",
-                                             CHECKMARK(hoveredValue->useTooltip > 2.0f));
-
-    useTooltipMenuItem->module = hoveredValue;
-    menu->addChild(useTooltipMenuItem);
-
-    return menu;
-}
 
 
 Model *modelHoveredValue = createModel<HoveredValue, HoveredValueWidget>("HoveredValue");

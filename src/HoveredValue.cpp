@@ -303,25 +303,25 @@ void HoveredValueWidget::step() {
 
     ModuleWidget::step();
 
-    // bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
+    bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
 
-    /*
-    if (!gHoveredWidget) {
-        tooltipHide();
+
+    if (!APP->event->hoveredWidget) {
+        // tooltipHide();
         return;
     }
 
+
     if (module->params[HoveredValue::HOVER_ENABLED_PARAM].getValue() == HoveredValue::OFF) {
-        tooltipHide();
+        // tooltipHide();
         return;
     }
 
     if (module->params[HoveredValue::HOVER_ENABLED_PARAM].getValue() == HoveredValue::WITH_SHIFT &&!shift_pressed) {
-        tooltipHide();
+        // tooltipHide();
         return;
     }
 
-    */
 
     VoltageRange outputRange = (VoltageRange) round(module->params[HoveredValue::OUTPUT_RANGE_PARAM].getValue());
 

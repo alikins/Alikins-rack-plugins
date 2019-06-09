@@ -63,8 +63,8 @@ struct HoveredValue : Module {
 };
 
 void HoveredValue::step() {
-    outputs[PARAM_VALUE_OUTPUT].value = params[HOVERED_PARAM_VALUE_PARAM].value;
-    outputs[SCALED_PARAM_VALUE_OUTPUT].value = params[HOVERED_SCALED_PARAM_VALUE_PARAM].value;
+    outputs[PARAM_VALUE_OUTPUT].setVoltage(params[HOVERED_PARAM_VALUE_PARAM].getValue());
+    outputs[SCALED_PARAM_VALUE_OUTPUT].setVoltage(params[HOVERED_SCALED_PARAM_VALUE_PARAM].getValue());
 }
 
 json_t* HoveredValue::dataToJson() {
@@ -271,17 +271,17 @@ void HoveredValueWidget::step() {
         return;
     }
 
-    if (module->params[HoveredValue::HOVER_ENABLED_PARAM].value == HoveredValue::OFF) {
+    if (module->params[HoveredValue::HOVER_ENABLED_PARAM].getValue() == HoveredValue::OFF) {
         tooltipHide();
         return;
     }
 
-    if (module->params[HoveredValue::HOVER_ENABLED_PARAM].value == HoveredValue::WITH_SHIFT &&!shift_pressed) {
+    if (module->params[HoveredValue::HOVER_ENABLED_PARAM].getValue() == HoveredValue::WITH_SHIFT &&!shift_pressed) {
         tooltipHide();
         return;
     }
 
-    VoltageRange outputRange = (VoltageRange) round(module->params[HoveredValue::OUTPUT_RANGE_PARAM].value);
+    VoltageRange outputRange = (VoltageRange) round(module->params[HoveredValue::OUTPUT_RANGE_PARAM].getValue());
 
     ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
 
@@ -304,7 +304,7 @@ void HoveredValueWidget::step() {
     Port *port = dynamic_cast<Port *>(gHoveredWidget);
     if (port) {
         if (port->type == port->INPUT) {
-            raw_value = port->module->inputs[port->portId].value;
+            raw_value = port->module->inputs[port->portId].getVoltage();
             display_type = "input";
         }
         if (port->type == port->OUTPUT) {

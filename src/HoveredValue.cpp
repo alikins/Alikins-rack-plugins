@@ -198,15 +198,10 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) {
     // addParam(outputRangeSwitch);
 
     // Scaled output port
-    Port *scaled_value_out_port = createPort<PJ301MPort>(
+    addOutput(createOutput<PJ301MPort>(
         Vec(60.0f, y_baseline - 2.0f),
-        PortWidget::OUTPUT,
         module,
-        HoveredValue::SCALED_PARAM_VALUE_OUTPUT);
-
-    outputs.push_back(scaled_value_out_port);
-
-    addChild(scaled_value_out_port);
+        HoveredValue::SCALED_PARAM_VALUE_OUTPUT));
 
     // enabled/disable switch
     y_baseline = box.size.y - 65.0f;
@@ -215,15 +210,10 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) {
 
     // addParam(enableHoverSwitch);
 
-    Port *raw_value_out_port = createPort<PJ301MPort>(
+    addOutput(createOutput<PJ301MPort>(
         Vec(60.0f, box.size.y - 67.0f),
-        PortWidget::OUTPUT,
         module,
-        HoveredValue::PARAM_VALUE_OUTPUT);
-
-    outputs.push_back(raw_value_out_port);
-
-    addChild(raw_value_out_port);
+        HoveredValue::PARAM_VALUE_OUTPUT));
 
     addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
     addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));

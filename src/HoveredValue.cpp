@@ -103,7 +103,7 @@ struct HoveredValueWidget : ModuleWidget {
 };
 
 HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(module) {
-    setPanel(SVG::load(assetPlugin(pluginInstance, "res/HoveredValue.svg")));
+    setPanel(APP->window->loadSvg(assetPlugin(pluginInstance, "res/HoveredValue.svg")));
 
     float y_baseline = 45.0f;
 

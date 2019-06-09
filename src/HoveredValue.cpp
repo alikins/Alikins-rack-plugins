@@ -103,7 +103,7 @@ struct HoveredValueWidget : ModuleWidget {
 };
 
 HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(module) {
-    setPanel(APP->window->loadSvg(assetPlugin(pluginInstance, "res/HoveredValue.svg")));
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/HoveredValue.svg")));
 
     float y_baseline = 45.0f;
 
@@ -324,7 +324,7 @@ void HoveredValueWidget::step() {
     } else {
         // TODO build fancier tool tip text
         // TODO maybe just draw a widget like a tooltip, would be cool to draw a pop up a mini 'scope'
-        tooltipShow(stringf("%s\n%#.4g", display_type.c_str(), raw_value), gHoveredWidget);
+        tooltipShow(string::f("%s\n%#.4g", display_type.c_str(), raw_value), gHoveredWidget);
     }
 
     float scaled_value = rescale(raw_value, display_min, display_max,
@@ -335,9 +335,9 @@ void HoveredValueWidget::step() {
     engineSetParam(module, HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM, scaled_value);
 
     param_value_field->setValue(raw_value);
-    min_field->setText(stringf("%#.4g", display_min));
-    max_field->setText(stringf("%#.4g", display_max));
-    default_field->setText(stringf("%#.4g", display_default));
+    min_field->setText(string::f("%#.4g", display_min));
+    max_field->setText(string::f("%#.4g", display_max));
+    default_field->setText(string::f("%#.4g", display_default));
     widget_type_field->setText(display_type);
 
     // TODO: if a WireWidget, can we figure out it's in/out and current value? That would be cool,

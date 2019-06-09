@@ -6,6 +6,11 @@
 #include "ui.hpp"
 #include "window.hpp"
 
+#include <iostream>
+#include <typeinfo>
+#include <cxxabi.h>
+#include "prettyprint.hpp"
+
 /* Notes:
 
 Most of this is implemented in HoveredValueWidget.step(). Each
@@ -344,21 +349,18 @@ void HoveredValueWidget::step() {
 
     }
 
-    Port *port = dynamic_cast<Port *>(APP->event->hoveredWidget);
-    if (port) {
-        raw_value = port->getVoltage();
-        // FIXME: check if Input or Output instead of Port
-        display_type = "port";
-        /*
-        if (port->type == port->INPUT) {
-            raw_value = port->module->inputs[port->portId].getVoltage();
-            display_type = "input";
+    PortWidget *port_widget = dynamic_cast<PortWidget *>(APP->event->hoveredWidget);
+    
+    if (port_widget) {
+        if (port_widget->type == PortWidget::OUTPUT) {
+            raw_value = port_widget->module->outputs[port_widget->portId].getVoltage();
+            display_type = "Output";
         }
-        if (port->type == port->OUTPUT) {
-            raw_value = port->module->outputs[port->portId].value;
-            display_type = "output";
+
+        if (port_widget->type == PortWidget::INPUT) {
+            raw_value = port_widget->module->inputs[port_widget->portId].getVoltage();
+            display_type = "Input";
         }
-        */
 
         // inputs/outputs dont have variable min/max, so just use the -10/+10 and
         // 0 for the default to get the point across.

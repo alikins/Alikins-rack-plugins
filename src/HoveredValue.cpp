@@ -47,7 +47,8 @@ struct HoveredValue : Module {
 
     enum HoverEnabled {OFF, WITH_SHIFT, ALWAYS};
 
-    HoveredValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    HoveredValue() {
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);}
 
     void step() override;
 
@@ -102,7 +103,8 @@ struct HoveredValueWidget : ModuleWidget {
     Tooltip *tooltip = NULL;
 };
 
-HoveredValueWidget::HoveredValueWidget(HoveredValue *module) : ModuleWidget(module) {
+HoveredValueWidget::HoveredValueWidget(HoveredValue *module) {
+		setModule(module);
     setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/HoveredValue.svg")));
 
     float y_baseline = 45.0f;

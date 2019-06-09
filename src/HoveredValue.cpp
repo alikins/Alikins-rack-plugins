@@ -88,6 +88,9 @@ struct UseTooltipMenuItem : MenuItem {
     HoveredValue *module;
 
     void onAction(const event::Action &e) override {
+        if (!module)
+            return;
+
         if (module->useTooltip) {
             module->useTooltip = false;
         } else {
@@ -96,13 +99,25 @@ struct UseTooltipMenuItem : MenuItem {
     }
 
     void step() override {
+        if (!module)
+            return;
+
         rightText = CHECKMARK(module->useTooltip);
     }
 };
 
 
 struct HoveredValueWidget : ModuleWidget {
-    HoveredValueWidget(HoveredValue *module);
+    // ParamWidget *enableHoverSwitch;
+    // ParamWidget *outputRangeSwitch;
+
+    ParamFloatField *param_value_field;
+    TextField *min_field;
+    TextField *max_field;
+    TextField *default_field;
+    TextField *widget_type_field;
+
+    // Tooltip *tooltip = NULL;
 
     void step() override;
     void onChange(const event::Change &e) override;
@@ -110,6 +125,90 @@ struct HoveredValueWidget : ModuleWidget {
     void tooltipHide();
     void tooltipShow(std::string tooltipText, Widget *hoveredWidget);
 */
+
+    HoveredValueWidget(HoveredValue *module) {
+        setModule(module);
+        setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/HoveredValue.svg")));
+
+        float y_baseline = 45.0f;
+
+        Vec text_field_size = Vec(70.0f, 22.0f);
+
+        float x_pos = 10.0f;
+
+        y_baseline = 38.0f;
+
+        // tooltip = new Tooltip();
+
+        param_value_field = new ParamFloatField(module);
+        param_value_field->box.pos = Vec(x_pos, y_baseline);
+        param_value_field->box.size = text_field_size;
+
+        addChild(param_value_field);
+
+        y_baseline = 78.0f;
+        min_field = new TextField();
+        min_field->box.pos = Vec(x_pos, y_baseline);
+        min_field->box.size = text_field_size;
+
+        addChild(min_field);
+
+        y_baseline = 118.0f;
+        max_field = new TextField();
+        max_field->box.pos = Vec(x_pos, y_baseline);
+        max_field->box.size = text_field_size;
+
+        addChild(max_field);
+
+        y_baseline = 158.0f;
+        default_field = new TextField();
+        default_field->box.pos = Vec(x_pos, y_baseline);
+        default_field->box.size = text_field_size;
+
+        addChild(default_field);
+
+        y_baseline = 198.0f;
+        widget_type_field = new TextField();
+        widget_type_field->box.pos = Vec(x_pos, y_baseline);
+        widget_type_field->box.size = text_field_size;
+
+        addChild(widget_type_field);
+
+        // Scaled output and scaled output range
+        // y_baseline = y_baseline + 25.0f;
+        y_baseline = box.size.y - 128.0f;
+
+        addParam(createParam<CKSSThree>(Vec(5, y_baseline), module, HoveredValue::OUTPUT_RANGE_PARAM));
+        // addParam(outputRangeSwitch);
+
+        // Scaled output port
+        addOutput(createOutput<PJ301MPort>(
+            Vec(60.0f, y_baseline - 2.0f),
+            module,
+            HoveredValue::SCALED_PARAM_VALUE_OUTPUT));
+
+        // enabled/disable switch
+        y_baseline = box.size.y - 65.0f;
+
+        addParam(createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module, HoveredValue::HOVER_ENABLED_PARAM));
+
+        // addParam(enableHoverSwitch);
+
+        addOutput(createOutput<PJ301MPort>(
+            Vec(60.0f, box.size.y - 67.0f),
+            module,
+            HoveredValue::PARAM_VALUE_OUTPUT));
+
+        addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
+
+        // fire off an event to refresh all the widgets
+        event::Change e;
+        onChange(e);
+
+    }
 
     void appendContextMenu(Menu *menu) override {
 
@@ -130,100 +229,7 @@ struct HoveredValueWidget : ModuleWidget {
 
     }
 
-    // ParamWidget *enableHoverSwitch;
-    // ParamWidget *outputRangeSwitch;
-
-    ParamFloatField *param_value_field;
-    TextField *min_field;
-    TextField *max_field;
-    TextField *default_field;
-    TextField *widget_type_field;
-
-    // Tooltip *tooltip = NULL;
 };
-
-HoveredValueWidget::HoveredValueWidget(HoveredValue *module) {
-    setModule(module);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/HoveredValue.svg")));
-
-    float y_baseline = 45.0f;
-
-    Vec text_field_size = Vec(70.0f, 22.0f);
-
-    float x_pos = 10.0f;
-
-    y_baseline = 38.0f;
-
-    // tooltip = new Tooltip();
-
-    param_value_field = new ParamFloatField(module);
-    param_value_field->box.pos = Vec(x_pos, y_baseline);
-    param_value_field->box.size = text_field_size;
-
-    addChild(param_value_field);
-
-    y_baseline = 78.0f;
-    min_field = new TextField();
-    min_field->box.pos = Vec(x_pos, y_baseline);
-    min_field->box.size = text_field_size;
-
-    addChild(min_field);
-
-    y_baseline = 118.0f;
-    max_field = new TextField();
-    max_field->box.pos = Vec(x_pos, y_baseline);
-    max_field->box.size = text_field_size;
-
-    addChild(max_field);
-
-    y_baseline = 158.0f;
-    default_field = new TextField();
-    default_field->box.pos = Vec(x_pos, y_baseline);
-    default_field->box.size = text_field_size;
-
-    addChild(default_field);
-
-    y_baseline = 198.0f;
-    widget_type_field = new TextField();
-    widget_type_field->box.pos = Vec(x_pos, y_baseline);
-    widget_type_field->box.size = text_field_size;
-
-    addChild(widget_type_field);
-
-    // Scaled output and scaled output range
-    // y_baseline = y_baseline + 25.0f;
-    y_baseline = box.size.y - 128.0f;
-
-    addParam(createParam<CKSSThree>(Vec(5, y_baseline), module, HoveredValue::OUTPUT_RANGE_PARAM));
-    // addParam(outputRangeSwitch);
-
-    // Scaled output port
-    addOutput(createOutput<PJ301MPort>(
-        Vec(60.0f, y_baseline - 2.0f),
-        module,
-        HoveredValue::SCALED_PARAM_VALUE_OUTPUT));
-
-    // enabled/disable switch
-    y_baseline = box.size.y - 65.0f;
-
-    addParam(createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module, HoveredValue::HOVER_ENABLED_PARAM));
-
-    // addParam(enableHoverSwitch);
-
-    addOutput(createOutput<PJ301MPort>(
-        Vec(60.0f, box.size.y - 67.0f),
-        module,
-        HoveredValue::PARAM_VALUE_OUTPUT));
-
-    addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
-
-    // fire off an event to refresh all the widgets
-    event::Change e;
-    onChange(e);
-}
 
 /*
 void HoveredValueWidget::tooltipHide() {
@@ -282,6 +288,9 @@ void HoveredValueWidget::step() {
         and if we are actively injecting or not. And transitions for when
         we start hovering and stop hovering over a widget.
     */
+
+    if (!module)
+        return;
 
     float display_min = -5.0f;
     float display_max = 5.0f;

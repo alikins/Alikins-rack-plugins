@@ -23,7 +23,7 @@ SOURCES = src/alikins.cpp \
 		  src/ColorPanel.cpp \
 		  src/ShiftPedal.cpp \
 		  src/SpecificValue.cpp \
-		 # src/HoveredValue.cpp
+		  src/HoveredValue.cpp \
 		 # src/InjectValue.cpp
 
 

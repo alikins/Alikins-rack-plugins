@@ -86,8 +86,10 @@ struct HoveredValueWidget : ModuleWidget {
 
     void step() override;
     void onChange(EventChange &e) override;
+/*
     void tooltipHide();
     void tooltipShow(std::string tooltipText, Widget *hoveredWidget);
+*/
 
     Menu *createContextMenu() override;
 
@@ -100,7 +102,7 @@ struct HoveredValueWidget : ModuleWidget {
     TextField *default_field;
     TextField *widget_type_field;
 
-    Tooltip *tooltip = NULL;
+    // Tooltip *tooltip = NULL;
 };
 
 HoveredValueWidget::HoveredValueWidget(HoveredValue *module) {
@@ -115,7 +117,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) {
 
     y_baseline = 38.0f;
 
-    tooltip = new Tooltip();
+    // tooltip = new Tooltip();
 
     param_value_field = new ParamFloatField(module);
     param_value_field->box.pos = Vec(x_pos, y_baseline);
@@ -199,6 +201,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) {
     onChange(e);
 }
 
+/*
 void HoveredValueWidget::tooltipHide() {
     // assert?
     if (!tooltip) {
@@ -247,6 +250,7 @@ void HoveredValueWidget::tooltipShow(std::string tooltipText, Widget *hoveredWid
         gScene->addChild(tooltip);
     }
 }
+*/
 
 void HoveredValueWidget::step() {
     /* TODO: would be useful to be more explicit about the state here,
@@ -268,6 +272,7 @@ void HoveredValueWidget::step() {
 
     bool shift_pressed = windowIsShiftPressed();
 
+    /*
     if (!gHoveredWidget) {
         tooltipHide();
         return;
@@ -282,6 +287,8 @@ void HoveredValueWidget::step() {
         tooltipHide();
         return;
     }
+
+    */
 
     VoltageRange outputRange = (VoltageRange) round(module->params[HoveredValue::OUTPUT_RANGE_PARAM].getValue());
 
@@ -321,6 +328,7 @@ void HoveredValueWidget::step() {
         display_default = 0.0f;
     }
 
+    /*
     if (!pwidget && !port) {
         tooltipHide();
     } else {
@@ -328,6 +336,7 @@ void HoveredValueWidget::step() {
         // TODO maybe just draw a widget like a tooltip, would be cool to draw a pop up a mini 'scope'
         tooltipShow(string::f("%s\n%#.4g", display_type.c_str(), raw_value), gHoveredWidget);
     }
+    */
 
     float scaled_value = rescale(raw_value, display_min, display_max,
                                  voltage_min[outputRange],

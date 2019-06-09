@@ -381,16 +381,8 @@ void HoveredValueWidget::step() {
                                  voltage_min[outputRange],
                                  voltage_max[outputRange]);
 
-    ParamWidget *raw_param_widget = getParam(HoveredValue::HOVERED_PARAM_VALUE_PARAM);
-    if (raw_param_widget) {
-        raw_param_widget->paramQuantity->setValue(raw_value);
-    }
-    ParamWidget *scaled_param_widget = getParam(HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM);
-    if (scaled_param_widget) {
-        scaled_param_widget->paramQuantity->setValue(scaled_value);
-    }
-    // engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, raw_value);
-    // engineSetParam(module, HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM, scaled_value);
+    module->params[HoveredValue::HOVERED_PARAM_VALUE_PARAM].setValue(raw_value);
+    module->params[HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM].setValue(scaled_value);
 
     param_value_field->setValue(raw_value);
     min_field->setText(string::f("%#.4g", display_min));

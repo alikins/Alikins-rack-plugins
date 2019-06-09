@@ -294,7 +294,7 @@ void HoveredValueWidget::step() {
 
     ModuleWidget::step();
 
-    bool shift_pressed = windowIsShiftPressed();
+    bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
 
     /*
     if (!gHoveredWidget) {
@@ -316,15 +316,16 @@ void HoveredValueWidget::step() {
 
     VoltageRange outputRange = (VoltageRange) round(module->params[HoveredValue::OUTPUT_RANGE_PARAM].getValue());
 
-    ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
+    // ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
+    ParamWidget *pwidget = dynamic_cast<ParamWidget *>(APP->event->hoveredWidget);
 
     if (pwidget) {
         // TODO: show value of original and scaled?
 
-        raw_value = pwidget->value;
-        display_min = pwidget->minValue;
-        display_max = pwidget->maxValue;
-        display_default = pwidget->defaultValue;
+        raw_value = pwidget->paramQuantity->getValue();
+        display_min = pwidget->paramQuantity->getMinValue();
+        display_max = pwidget->paramQuantity->getMaxValue();
+        display_default = pwidget->paramQuantity->getDefaultValue();
         display_type = "param";
 
         // TODO: if we use type name detection stuff (cxxabi/typeinfo/etc) we could possibly
@@ -334,8 +335,12 @@ void HoveredValueWidget::step() {
 
     }
 
-    Port *port = dynamic_cast<Port *>(gHoveredWidget);
+    Port *port = dynamic_cast<Port *>(APP->event->hoveredWidget);
     if (port) {
+        raw_value = port->getVoltage();
+        // FIXME: check if Input or Output instead of Port
+        display_type = "port";
+        /*
         if (port->type == port->INPUT) {
             raw_value = port->module->inputs[port->portId].getVoltage();
             display_type = "input";
@@ -344,6 +349,7 @@ void HoveredValueWidget::step() {
             raw_value = port->module->outputs[port->portId].value;
             display_type = "output";
         }
+        */
 
         // inputs/outputs dont have variable min/max, so just use the -10/+10 and
         // 0 for the default to get the point across.
@@ -366,8 +372,10 @@ void HoveredValueWidget::step() {
                                  voltage_min[outputRange],
                                  voltage_max[outputRange]);
 
-    engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, raw_value);
-    engineSetParam(module, HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM, scaled_value);
+    getParam(HoveredValue::HOVERED_PARAM_VALUE_PARAM)->paramQuantity->setValue(raw_value);
+    getParam(HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM)->paramQuantity->setValue(scaled_value);
+    // engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, raw_value);
+    // engineSetParam(module, HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM, scaled_value);
 
     param_value_field->setValue(raw_value);
     min_field->setText(string::f("%#.4g", display_min));

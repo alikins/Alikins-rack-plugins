@@ -68,6 +68,14 @@
       ]
     },
     {
+      "slug": "HoveredValue",
+      "name": "Hovered Value",
+      "description": "Display and output the value of the currently hovered widget",
+      "tags": [
+        "Utility"
+      ]
+    },
+    {
       "slug": "ValueSaver",
       "name": "Value Saver",
       "description": "Save last used value",

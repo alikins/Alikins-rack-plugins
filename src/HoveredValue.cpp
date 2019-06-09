@@ -48,7 +48,10 @@ struct HoveredValue : Module {
     enum HoverEnabled {OFF, WITH_SHIFT, ALWAYS};
 
     HoveredValue() {
-		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);}
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        configParam(OUTPUT_RANGE_PARAM, 0.0f, 2.0f, 0.0f, "Output Range");
+        configParam(HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f, "Enable Hover");
+    }
 
     void step() override;
 
@@ -127,8 +130,8 @@ struct HoveredValueWidget : ModuleWidget {
 
     }
 
-    ParamWidget *enableHoverSwitch;
-    ParamWidget *outputRangeSwitch;
+    // ParamWidget *enableHoverSwitch;
+    // ParamWidget *outputRangeSwitch;
 
     ParamFloatField *param_value_field;
     TextField *min_field;
@@ -140,7 +143,7 @@ struct HoveredValueWidget : ModuleWidget {
 };
 
 HoveredValueWidget::HoveredValueWidget(HoveredValue *module) {
-		setModule(module);
+    setModule(module);
     setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/HoveredValue.svg")));
 
     float y_baseline = 45.0f;
@@ -191,10 +194,8 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) {
     // y_baseline = y_baseline + 25.0f;
     y_baseline = box.size.y - 128.0f;
 
-    outputRangeSwitch = createParam<CKSSThree>(Vec(5, y_baseline), module,
-        HoveredValue::OUTPUT_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
-
-    addParam(outputRangeSwitch);
+    addParam(createParam<CKSSThree>(Vec(5, y_baseline), module, HoveredValue::OUTPUT_RANGE_PARAM));
+    // addParam(outputRangeSwitch);
 
     // Scaled output port
     Port *scaled_value_out_port = createPort<PJ301MPort>(
@@ -210,10 +211,9 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) {
     // enabled/disable switch
     y_baseline = box.size.y - 65.0f;
 
-    enableHoverSwitch = createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
-        HoveredValue::HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
+    addParam(createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module, HoveredValue::HOVER_ENABLED_PARAM));
 
-    addParam(enableHoverSwitch);
+    // addParam(enableHoverSwitch);
 
     Port *raw_value_out_port = createPort<PJ301MPort>(
         Vec(60.0f, box.size.y - 67.0f),

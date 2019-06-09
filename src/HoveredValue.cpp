@@ -85,7 +85,7 @@ struct HoveredValueWidget : ModuleWidget {
     HoveredValueWidget(HoveredValue *module);
 
     void step() override;
-    void onChange(EventChange &e) override;
+    void onChange(const event::Change &e) override;
 /*
     void tooltipHide();
     void tooltipShow(std::string tooltipText, Widget *hoveredWidget);
@@ -197,7 +197,7 @@ HoveredValueWidget::HoveredValueWidget(HoveredValue *module) {
     addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
 
     // fire off an event to refresh all the widgets
-    EventChange e;
+    event::Change e;
     onChange(e);
 }
 
@@ -356,7 +356,7 @@ void HoveredValueWidget::step() {
     //       seems to be a WireWidget).
 }
 
-void HoveredValueWidget::onChange(EventChange &e) {
+void HoveredValueWidget::onChange(const event::Change &e) {
     ModuleWidget::onChange(e);
     param_value_field->onChange(e);
 }
@@ -364,7 +364,7 @@ void HoveredValueWidget::onChange(EventChange &e) {
 struct UseTooltipMenuItem : MenuItem {
     HoveredValue *module;
 
-    void onAction(EventAction &e) override {
+    void onAction(const event::Action &e) override {
         if (module->useTooltip) {
             module->useTooltip = false;
         } else {

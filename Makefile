@@ -24,6 +24,7 @@ SOURCES = src/alikins.cpp \
 		  src/ShiftPedal.cpp \
 		  src/SpecificValue.cpp \
 		  src/HoveredValue.cpp \
+		  src/ParamFloatField.cpp \
 		 # src/InjectValue.cpp
 
 

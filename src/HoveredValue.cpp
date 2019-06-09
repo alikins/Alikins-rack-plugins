@@ -53,7 +53,7 @@ struct HoveredValue : Module {
         configParam(HOVER_ENABLED_PARAM, 0.0f, 2.0f, 0.0f, "Enable Hover");
     }
 
-    void step() override;
+    void process(const ProcessArgs &args) override;
 
     json_t* dataToJson() override;
     void dataFromJson(json_t *rootJ) override;
@@ -66,7 +66,7 @@ struct HoveredValue : Module {
 
 };
 
-void HoveredValue::step() {
+void HoveredValue::process(const ProcessArgs &args) {
     outputs[PARAM_VALUE_OUTPUT].setVoltage(params[HOVERED_PARAM_VALUE_PARAM].getValue());
     outputs[SCALED_PARAM_VALUE_OUTPUT].setVoltage(params[HOVERED_SCALED_PARAM_VALUE_PARAM].getValue());
 }
@@ -303,7 +303,7 @@ void HoveredValueWidget::step() {
 
     ModuleWidget::step();
 
-    bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
+    // bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
 
     /*
     if (!gHoveredWidget) {
@@ -381,8 +381,14 @@ void HoveredValueWidget::step() {
                                  voltage_min[outputRange],
                                  voltage_max[outputRange]);
 
-    getParam(HoveredValue::HOVERED_PARAM_VALUE_PARAM)->paramQuantity->setValue(raw_value);
-    getParam(HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM)->paramQuantity->setValue(scaled_value);
+    ParamWidget *raw_param_widget = getParam(HoveredValue::HOVERED_PARAM_VALUE_PARAM);
+    if (raw_param_widget) {
+        raw_param_widget->paramQuantity->setValue(raw_value);
+    }
+    ParamWidget *scaled_param_widget = getParam(HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM);
+    if (scaled_param_widget) {
+        scaled_param_widget->paramQuantity->setValue(scaled_value);
+    }
     // engineSetParam(module, HoveredValue::HOVERED_PARAM_VALUE_PARAM, raw_value);
     // engineSetParam(module, HoveredValue::HOVERED_SCALED_PARAM_VALUE_PARAM, scaled_value);
 

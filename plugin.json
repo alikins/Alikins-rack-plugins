@@ -72,7 +72,8 @@
       "name": "Hovered Value",
       "description": "Display and output the value of the currently hovered widget",
       "tags": [
-        "Utility"
+        "Utility",
+        "Controller"
       ]
     },
     {

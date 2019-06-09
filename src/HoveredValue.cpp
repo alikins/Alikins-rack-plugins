@@ -122,14 +122,13 @@ struct HoveredValueWidget : ModuleWidget {
     TextField *default_field;
     TextField *widget_type_field;
 
-    // Tooltip *tooltip = NULL;
+    Tooltip *tooltip = NULL;
 
     void step() override;
     void onChange(const event::Change &e) override;
-/*
+
     void tooltipHide();
     void tooltipShow(std::string tooltipText, Widget *hoveredWidget);
-*/
 
     HoveredValueWidget(HoveredValue *module) {
         setModule(module);
@@ -143,7 +142,7 @@ struct HoveredValueWidget : ModuleWidget {
 
         y_baseline = 38.0f;
 
-        // tooltip = new Tooltip();
+        tooltip = new Tooltip();
 
         param_value_field = new ParamFloatField(module);
         param_value_field->box.pos = Vec(x_pos, y_baseline);
@@ -236,7 +235,6 @@ struct HoveredValueWidget : ModuleWidget {
 
 };
 
-/*
 void HoveredValueWidget::tooltipHide() {
     // assert?
     if (!tooltip) {
@@ -248,15 +246,19 @@ void HoveredValueWidget::tooltipHide() {
 
     // debug("tooltipHide[res=%s]: tt->text:%s", reason.c_str(), tooltip->text.c_str());
 
-    if (!gScene) {
+    /*
+     * if (!gScene) {
         // debug("gScene was null");
         return;
     }
+    */
+
     if (tooltip->parent) {
-        gScene->removeChild(tooltip);
+        APP->scene->removeChild(tooltip);
     }
 
 }
+
 
 void HoveredValueWidget::tooltipShow(std::string tooltipText, Widget *hoveredWidget) {
 
@@ -282,10 +284,9 @@ void HoveredValueWidget::tooltipShow(std::string tooltipText, Widget *hoveredWid
 
     tooltip->text = tooltipText;
     if (!tooltip->parent) {
-        gScene->addChild(tooltip);
+        APP->scene->addChild(tooltip);
     }
 }
-*/
 
 void HoveredValueWidget::step() {
     /* TODO: would be useful to be more explicit about the state here,
@@ -312,18 +313,17 @@ void HoveredValueWidget::step() {
 
 
     if (!APP->event->hoveredWidget) {
-        // tooltipHide();
+        tooltipHide();
         return;
     }
 
-
     if (module->params[HoveredValue::HOVER_ENABLED_PARAM].getValue() == HoveredValue::OFF) {
-        // tooltipHide();
+        tooltipHide();
         return;
     }
 
     if (module->params[HoveredValue::HOVER_ENABLED_PARAM].getValue() == HoveredValue::WITH_SHIFT &&!shift_pressed) {
-        // tooltipHide();
+        tooltipHide();
         return;
     }
 
@@ -350,7 +350,7 @@ void HoveredValueWidget::step() {
     }
 
     PortWidget *port_widget = dynamic_cast<PortWidget *>(APP->event->hoveredWidget);
-    
+
     if (port_widget) {
         if (port_widget->type == PortWidget::OUTPUT) {
             raw_value = port_widget->module->outputs[port_widget->portId].getVoltage();
@@ -369,15 +369,14 @@ void HoveredValueWidget::step() {
         display_default = 0.0f;
     }
 
-    /*
-    if (!pwidget && !port) {
+    if (!pwidget && !port_widget) {
         tooltipHide();
     } else {
         // TODO build fancier tool tip text
         // TODO maybe just draw a widget like a tooltip, would be cool to draw a pop up a mini 'scope'
-        tooltipShow(string::f("%s\n%#.4g", display_type.c_str(), raw_value), gHoveredWidget);
+        tooltipShow(string::f("%s\n%#.4g", display_type.c_str(), raw_value),
+                APP->event->hoveredWidget);
     }
-    */
 
     float scaled_value = rescale(raw_value, display_min, display_max,
                                  voltage_min[outputRange],
@@ -405,5 +404,3 @@ void HoveredValueWidget::onChange(const event::Change &e) {
 
 
 Model *modelHoveredValue = createModel<HoveredValue, HoveredValueWidget>("HoveredValue");
-// Model *modelHoveredValue = createModel<HoveredValue, HoveredValueWidget>(
-//    "Alikins", "HoveredValue", "Hovered Value - get value under cursor", UTILITY_TAG, CONTROLLER_TAG);

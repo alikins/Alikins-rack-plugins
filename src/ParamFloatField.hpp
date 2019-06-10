@@ -1,6 +1,8 @@
+#pragma once
 
-using namespace rack;
-#include "rack.hpp"
+#include "alikins.hpp"
+//using namespace rack;
+//#include "rack.hpp"
 // #include "ui.hpp"
 
 // TODO/FIXME: This is more or less adhoc TextField mixed with QuantityWidget
@@ -13,6 +15,6 @@ struct ParamFloatField : TextField
     ParamFloatField(Module *module);
 
     void setValue(float value);
-    void onChange(EventChange &e) override;
+    void onChange(const event::Change &e) override;
 
 };

@@ -10,11 +10,11 @@ ParamFloatField::ParamFloatField(Module *_module)
 void ParamFloatField::setValue(float value) {
     this->hovered_value = value;
     // this->module->param_value = value;
-    EventChange e;
+    event::Change e;
     onChange(e);
 }
 
-void ParamFloatField::onChange(EventChange &e) {
+void ParamFloatField::onChange(const event::Change &e) {
     std::string new_text = string::f("%#.4g", hovered_value);
     setText(new_text);
 }

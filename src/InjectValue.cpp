@@ -35,9 +35,13 @@ struct InjectValue : Module
         ALWAYS
     };
 
-    InjectValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    InjectValue() {
+        config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        configParam(InjectValue::INPUT_VOLTAGE_RANGE_PARAM, 0.0f, 2.0f, 0.0f, "Input Voltage Range");
+        configParam(InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f, "Enable Inject");
+    }
 
-    void step() override;
+    void process(const ProcessArgs &args) override;
 
     float param_value = 0.0f;
     float input_param_value = 0.0f;
@@ -46,30 +50,28 @@ struct InjectValue : Module
     VoltageRange inputRange = MINUS_PLUS_FIVE;
 };
 
-void InjectValue::step()
+void InjectValue::process(const ProcessArgs &args)
 {
-    enabled = (InjectEnabled) clamp((int) round(params[INJECT_ENABLED_PARAM].value), 0, 2);
+    enabled = (InjectEnabled) clamp((int) round(params[INJECT_ENABLED_PARAM].getValue()), 0, 2);
 
-    inputRange  = (VoltageRange) clamp((int) round(params[INPUT_VOLTAGE_RANGE_PARAM].value), 0, 2);
+    inputRange  = (VoltageRange) clamp((int) round(params[INPUT_VOLTAGE_RANGE_PARAM].getValue()), 0, 2);
 
-    if (!inputs[VALUE_INPUT].active) {
+    if (!inputs[VALUE_INPUT].isConnected()) {
         return;
     }
 
-    param_value = inputs[VALUE_INPUT].value;
+    param_value = inputs[VALUE_INPUT].getVoltage();
 }
 
 struct InjectValueWidget : ModuleWidget
 {
-    InjectValueWidget(InjectValue *module);
 
     void step() override;
-    void onChange(EventChange &e) override;
+    void onChange(const event::Change &e) override;
 
     // TODO: enum/params/ui for input range
 
     ParamWidget *enableInjectSwitch;
-    ParamWidget *inputVoltageSwitch;
 
     ParamFloatField *param_value_field;
     TextField *min_field;
@@ -77,102 +79,98 @@ struct InjectValueWidget : ModuleWidget
     TextField *default_field;
     TextField *widget_type_field;
 
+    InjectValueWidget(InjectValue *module) {
+        setModule(module);
+        setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/InjectValue.svg")));
+
+        float y_baseline = 45.0f;
+
+        Vec text_field_size = Vec(70.0f, 22.0f);
+
+        float x_pos = 10.0f;
+
+        y_baseline = 38.0f;
+
+        param_value_field = new ParamFloatField(module);
+        param_value_field->box.pos = Vec(x_pos, y_baseline);
+        param_value_field->box.size = text_field_size;
+        if (module) {
+            param_value_field->setValue(module->param_value);
+        }
+
+        addChild(param_value_field);
+
+        y_baseline = 78.0f;
+        min_field = new TextField();
+        min_field->box.pos = Vec(x_pos, y_baseline);
+        min_field->box.size = text_field_size;
+
+        addChild(min_field);
+
+        y_baseline = 118.0f;
+        max_field = new TextField();
+        max_field->box.pos = Vec(x_pos, y_baseline);
+        max_field->box.size = text_field_size;
+
+        addChild(max_field);
+
+        y_baseline = 158.0f;
+        default_field = new TextField();
+        default_field->box.pos = Vec(x_pos, y_baseline);
+        default_field->box.size = text_field_size;
+
+        addChild(default_field);
+
+        y_baseline = 198.0f;
+        widget_type_field = new TextField();
+        widget_type_field->box.pos = Vec(x_pos, y_baseline);
+        widget_type_field->box.size = text_field_size;
+
+        addChild(widget_type_field);
+
+        y_baseline = box.size.y - 128.0f;
+
+        addParam(createParam<CKSSThree>(Vec(5.0f, y_baseline ), module, InjectValue::INPUT_VOLTAGE_RANGE_PARAM));
+
+        addInput(createInput<PJ301MPort>(
+            Vec(60.0f, y_baseline - 2.0),
+            module,
+            InjectValue::VALUE_INPUT));
+
+        y_baseline = box.size.y - 65.0f;
+
+        enableInjectSwitch = createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module, InjectValue::INJECT_ENABLED_PARAM);
+
+        addParam(enableInjectSwitch);
+
+        addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
+
+        // fire off an event to refresh all the widgets
+        event::Change e;
+        onChange(e);
+    }
 };
 
-InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
-{
-    setPanel(SVG::load(assetPlugin(pluginInstance, "res/InjectValue.svg")));
-
-    float y_baseline = 45.0f;
-
-    Vec text_field_size = Vec(70.0f, 22.0f);
-
-    float x_pos = 10.0f;
-
-    y_baseline = 38.0f;
-
-    param_value_field = new ParamFloatField(module);
-    param_value_field->box.pos = Vec(x_pos, y_baseline);
-    param_value_field->box.size = text_field_size;
-    param_value_field->setValue(module->param_value);
-
-    addChild(param_value_field);
-
-    y_baseline = 78.0f;
-    min_field = new TextField();
-    min_field->box.pos = Vec(x_pos, y_baseline);
-    min_field->box.size = text_field_size;
-
-    addChild(min_field);
-
-    y_baseline = 118.0f;
-    max_field = new TextField();
-    max_field->box.pos = Vec(x_pos, y_baseline);
-    max_field->box.size = text_field_size;
-
-    addChild(max_field);
-
-    y_baseline = 158.0f;
-    default_field = new TextField();
-    default_field->box.pos = Vec(x_pos, y_baseline);
-    default_field->box.size = text_field_size;
-
-    addChild(default_field);
-
-    y_baseline = 198.0f;
-    widget_type_field = new TextField();
-    widget_type_field->box.pos = Vec(x_pos, y_baseline);
-    widget_type_field->box.size = text_field_size;
-
-    addChild(widget_type_field);
-
-    y_baseline = box.size.y - 128.0f;
-
-    inputVoltageSwitch = createParam<CKSSThree>(Vec(5.0f, y_baseline ), module,
-        InjectValue::INPUT_VOLTAGE_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
-
-    addParam(inputVoltageSwitch);
-
-    Port *value_in_port = createPort<PJ301MPort>(
-        Vec(60.0f, y_baseline - 2.0),
-        PortWidget::INPUT,
-        module,
-        InjectValue::VALUE_INPUT);
-
-    y_baseline = box.size.y - 65.0f;
-
-    enableInjectSwitch = createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
-        InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
-
-    addParam(enableInjectSwitch);
-
-    inputs.push_back(value_in_port);
-    addChild(value_in_port);
-
-    addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
-
-    // fire off an event to refresh all the widgets
-    EventChange e;
-    onChange(e);
-}
 
 void InjectValueWidget::step() {
+    if (!module)
+        return;
+
     InjectValue *injectValueModule = dynamic_cast<InjectValue *>(module);
 
     if (!injectValueModule) {
         return;
     }
 
-
-    if (!gHoveredWidget) {
+    if (!APP->event->hoveredWidget) {
         return;
     }
 
     // TODO/FIXME: I assume there is a better way to check type?
-    ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
+    ParamWidget *pwidget = dynamic_cast<ParamWidget *>(APP->event->hoveredWidget);
 
     if (!pwidget) {
         min_field->setText("");
@@ -184,7 +182,7 @@ void InjectValueWidget::step() {
         return;
     }
 
-    // float input = module->inputs[InjectValue::VALUE_INPUT].value;
+    // float input = module->inputs[InjectValue::VALUE_INPUT].getVoltage();
     float input_value = injectValueModule->param_value;
 
     // clamp the input to withing input voltage range before scaling it
@@ -196,7 +194,8 @@ void InjectValueWidget::step() {
     float scaled_value = rescale(clamped_input,
                                  voltage_min[injectValueModule->inputRange],
                                  voltage_max[injectValueModule->inputRange],
-                                 pwidget->minValue, pwidget->maxValue);
+                                 pwidget->paramQuantity->getMinValue(),
+                                 pwidget->paramQuantity->getMaxValue());
 
     /*
         debug("input_value: %f (in_min: %f, in_max:%f) clamped_in: %f out_min: %f, out_max: %f) scaled_value: %f",
@@ -212,16 +211,18 @@ void InjectValueWidget::step() {
     // Show the value that will be injected
     // TODO: show the original input value and scaled output?
 
-    if (!injectValueModule->enabled || (injectValueModule->enabled == InjectValue::WITH_SHIFT && !windowIsShiftPressed()))
+    bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
+
+    if (!injectValueModule->enabled || (injectValueModule->enabled == InjectValue::WITH_SHIFT && !shift_pressed))
     {
         return;
     }
 
     param_value_field->setValue(scaled_value);
 
-    min_field->setText(stringf("%#.4g", pwidget->minValue));
-    max_field->setText(stringf("%#.4g", pwidget->maxValue));
-    default_field->setText(stringf("%#.4g", pwidget->defaultValue));
+    min_field->setText(string::f("%#.4g", pwidget->paramQuantity->getMinValue()));
+    max_field->setText(string::f("%#.4g", pwidget->paramQuantity->getMaxValue()));
+    default_field->setText(string::f("%#.4g", pwidget->paramQuantity->getDefaultValue()));
     widget_type_field->setText("Param");
 
     // ParamWidgets are-a QuantityWidget, so change it's value
@@ -230,7 +231,7 @@ void InjectValueWidget::step() {
     {
 
         // TODO: would be useful to have a light to indicate when values are being injected
-        pwidget->setValue(scaled_value);
+        pwidget->paramQuantity->setValue(scaled_value);
 
         // force a step of the param widget to get it to 'animate'
         pwidget->step();
@@ -240,10 +241,9 @@ void InjectValueWidget::step() {
     ModuleWidget::step();
 }
 
-void InjectValueWidget::onChange(EventChange &e) {
+void InjectValueWidget::onChange(const event::Change &e) {
     ModuleWidget::onChange(e);
     param_value_field->onChange(e);
 }
 
-Model *modelInjectValue = createModel<InjectValue, InjectValueWidget>(
-    "Alikins", "InjectValue", "Inject Value - inject value into param under cursor", UTILITY_TAG, CONTROLLER_TAG);
+Model *modelInjectValue = createModel<InjectValue, InjectValueWidget>("InjectValue");

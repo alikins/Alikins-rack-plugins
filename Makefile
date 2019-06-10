@@ -25,7 +25,7 @@ SOURCES = src/alikins.cpp \
 		  src/SpecificValue.cpp \
 		  src/HoveredValue.cpp \
 		  src/ParamFloatField.cpp \
-		 # src/InjectValue.cpp
+		  src/InjectValue.cpp \
 
 
 # Must include the VCV plugin Makefile framework

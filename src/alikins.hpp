@@ -36,7 +36,4 @@ extern Model *modelValueSaver;
 extern Model *modelColorPanel;
 extern Model *modelSpecificValue;
 extern Model *modelHoveredValue;
-
-/*
 extern Model *modelInjectValue;
-*/

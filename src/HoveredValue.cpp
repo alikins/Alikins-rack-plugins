@@ -301,16 +301,18 @@ void HoveredValueWidget::step() {
     float display_min = -5.0f;
     float display_max = 5.0f;
     float display_default = 0.0f;
+    float display_value = 0.0f;
 
     std::string display_type = "";
-    std::string tooltipText;
+    std::string display_label = "";
+    std::string display_description = "";
+    std::string display_unit = "";
 
     float raw_value = 0.0f;
 
     ModuleWidget::step();
 
     bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
-
 
     if (!APP->event->hoveredWidget) {
         tooltipHide();
@@ -340,7 +342,11 @@ void HoveredValueWidget::step() {
         display_min = pwidget->paramQuantity->getMinValue();
         display_max = pwidget->paramQuantity->getMaxValue();
         display_default = pwidget->paramQuantity->getDefaultValue();
-        display_type = "param";
+        display_label = pwidget->paramQuantity->getLabel();
+        display_value = pwidget->paramQuantity->getDisplayValue();
+        display_description = pwidget->paramQuantity->description;
+        display_unit = pwidget->paramQuantity->getUnit();
+        display_type = "Param";
 
         // TODO: if we use type name detection stuff (cxxabi/typeinfo/etc) we could possibly
         //       also show the name of the hovered widget as a hint on mystery meat params
@@ -367,6 +373,9 @@ void HoveredValueWidget::step() {
         display_min = -10.0f;
         display_max = 10.0f;
         display_default = 0.0f;
+        display_unit = " V";
+        display_label = string::f("%s port", display_type.c_str());
+        display_value = raw_value;
     }
 
     if (!pwidget && !port_widget) {
@@ -374,8 +383,18 @@ void HoveredValueWidget::step() {
     } else {
         // TODO build fancier tool tip text
         // TODO maybe just draw a widget like a tooltip, would be cool to draw a pop up a mini 'scope'
-        tooltipShow(string::f("%s\n%#.4g", display_type.c_str(), raw_value),
+
+        std::string param_string = string::f("%s: %#.4g%s\n%s\ndisplay: %f\nraw: %#.4g",
+                display_label.c_str(),
+                display_value,
+                display_unit.c_str(),
+                display_description.c_str(),
+                display_value,
+                raw_value);
+
+        tooltipShow(param_string,
                 APP->event->hoveredWidget);
+
     }
 
     float scaled_value = rescale(raw_value, display_min, display_max,

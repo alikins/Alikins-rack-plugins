@@ -160,12 +160,12 @@ void InjectValueWidget::step() {
         return;
     }
 
-    if (!gHoveredWidget) {
+    if (!APP->event->hoveredWidget) {
         return;
     }
 
     // TODO/FIXME: I assume there is a better way to check type?
-    ParamWidget *pwidget = dynamic_cast<ParamWidget *>(gHoveredWidget);
+    ParamWidget *pwidget = dynamic_cast<ParamWidget *>(APP->event->hoveredWidget);
 
     if (!pwidget) {
         min_field->setText("");
@@ -189,7 +189,8 @@ void InjectValueWidget::step() {
     float scaled_value = rescale(clamped_input,
                                  voltage_min[injectValueModule->inputRange],
                                  voltage_max[injectValueModule->inputRange],
-                                 pwidget->minValue, pwidget->maxValue);
+                                 pwidget->paramQuantity->getMinValue(),
+                                 pwidget->paramQuantity->getMaxValue());
 
     /*
         debug("input_value: %f (in_min: %f, in_max:%f) clamped_in: %f out_min: %f, out_max: %f) scaled_value: %f",
@@ -205,16 +206,18 @@ void InjectValueWidget::step() {
     // Show the value that will be injected
     // TODO: show the original input value and scaled output?
 
-    if (!injectValueModule->enabled || (injectValueModule->enabled == InjectValue::WITH_SHIFT && !windowIsShiftPressed()))
+    bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
+
+    if (!injectValueModule->enabled || (injectValueModule->enabled == InjectValue::WITH_SHIFT && !shift_pressed))
     {
         return;
     }
 
     param_value_field->setValue(scaled_value);
 
-    min_field->setText(string::f("%#.4g", pwidget->minValue));
-    max_field->setText(string::f("%#.4g", pwidget->maxValue));
-    default_field->setText(string::f("%#.4g", pwidget->defaultValue));
+    min_field->setText(string::f("%#.4g", pwidget->paramQuantity->getMinValue()));
+    max_field->setText(string::f("%#.4g", pwidget->paramQuantity->getMaxValue()));
+    default_field->setText(string::f("%#.4g", pwidget->paramQuantity->getDefaultValue()));
     widget_type_field->setText("Param");
 
     // ParamWidgets are-a QuantityWidget, so change it's value
@@ -223,7 +226,7 @@ void InjectValueWidget::step() {
     {
 
         // TODO: would be useful to have a light to indicate when values are being injected
-        pwidget->setValue(scaled_value);
+        pwidget->paramQuantity->setValue(scaled_value);
 
         // force a step of the param widget to get it to 'animate'
         pwidget->step();

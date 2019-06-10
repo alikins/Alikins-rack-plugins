@@ -2,7 +2,7 @@
   "slug": "Alikins",
   "name": "Alikins",
   "version": "1.0.0",
-  "license": "BSD-3-Clause",
+  "license": "GPL-3.0-or-later",
   "author": "Adrian Likins",
   "authorEmail": "adrian@likins.com",
   "authorUrl": "https://github.com/alikins/",

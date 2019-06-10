@@ -449,4 +449,4 @@ Output some useful reference voltags: -10V, -5V, -1V, 0V, 1V, 5V, 10V
 
 ## License
 
-BSD 3-clause. See LICENSE.txt
+GPL-3.0-or-later. See LICENSE.txt

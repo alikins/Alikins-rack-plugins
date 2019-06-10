@@ -41,7 +41,7 @@ struct InjectValue : Module
         configParam(InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f, "Enable Inject");
     }
 
-    void step() override;
+    void process(const ProcessArgs &args) override;
 
     float param_value = 0.0f;
     float input_param_value = 0.0f;
@@ -50,7 +50,7 @@ struct InjectValue : Module
     VoltageRange inputRange = MINUS_PLUS_FIVE;
 };
 
-void InjectValue::step()
+void InjectValue::process(const ProcessArgs &args)
 {
     enabled = (InjectEnabled) clamp((int) round(params[INJECT_ENABLED_PARAM].getValue()), 0, 2);
 
@@ -68,7 +68,7 @@ struct InjectValueWidget : ModuleWidget
     InjectValueWidget(InjectValue *module);
 
     void step() override;
-    void onChange(EventChange &e) override;
+    void onChange(const event::Change &e) override;
 
     // TODO: enum/params/ui for input range
 
@@ -153,7 +153,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
     addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
 
     // fire off an event to refresh all the widgets
-    EventChange e;
+    event::Change e;
     onChange(e);
 }
 
@@ -238,7 +238,7 @@ void InjectValueWidget::step() {
     ModuleWidget::step();
 }
 
-void InjectValueWidget::onChange(EventChange &e) {
+void InjectValueWidget::onChange(const event::Change &e) {
     ModuleWidget::onChange(e);
     param_value_field->onChange(e);
 }

@@ -94,7 +94,9 @@ struct InjectValueWidget : ModuleWidget
         param_value_field = new ParamFloatField(module);
         param_value_field->box.pos = Vec(x_pos, y_baseline);
         param_value_field->box.size = text_field_size;
-        param_value_field->setValue(module->param_value);
+        if (module) {
+            param_value_field->setValue(module->param_value);
+        }
 
         addChild(param_value_field);
 
@@ -154,6 +156,9 @@ struct InjectValueWidget : ModuleWidget
 
 
 void InjectValueWidget::step() {
+    if (!module)
+        return;
+
     InjectValue *injectValueModule = dynamic_cast<InjectValue *>(module);
 
     if (!injectValueModule) {

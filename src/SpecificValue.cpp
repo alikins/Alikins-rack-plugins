@@ -18,18 +18,6 @@
 #include "cv_utils.hpp"
 #include "specificValueWidgets.hpp"
 
-#define DOUBLE_CLICK_SECS 0.5
-
-// From KISS FFT,
-// https://github.com/mborgerding/kissfft/blob/master/test/testcpp.cc
-// BSD-3-Clause
-static inline
-double curtime(void)
-{
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return (double)tv.tv_sec + (double)tv.tv_usec*.000001;
-}
 
 struct SpecificValue : Module
 {

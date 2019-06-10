@@ -48,15 +48,15 @@ struct InjectValue : Module
 
 void InjectValue::step()
 {
-    enabled = (InjectEnabled) clamp((int) round(params[INJECT_ENABLED_PARAM].value), 0, 2);
+    enabled = (InjectEnabled) clamp((int) round(params[INJECT_ENABLED_PARAM].getValue()), 0, 2);
 
-    inputRange  = (VoltageRange) clamp((int) round(params[INPUT_VOLTAGE_RANGE_PARAM].value), 0, 2);
+    inputRange  = (VoltageRange) clamp((int) round(params[INPUT_VOLTAGE_RANGE_PARAM].getValue()), 0, 2);
 
-    if (!inputs[VALUE_INPUT].active) {
+    if (!inputs[VALUE_INPUT].isConnected()) {
         return;
     }
 
-    param_value = inputs[VALUE_INPUT].value;
+    param_value = inputs[VALUE_INPUT].getVoltage();
 }
 
 struct InjectValueWidget : ModuleWidget
@@ -182,7 +182,7 @@ void InjectValueWidget::step() {
         return;
     }
 
-    // float input = module->inputs[InjectValue::VALUE_INPUT].value;
+    // float input = module->inputs[InjectValue::VALUE_INPUT].getVoltage();
     float input_value = injectValueModule->param_value;
 
     // clamp the input to withing input voltage range before scaling it

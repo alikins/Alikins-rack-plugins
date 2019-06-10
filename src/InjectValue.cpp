@@ -65,7 +65,6 @@ void InjectValue::process(const ProcessArgs &args)
 
 struct InjectValueWidget : ModuleWidget
 {
-    InjectValueWidget(InjectValue *module);
 
     void step() override;
     void onChange(const event::Change &e) override;
@@ -73,7 +72,6 @@ struct InjectValueWidget : ModuleWidget
     // TODO: enum/params/ui for input range
 
     ParamWidget *enableInjectSwitch;
-    ParamWidget *inputVoltageSwitch;
 
     ParamFloatField *param_value_field;
     TextField *min_field;
@@ -81,81 +79,79 @@ struct InjectValueWidget : ModuleWidget
     TextField *default_field;
     TextField *widget_type_field;
 
+    InjectValueWidget(InjectValue *module) {
+        setModule(module);
+        setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/InjectValue.svg")));
+
+        float y_baseline = 45.0f;
+
+        Vec text_field_size = Vec(70.0f, 22.0f);
+
+        float x_pos = 10.0f;
+
+        y_baseline = 38.0f;
+
+        param_value_field = new ParamFloatField(module);
+        param_value_field->box.pos = Vec(x_pos, y_baseline);
+        param_value_field->box.size = text_field_size;
+        param_value_field->setValue(module->param_value);
+
+        addChild(param_value_field);
+
+        y_baseline = 78.0f;
+        min_field = new TextField();
+        min_field->box.pos = Vec(x_pos, y_baseline);
+        min_field->box.size = text_field_size;
+
+        addChild(min_field);
+
+        y_baseline = 118.0f;
+        max_field = new TextField();
+        max_field->box.pos = Vec(x_pos, y_baseline);
+        max_field->box.size = text_field_size;
+
+        addChild(max_field);
+
+        y_baseline = 158.0f;
+        default_field = new TextField();
+        default_field->box.pos = Vec(x_pos, y_baseline);
+        default_field->box.size = text_field_size;
+
+        addChild(default_field);
+
+        y_baseline = 198.0f;
+        widget_type_field = new TextField();
+        widget_type_field->box.pos = Vec(x_pos, y_baseline);
+        widget_type_field->box.size = text_field_size;
+
+        addChild(widget_type_field);
+
+        y_baseline = box.size.y - 128.0f;
+
+        addParam(createParam<CKSSThree>(Vec(5.0f, y_baseline ), module, InjectValue::INPUT_VOLTAGE_RANGE_PARAM));
+
+        addInput(createInput<PJ301MPort>(
+            Vec(60.0f, y_baseline - 2.0),
+            module,
+            InjectValue::VALUE_INPUT));
+
+        y_baseline = box.size.y - 65.0f;
+
+        enableInjectSwitch = createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module, InjectValue::INJECT_ENABLED_PARAM);
+
+        addParam(enableInjectSwitch);
+
+        addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
+
+        // fire off an event to refresh all the widgets
+        event::Change e;
+        onChange(e);
+    }
 };
 
-InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
-{
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/InjectValue.svg")));
-
-    float y_baseline = 45.0f;
-
-    Vec text_field_size = Vec(70.0f, 22.0f);
-
-    float x_pos = 10.0f;
-
-    y_baseline = 38.0f;
-
-    param_value_field = new ParamFloatField(module);
-    param_value_field->box.pos = Vec(x_pos, y_baseline);
-    param_value_field->box.size = text_field_size;
-    param_value_field->setValue(module->param_value);
-
-    addChild(param_value_field);
-
-    y_baseline = 78.0f;
-    min_field = new TextField();
-    min_field->box.pos = Vec(x_pos, y_baseline);
-    min_field->box.size = text_field_size;
-
-    addChild(min_field);
-
-    y_baseline = 118.0f;
-    max_field = new TextField();
-    max_field->box.pos = Vec(x_pos, y_baseline);
-    max_field->box.size = text_field_size;
-
-    addChild(max_field);
-
-    y_baseline = 158.0f;
-    default_field = new TextField();
-    default_field->box.pos = Vec(x_pos, y_baseline);
-    default_field->box.size = text_field_size;
-
-    addChild(default_field);
-
-    y_baseline = 198.0f;
-    widget_type_field = new TextField();
-    widget_type_field->box.pos = Vec(x_pos, y_baseline);
-    widget_type_field->box.size = text_field_size;
-
-    addChild(widget_type_field);
-
-    y_baseline = box.size.y - 128.0f;
-
-    inputVoltageSwitch = createParam<CKSSThree>(Vec(5.0f, y_baseline ), module, InjectValue::INPUT_VOLTAGE_RANGE_PARAM);
-
-    addParam(inputVoltageSwitch);
-
-    addInput(createInput<PJ301MPort>(
-        Vec(60.0f, y_baseline - 2.0),
-        module,
-        InjectValue::VALUE_INPUT));
-
-    y_baseline = box.size.y - 65.0f;
-
-    enableInjectSwitch = createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module, InjectValue::INJECT_ENABLED_PARAM);
-
-    addParam(enableInjectSwitch);
-
-    addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
-
-    // fire off an event to refresh all the widgets
-    event::Change e;
-    onChange(e);
-}
 
 void InjectValueWidget::step() {
     InjectValue *injectValueModule = dynamic_cast<InjectValue *>(module);
@@ -163,7 +159,6 @@ void InjectValueWidget::step() {
     if (!injectValueModule) {
         return;
     }
-
 
     if (!gHoveredWidget) {
         return;

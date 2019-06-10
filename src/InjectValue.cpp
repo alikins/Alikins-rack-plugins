@@ -81,7 +81,7 @@ struct InjectValueWidget : ModuleWidget
 
 InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 {
-    setPanel(APP->window->loadSvg(assetPlugin(pluginInstance, "res/InjectValue.svg")));
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/InjectValue.svg")));
 
     float y_baseline = 45.0f;
 
@@ -217,9 +217,9 @@ void InjectValueWidget::step() {
 
     param_value_field->setValue(scaled_value);
 
-    min_field->setText(stringf("%#.4g", pwidget->minValue));
-    max_field->setText(stringf("%#.4g", pwidget->maxValue));
-    default_field->setText(stringf("%#.4g", pwidget->defaultValue));
+    min_field->setText(string::f("%#.4g", pwidget->minValue));
+    max_field->setText(string::f("%#.4g", pwidget->maxValue));
+    default_field->setText(string::f("%#.4g", pwidget->defaultValue));
     widget_type_field->setText("Param");
 
     // ParamWidgets are-a QuantityWidget, so change it's value

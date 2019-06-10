@@ -136,20 +136,16 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     addParam(inputVoltageSwitch);
 
-    Port *value_in_port = createPort<PJ301MPort>(
+    addInput(createInput<PJ301MPort>(
         Vec(60.0f, y_baseline - 2.0),
-        PortWidget::INPUT,
         module,
-        InjectValue::VALUE_INPUT);
+        InjectValue::VALUE_INPUT));
 
     y_baseline = box.size.y - 65.0f;
 
     enableInjectSwitch = createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module, InjectValue::INJECT_ENABLED_PARAM);
 
     addParam(enableInjectSwitch);
-
-    inputs.push_back(value_in_port);
-    addChild(value_in_port);
 
     addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
     addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));

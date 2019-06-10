@@ -128,8 +128,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     y_baseline = box.size.y - 128.0f;
 
-    inputVoltageSwitch = createParam<CKSSThree>(Vec(5.0f, y_baseline ), module,
-        InjectValue::INPUT_VOLTAGE_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
+    inputVoltageSwitch = createParam<CKSSThree>(Vec(5.0f, y_baseline ), module, InjectValue::INPUT_VOLTAGE_RANGE_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(inputVoltageSwitch);
 
@@ -141,8 +140,7 @@ InjectValueWidget::InjectValueWidget(InjectValue *module) : ModuleWidget(module)
 
     y_baseline = box.size.y - 65.0f;
 
-    enableInjectSwitch = createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module,
-        InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
+    enableInjectSwitch = createParam<CKSSThree>(Vec(5, box.size.y - 62.0f), module, InjectValue::INJECT_ENABLED_PARAM, 0.0f, 2.0f, 0.0f);
 
     addParam(enableInjectSwitch);
 
@@ -245,5 +243,4 @@ void InjectValueWidget::onChange(EventChange &e) {
     param_value_field->onChange(e);
 }
 
-Model *modelInjectValue = createModel<InjectValue, InjectValueWidget>(
-    "Alikins", "InjectValue", "Inject Value - inject value into param under cursor", UTILITY_TAG, CONTROLLER_TAG);
+Model *modelInjectValue = createModel<InjectValue, InjectValueWidget>("InjectValue");

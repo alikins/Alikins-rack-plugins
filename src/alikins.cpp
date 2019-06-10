@@ -16,5 +16,5 @@ void init(rack::Plugin *p) {
     p->addModel(modelSpecificValue);
     p->addModel(modelColorPanel);
     p->addModel(modelHoveredValue);
-    // p->addModel(modelInjectValue);
+    p->addModel(modelInjectValue);
 }

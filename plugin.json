@@ -77,6 +77,15 @@
       ]
     },
     {
+      "slug": "InjectValue",
+      "name": "Inject Value",
+      "description": "Inject value into param under cursor",
+      "tags": [
+        "Utility",
+        "Controller"
+      ]
+    },
+    {
       "slug": "ValueSaver",
       "name": "Value Saver",
       "description": "Save last used value",

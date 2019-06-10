@@ -35,7 +35,8 @@ struct InjectValue : Module
         ALWAYS
     };
 
-    InjectValue() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+    InjectValue() {
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);}
 
     void step() override;
 

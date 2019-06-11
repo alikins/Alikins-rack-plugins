@@ -6,11 +6,6 @@
 #include "ui.hpp"
 #include "window.hpp"
 
-#include <iostream>
-#include <typeinfo>
-#include <cxxabi.h>
-#include "prettyprint.hpp"
-
 /* Notes:
 
 Most of this is implemented in HoveredValueWidget.step(). Each

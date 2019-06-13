@@ -70,39 +70,7 @@ directly.
 Left and Right arrow keys move the text cursor
 as normal when editing text.
 
-To select all text to replace, use Ctrl/Command + 'a',
-or doubleclick on the field.
-
-
-Up and Down arrow keys change the value as follows:
-
-
-| Key or mouse         | Modifier     | Action                             |
-| -------------------- | ------------ | ---------------------------------- |
-| Up arrow key         |              | increment                          |
-| Up arrow key         | Shift        | increment by "large" amount        |
-| Up arrow key         | Ctrl/Command | increment by "small" amount        |
-| Down arrow key       |              | decrement by default amount        |
-| Down arrow key       | Shift        | decrement by "large" amount        |
-| Down arrow key       | Ctrl/Command | decrement by "small" amount        |
-| Esc                  |              | "undo" and reset to original value |
-
-To change the value using the mouse, click on a field and 'drag' it up
-to increment and drag it 'down' to decrement. To change the value in
-larger steps, hold 'Shift' while dragging. To use small steps, hold
-the mod key ('Ctrl' or 'Command') while dragging.
-
-The default, "large", or "small" increment depends on which field
-is being used.
-
-| Field           | default  | mod (small) | shift (large)  |
-| --------------- | -------- | ----------- | -------------- |
-| Volts           | 0.01 V   | 0.1 V       | 0.001 V        |
-| Frequency (hz)  | 1.0  hz  | 10.0 hz     | 0.1 hz         |
-| LFO (hz)        | 0.01 hz  | 0.1 hz      | 0.001 hz       |
-| LFO (bpm)       | 1.0  bpm | 1.0 bpm     | 0.1 bpm        |
-| Note            | 1 step   | 1 octave    | 1 cent         |
-| Cents           | 0.1 cent | 1.0 cent    | .01 cent       |
+To select all text to replace, use Ctrl/Command + 'a'.
 
 ### Hovered Value
 

@@ -1,19 +1,22 @@
+
+#include <math.h>
+#include <float.h>
+#include <sys/time.h>
+
 #include <stdio.h>
 #include <string>
 #include <vector>
 #include <cstddef>
 #include <array>
 #include <map>
-#include <math.h>
-#include <float.h>
-#include <sys/time.h>
 
 #include "window.hpp"
 #include <GLFW/glfw3.h>
 
-#include "alikins.hpp"
-#include "ui.hpp"
 #include "event.hpp"
+#include "ui.hpp"
+
+#include "alikins.hpp"
 #include "enharmonic.hpp"
 #include "cv_utils.hpp"
 #include "specificValueWidgets.hpp"
@@ -29,7 +32,7 @@ struct SpecificValue : Module
     };
     enum InputIds
     {
-    	VALUE1_INPUT,
+        VALUE1_INPUT,
         NUM_INPUTS
     };
     enum OutputIds
@@ -76,24 +79,30 @@ enum AdjustKey
 
 struct FloatField : TextField
 {
+    ParamWidget *paramWidget;
     SpecificValue *module;
 
     FloatField(SpecificValue *module);
+
+    void step() override {
+		TextField::step();
+	}
+
+    void setParamWidget(ParamWidget *paramWidget) {
+		this->paramWidget = paramWidget;
+		if (paramWidget->paramQuantity) {
+			text = paramWidget->paramQuantity->getDisplayValueString();
+        }
+        TextField::selectAll();
+	}
+
     void onAction(const event::Action &e) override;
     void onChange(const event::Change &e) override;
-    void onHoverKey(const event::HoverKey &e) override;
 
-	// void onMouseMove(ventMouseMove &e) override;
-    // void onMouseUp(EventMouseUp &e) override;
+    void onSelectKey(const event::SelectKey &e) override;
+    void onDoubleClick(const event::DoubleClick &e) override;
 
-    // void onDragMove(const event::DragMove &e) override;
-    // void onDragEnd(const event::DragEnd &e) override;
-
-    // TODO: was used to implement 'esc' undo behavior,
-    //       need to figure out how to do that in v1
-    // void onFocus(EventFocus &e) override;
-
-    virtual void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
+    virtual void handleKeyPress(AdjustKey key, bool shift_pressed, bool mod_pressed);
 
     virtual void increment(float delta);
 
@@ -139,9 +148,11 @@ void FloatField::onChange(const event::Change &e) {
         return;
     }
 
-    std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
-    // std::string new_text = voltsToText(getParam(SpecificValue::VALUE1_PARAM)->paramQuantity->getValue());
-    setText(new_text);
+    if (this != APP->event->selectedWidget)
+    {
+        std::string new_text = voltsToText(module->params[SpecificValue::VALUE1_PARAM].getValue());
+        setText(new_text);
+    }
 }
 
 void FloatField::onAction(const event::Action &e)
@@ -153,84 +164,12 @@ void FloatField::onAction(const event::Action &e)
         return;
 
     module->params[SpecificValue::VALUE1_PARAM].setValue(volts);
+    e.consume(this);
 }
 
-/*
-void FloatField::onFocus(EventFocus &e) {
-    orig_string = text;
-    TextField::onFocus(e);
+void FloatField::onDoubleClick(const event::DoubleClick &e) {
+    selectAll();
 }
-*/
-
-/*
-void FloatField::onMouseUp(EventMouseUp &e) {
-    double new_mouse_up_time = curtime();
-    double delta = new_mouse_up_time - prev_mouse_up_time;
-    prev_mouse_up_time = new_mouse_up_time;
-
-    if (delta <= DOUBLE_CLICK_SECS) {
-        // Select 'all' text in the field
-        selection = 0;
-		cursor = text.size();
-    }
-}
-*/
-
-/*
-void FloatField::onMouseMove(EventMouseMove &e) {
-	if (this == gDraggedWidget) {
-        // debug("FloatField::onMouseMove y_dragging: %d", y_dragging);
-        if (e.mouseRel.x != 0.0f && !y_dragging)  {
-            TextField::onMouseMove(e);
-            return;
-        }
-    }
-}
-*/
-
-/*
-void FloatField::onDragMove(const event::DragMove &e)
-{
-    // wait until we are moving and can tell if up/down or left/right before locking the cursor
-
-    // no vertical cursor movement, dont do anything. In particular, not
-    // locking the cursor so text selection keeps working.
-    if (e.mouseDelta.y == 0.0f || fabs(e.mouseDelta.x) >= 1.0f) {
-        APP->
-        if (this == gDraggedWidget) {
-            return;
-        }
-    }
-    // debug("FloatField::onDragMove doing SOMETHING, start y_dragging");
-    y_dragging = true;
-
-    // lock the
-    windowCursorLock();
-
-    bool shift_pressed = windowIsShiftPressed();
-    bool mod_pressed = windowIsModPressed();
-
-    float inc = shift_pressed ? SHIFT_INC : INC;
-    // mod "wins" if shift and mod pressed
-    inc = mod_pressed ? MOD_INC : inc;
-
-    float delta = inc * -e.mouseRel.y;
-
-    increment(delta);
-
-    // we change the text in the field, trigger onAction to update the param
-    EventAction ae;
-    onAction(ae);
-}
-*/
-
-/*
-void FloatField::onDragEnd(const event::DragEnd &e) {
-    // mouse key released, stop dragging and release the cursor lock
-    y_dragging = false;
-    windowCursorUnlock();
-}
-*/
 
 void FloatField::increment(float delta) {
     float field_value = atof(text.c_str());
@@ -241,7 +180,7 @@ void FloatField::increment(float delta) {
     // debug("orig_string: %s text: %s", orig_string.c_str(), text.c_str());
 }
 
-void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
+void FloatField::handleKeyPress(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
     float inc = shift_pressed ? SHIFT_INC : INC;
     // mod "wins" if shift and mod pressed
     inc = mod_pressed ? MOD_INC : inc;
@@ -253,37 +192,29 @@ void FloatField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pre
     onAction(e);
 }
 
-void FloatField::onHoverKey(const event::HoverKey &e) {
+void FloatField::onSelectKey(const event::SelectKey &e) {
     // debug("e.key: %d", e.key);
-    // bool shift_pressed = windowIsShiftPressed();
-    // bool mod_pressed = windowIsModPressed();
+
+    if (!e.getTarget())
+        TextField::onSelectKey(e);
 
     bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
     bool mod_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_ALT);
-    // e.consume(this);
+
     if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
         switch (e.key) {
             case GLFW_KEY_UP: {
+                handleKeyPress(AdjustKey::UP, shift_pressed, mod_pressed);
                 e.consume(this);
-                handleKey(AdjustKey::UP, shift_pressed, mod_pressed);
             } break;
             case GLFW_KEY_DOWN: {
+                handleKeyPress(AdjustKey::DOWN, shift_pressed, mod_pressed);
                 e.consume(this);
-                handleKey(AdjustKey::DOWN, shift_pressed, mod_pressed);
-            } break;
-            case GLFW_KEY_ESCAPE: {
-                e.consume(this);
-                // debug("escape key pressed, orig_string: %s", orig_string.c_str());
-                text = orig_string;
-                event::Action ea;
-                onAction(ea);
             } break;
         }
+        e.consume(this);
     }
 
-	if (!e.isConsumed()) {
-		TextField::onHoverKey(e);
-	}
 }
 
 struct HZFloatField : FloatField
@@ -549,9 +480,22 @@ void CentsField::onAction(const event::Action &e) {
 }
 
 struct NoteNameField : TextField {
+    ParamWidget *paramWidget;
     SpecificValue *module;
 
     NoteNameField(SpecificValue *_module);
+
+    void step() override {
+		TextField::step();
+	}
+
+    void setParamWidget(ParamWidget *paramWidget) {
+		this->paramWidget = paramWidget;
+		if (paramWidget->paramQuantity) {
+			text = paramWidget->paramQuantity->getDisplayValueString();
+        }
+        TextField::selectAll();
+	}
 
     float minValue = -10.0f;
     float maxValue = 10.0f;
@@ -560,18 +504,11 @@ struct NoteNameField : TextField {
 
     void onChange(const event::Change &e) override;
     void onAction(const event::Action &e) override;
-    void onHoverKey(const event::HoverKey &e) override;
-
-	// void onMouseMove(EventMouseMove &e) override;
-    // void onMouseUp(EventMouseUp &e) override;
-
-    // void onDragMove(const event::DragMove &e) override;
-    // void onDragEnd(const event::DragEnd &e) override;
-
-    // void onFocus(EventFocus &e) override;
+    void onSelectKey(const event::SelectKey &e) override;
+    void onDoubleClick(const event::DoubleClick &e) override;
 
     void increment(float delta);
-    void handleKey(AdjustKey key, bool shift_pressed, bool mod_pressed);
+    void handleKeyPress(AdjustKey key, bool shift_pressed, bool mod_pressed);
 
     bool y_dragging = false;
 
@@ -597,22 +534,22 @@ void NoteNameField::increment(float delta) {
 
     field_value = clampSafe(field_value, minValue, maxValue);
     field_value = chop(field_value, 0.001f);
-    module->params[SpecificValue::VALUE1_PARAM].setValue(field_value);
+    paramWidget->paramQuantity->setValue(field_value);
 }
 
-void NoteNameField::handleKey(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
+void NoteNameField::handleKeyPress(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
     //inc by oct for shift, and 1 cent for mod
     float inc = shift_pressed ? SHIFT_INC : INC;
     inc = mod_pressed ? MOD_INC : inc;
     inc = adjustKey == AdjustKey::UP ? inc : -inc;
 
     increment(inc);
-
-    event::Change e;
-    onChange(e);
 }
 
-void NoteNameField::onHoverKey(const event::HoverKey &e) {
+void NoteNameField::onSelectKey(const event::SelectKey &e) {
+    if (!e.getTarget()) {
+        TextField::onSelectKey(e);
+    }
 
     bool shift_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_SHIFT);
     bool mod_pressed = ((APP->window->getMods() & RACK_MOD_MASK) == GLFW_MOD_ALT);
@@ -620,37 +557,17 @@ void NoteNameField::onHoverKey(const event::HoverKey &e) {
     if (e.action == GLFW_PRESS || e.action == GLFW_REPEAT) {
         switch (e.key) {
             case GLFW_KEY_UP: {
+                handleKeyPress(AdjustKey::UP, shift_pressed, mod_pressed );
                 e.consume(this);
-                handleKey(AdjustKey::UP, shift_pressed, mod_pressed );
             } break;
             case GLFW_KEY_DOWN: {
+                handleKeyPress(AdjustKey::DOWN, shift_pressed, mod_pressed);
                 e.consume(this);
-                handleKey(AdjustKey::DOWN, shift_pressed, mod_pressed);
-            } break;
-            case GLFW_KEY_ESCAPE: {
-                e.consume(this);
-                // debug("escape key pressed, orig_value: %0.5f", orig_value);
-                if (module) {
-                    module->params[SpecificValue::VALUE1_PARAM].setValue(orig_value);
-                }
-                event::Change ec;
-                onChange(ec);
             } break;
         }
+        e.consume(this);
     }
-
-	if (!e.isConsumed()) {
-		TextField::onHoverKey(e);
-	}
 }
-
-/*
-void NoteNameField::onFocus(EventFocus &e) {
-    orig_value = module->params[SpecificValue::VALUE1_PARAM].getValue();
-    // debug("onFocus orig_value: %0.5f", orig_value);
-    TextField::onFocus(e);
-}
-*/
 
 void NoteNameField::onChange(const event::Change &e) {
     if (!module)
@@ -703,10 +620,7 @@ void NoteNameField::onAction(const event::Action &e) {
 
     auto search = note_name_to_volts_map.find(can_note_id);
     if(search != note_name_to_volts_map.end()) {
-        // float f = (float) orig;
-        // module->params[SpecificValue::VALUE1_PARAM].getValue() = note_name_to_volts_map[can_note_id];
-        module->params[SpecificValue::VALUE1_PARAM].setValue((float) note_name_to_volts_map[can_note_id]);
-
+        paramWidget->paramQuantity->setValue((float) note_name_to_volts_map[can_note_id]);
         return;
     }
     else {
@@ -714,78 +628,12 @@ void NoteNameField::onAction(const event::Action &e) {
         // debug("%s was  NOT A VALID CANONICAL NOTE ID", can_note_id.c_str());
         return;
     }
+    e.consume(this);
 }
 
-/*
-void NoteNameField::onMouseMove(EventMouseMove &e) {
-	if (this == gDraggedWidget) {
-        if (e.mouseRel.x != 0.0f && !y_dragging)  {
-            TextField::onMouseMove(e);
-            return;
-        }
-    }
+void NoteNameField::onDoubleClick(const event::DoubleClick &e) {
+    selectAll();
 }
-*/
-
-/*
-// FIXME: refactor to share this and other bits better
-// with FloatField and friends
-void NoteNameField::onMouseUp(EventMouseUp &e) {
-    double new_mouse_up_time = curtime();
-    double delta = new_mouse_up_time - prev_mouse_up_time;
-    prev_mouse_up_time = new_mouse_up_time;
-
-    if (delta <= DOUBLE_CLICK_SECS) {
-        // Select 'all' text in the field
-        selection = 0;
-		cursor = text.size();
-    }
-}
-*/
-
-/*
-void NoteNameField::onDragMove(const event::DragMove &e)
-{
-    // TextField::onDragMove(e);
-
-    if (e.mouseDelta.y == 0.0f || fabs(e.mouseDelta.x) >= 1.0f) {
-        if (this == gDraggedWidget) {
-            return;
-        }
-    }
-
-    y_dragging = true;
-
-    windowCursorLock();
-
-    bool shift_pressed = windowIsShiftPressed();
-    bool mod_pressed = windowIsModPressed();
-
-    float inc = shift_pressed ? SHIFT_INC : INC;
-    inc = mod_pressed ? MOD_INC : inc;
-
-    float delta = inc * -e.mouseRel.y;
-
-
-    //debug("v: %0.5f, dy: %0.5f, delta: %0.5f",
-    //    module->params[SpecificValue::VALUE1_PARAM].getValue(),
-    //    e.mouseRel.y,
-    //    delta);
-
-
-    increment(delta);
-
-    EventChange ce;
-    onChange(ce);
-}
-*/
-
-/*
-void NoteNameField::onDragEnd(const event::DragEnd &e) {
-    APP->window->cursorUnlock();
-    y_dragging = false;
-}
-*/
 
 struct SpecificValueWidget : ModuleWidget
 {
@@ -908,8 +756,9 @@ struct SpecificValueWidget : ModuleWidget
             SpecificValue::VALUE1_PARAM);
 
         addParam(trimpot);
-        // params.push_back(trimpot);
-        // addChild(trimpot);
+
+        volts_field->setParamWidget(trimpot);
+        note_name_field->setParamWidget(trimpot);
 
         // fire off an event to refresh all the widgets
         event::Change e;
@@ -917,7 +766,6 @@ struct SpecificValueWidget : ModuleWidget
 
     }
 };
-
 
 void SpecificValueWidget::step() {
     ModuleWidget::step();
@@ -940,7 +788,7 @@ void SpecificValueWidget::step() {
             // ignore Nan/Inf and dont emit change
             if (std::isfinite(param_value) && std::isfinite(input_value)) {
                 event::Change e;
-		        onChange(e);
+                onChange(e);
             }
     }
 }

@@ -69,11 +69,18 @@ int volts_to_note(float volts) {
         res = 12 - res;
     }
 
-    // debug("volts_to_note: volts=%f res=%d", volts, res);
+    // DEBUG("volts_to_note1: volts=%f res=%d", volts, res);
+    res = clampSafe(res, 0, 11);
+
+    // DEBUG("volts_to_note2: volts=%f res=%d", volts, res);
     return res;
 }
 
 int volts_to_octave(float volts) {
+    if (!isfinite(volts)) {
+        return VCO_BASELINE_NOTE_OCTAVE_OFFSET;
+    }
+
     int octave = floor(volts) + VCO_BASELINE_NOTE_OCTAVE_OFFSET;
     //debug("volts_to_octaves: volts=%f -> octave=%d (offset_from_baseline=%f, v+ofb=%f)",
     //      volts, octave, offset_from_baseline, volts+offset_from_baseline);

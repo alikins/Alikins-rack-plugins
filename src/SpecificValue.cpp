@@ -45,7 +45,7 @@ struct SpecificValue : Module
 
     SpecificValue() {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-        configParam(VALUE1_PARAM, -10.0f, 10.0f, 0.0f);
+        configParam(VALUE1_PARAM, -10.0f, 10.0f, 0.0f, "The voltage", " V");
     }
 
     void process(const ProcessArgs &args) override;
@@ -659,8 +659,10 @@ void NoteNameField::onChange(const event::Change &e) {
     float cv_volts = module->params[SpecificValue::VALUE1_PARAM].getValue();
     int octave = volts_to_octave(cv_volts);
     int note_number = volts_to_note(cv_volts);
-    /* debug("cv_volts: %f, octave: %d, note_number: %d, can: %s",
-     cv_volts, octave, note_number, note_name_vec[note_number].c_str()); */
+
+    // DEBUG("cv_volts: %f, octave: %d, note_number: %d, can: %s",
+    //        cv_volts, octave, note_number, note_name_vec[note_number].c_str());
+
     std::string new_text = string::f("%s%d", note_name_vec[note_number].c_str(), octave);
 
     setText(new_text);
@@ -923,14 +925,23 @@ void SpecificValueWidget::step() {
     if (!module)
         return;
 
-    if (prev_volts != module->params[SpecificValue::VALUE1_PARAM].getValue() ||
-        prev_input != module->params[SpecificValue::VALUE1_INPUT].getValue()) {
+    float param_value = module->params[SpecificValue::VALUE1_PARAM].getValue();
+    float input_value = module->params[SpecificValue::VALUE1_INPUT].getValue();
+
+
+    if (prev_volts != param_value ||
+        prev_input != input_value) {
+
             // debug("SpVWidget step - emitting EventChange / onChange prev_volts=%f param=%f",
             //     prev_volts, module->params[SpecificValue::VALUE1_PARAM].getValue());
-            prev_volts = module->params[SpecificValue::VALUE1_PARAM].getValue();
-            prev_input = module->params[SpecificValue::VALUE1_INPUT].getValue();
-            event::Change e;
-		    onChange(e);
+            prev_volts = param_value;
+            prev_input = input_value;
+
+            // ignore Nan/Inf and dont emit change
+            if (std::isfinite(param_value) && std::isfinite(input_value)) {
+                event::Change e;
+		        onChange(e);
+            }
     }
 }
 

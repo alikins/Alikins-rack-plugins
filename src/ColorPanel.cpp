@@ -171,14 +171,10 @@ struct ColorPanelModuleResizeHandle : OpaqueWidget {
 struct ColorFrame : TransparentWidget {
 
     ColorPanel *module;
-    ColorPanel::ColorMode colorMode;
 
-    // purple-ish
-    NVGcolor defaultColor = nvgRGB(93, 0, 235);
     NVGcolor panelColor;
 
     ColorFrame() {
-        panelColor = defaultColor;
     }
 
     void step() override {
@@ -262,6 +258,9 @@ struct ColorPanelWidget : ModuleWidget {
             colorFrame = new ColorFrame();
             colorFrame->box.size = box.size;
             colorFrame->module = module;
+            // purple-ish
+            // NVGcolor defaultColor = nvgRGB(93, 0, 235);
+            colorFrame->panelColor = nvgRGB(93, 0, 235);
             addChild(colorFrame);
         }
 

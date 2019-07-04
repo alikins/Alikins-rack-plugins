@@ -35,6 +35,20 @@ struct ColorPanel : Module {
     const float in_min[2] = {0.0, -5.0};
     const float in_max[2] = {10.0, 5.0};
 
+    float color_tup[3] = {0.0f, 0.0f, 0.0f};
+
+    enum RGB {
+        RED,
+        GREEN,
+        BLUE
+    };
+
+    enum HSL {
+        HUE,
+        SAT,
+        LIGHTNESS
+    };
+
     enum ColorMode {
         RGB_MODE,
         HSL_MODE,
@@ -44,6 +58,12 @@ struct ColorPanel : Module {
 
     ColorPanel() {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+        configParam(RED_PARAM,
+                    0.0f, 1.0f, 0.5f, "Red");
+        configParam(GREEN_PARAM,
+                    0.0f, 1.0f, 0.5f, "Green");
+        configParam(BLUE_PARAM,
+                    0.0f, 1.0f, 0.5f, "Blue");
     }
 
     void process(const ProcessArgs &args) override;
@@ -80,14 +100,28 @@ void ColorPanel::process(const ProcessArgs &args)
     if (inputs[RED_INPUT].isConnected()) {
         float in_value = clamp(inputs[RED_INPUT].getVoltage(), in_min[inputRange], in_max[inputRange]);
         red = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
+        // color_tup[RED] = red;
+        // params[RED_PARAM].setValue(red);
+    } else {
+        red = params[RED_PARAM].getValue();
     }
+
     if (inputs[GREEN_INPUT].isConnected()) {
         float in_value = clamp(inputs[GREEN_INPUT].getVoltage(), in_min[inputRange], in_max[inputRange]);
         green = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
+        // color_tup[GREEN] = green;
+        // params[GREEN].setValue(green);
+    } else {
+        green = params[GREEN_PARAM].getValue();
     }
+
     if (inputs[BLUE_INPUT].isConnected()) {
         float in_value = clamp(inputs[BLUE_INPUT].getVoltage(), in_min[inputRange], in_max[inputRange]);
         blue = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
+        // color_tup[BLUE] = blue;
+        // params[BLUE].setValue(blue);
+    } else {
+        blue = params[BLUE_PARAM].getValue();
     }
 }
 
@@ -161,6 +195,10 @@ struct ColorFrame : TransparentWidget {
     float green = 0.5f;
     float blue = 0.5f;
 
+    // purple-ish
+    NVGcolor defaultColor = nvgRGB(93, 0, 235);
+    NVGcolor panelColor = defaultColor;
+
     ColorFrame() {
     }
 
@@ -171,24 +209,20 @@ struct ColorFrame : TransparentWidget {
             return;
         }
 
-        red = module->red;
-        green = module->green;
-        blue = module->blue;
-        colorMode = module->colorMode;
+        if (module->colorMode == ColorPanel::HSL_MODE) {
+            panelColor = nvgHSL(module->red, module->green, module->blue);
+        }
+
+        if (module->colorMode == ColorPanel::RGB_MODE) {
+            panelColor = nvgRGB(module->red, module->green, module->blue);
+        }
+
     }
 
 	void draw(const DrawArgs &args) override {
         // FIXME: not really red, green, blue anymore
         // could include alpha
         // debug("RgbPanel.draw red=%f, green=%f, blue=%f", red, green, blue);
-        if (!module) {
-            return;
-        }
-
-        NVGcolor panelColor = nvgRGBf(red, green, blue);
-        if (module->colorMode == ColorPanel::HSL_MODE) {
-            panelColor = nvgHSL(red, green, blue);
-        }
 
         nvgBeginPath(args.vg);
 

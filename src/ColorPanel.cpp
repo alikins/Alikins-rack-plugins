@@ -35,20 +35,6 @@ struct ColorPanel : Module {
     const float in_min[2] = {0.0, -5.0};
     const float in_max[2] = {10.0, 5.0};
 
-    float color_tup[3] = {0.0f, 0.0f, 0.0f};
-
-    enum RGB {
-        RED,
-        GREEN,
-        BLUE
-    };
-
-    enum HSL {
-        HUE,
-        SAT,
-        LIGHTNESS
-    };
-
     enum ColorMode {
         RGB_MODE,
         HSL_MODE,
@@ -100,8 +86,7 @@ void ColorPanel::process(const ProcessArgs &args)
     if (inputs[RED_INPUT].isConnected()) {
         float in_value = clamp(inputs[RED_INPUT].getVoltage(), in_min[inputRange], in_max[inputRange]);
         red = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
-        // color_tup[RED] = red;
-        // params[RED_PARAM].setValue(red);
+        params[RED_PARAM].setValue(red);
     } else {
         red = params[RED_PARAM].getValue();
     }
@@ -109,8 +94,7 @@ void ColorPanel::process(const ProcessArgs &args)
     if (inputs[GREEN_INPUT].isConnected()) {
         float in_value = clamp(inputs[GREEN_INPUT].getVoltage(), in_min[inputRange], in_max[inputRange]);
         green = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
-        // color_tup[GREEN] = green;
-        // params[GREEN].setValue(green);
+        params[GREEN_PARAM].setValue(green);
     } else {
         green = params[GREEN_PARAM].getValue();
     }
@@ -118,8 +102,7 @@ void ColorPanel::process(const ProcessArgs &args)
     if (inputs[BLUE_INPUT].isConnected()) {
         float in_value = clamp(inputs[BLUE_INPUT].getVoltage(), in_min[inputRange], in_max[inputRange]);
         blue = rescale(in_value, in_min[inputRange], in_max[inputRange], 0.0f, 1.0f);
-        // color_tup[BLUE] = blue;
-        // params[BLUE].setValue(blue);
+        params[BLUE_PARAM].setValue(blue);
     } else {
         blue = params[BLUE_PARAM].getValue();
     }
@@ -190,16 +173,12 @@ struct ColorFrame : TransparentWidget {
     ColorPanel *module;
     ColorPanel::ColorMode colorMode;
 
-    // std::vector<CreditData*> vcredits;
-    float red = 0.5f;
-    float green = 0.5f;
-    float blue = 0.5f;
-
     // purple-ish
     NVGcolor defaultColor = nvgRGB(93, 0, 235);
-    NVGcolor panelColor = defaultColor;
+    NVGcolor panelColor;
 
     ColorFrame() {
+        panelColor = defaultColor;
     }
 
     void step() override {
@@ -214,9 +193,8 @@ struct ColorFrame : TransparentWidget {
         }
 
         if (module->colorMode == ColorPanel::RGB_MODE) {
-            panelColor = nvgRGB(module->red, module->green, module->blue);
+            panelColor = nvgRGBf(module->red, module->green, module->blue);
         }
-
     }
 
 	void draw(const DrawArgs &args) override {
@@ -238,6 +216,7 @@ struct ColorModeItem : MenuItem {
     ColorPanel::ColorMode colorMode;
 
     void onAction(const event::Action &e) override {
+        DEBUG("setting colorPanel->colorMode = %d", colorMode);
         colorPanel->colorMode = colorMode;
     };
 
@@ -266,7 +245,7 @@ struct InputRangeItem : MenuItem {
 
 struct ColorPanelWidget : ModuleWidget {
 	Widget *rightHandle;
-    ColorFrame *panel;
+    ColorFrame *colorFrame;
 
     // Menu *createContextMenu();
 
@@ -280,10 +259,10 @@ struct ColorPanelWidget : ModuleWidget {
         box.size = Vec(6 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
         {
-            panel = new ColorFrame();
-            panel->box.size = box.size;
-            panel->module = module;
-            addChild(panel);
+            colorFrame = new ColorFrame();
+            colorFrame->box.size = box.size;
+            colorFrame->module = module;
+            addChild(colorFrame);
         }
 
         ColorPanelModuleResizeHandle *leftHandle = new ColorPanelModuleResizeHandle();
@@ -327,11 +306,11 @@ struct ColorPanelWidget : ModuleWidget {
         menu->addChild(colorModeLabel);
 
         // FIXME: colorModeItem looks too much like colorModelItem
-        ColorModeItem *colorModeItem = new ColorModeItem();
-        colorModeItem->text = "RGB";
-        colorModeItem->colorPanel = colorPanel;
-        colorModeItem->colorMode = ColorPanel::RGB_MODE;
-        menu->addChild(colorModeItem);
+        ColorModeItem *rgbModeItem = new ColorModeItem();
+        rgbModeItem->text = "RGB";
+        rgbModeItem->colorPanel = colorPanel;
+        rgbModeItem->colorMode = ColorPanel::RGB_MODE;
+        menu->addChild(rgbModeItem);
 
         ColorModeItem *hslModeItem = new ColorModeItem();
         hslModeItem->text = "HSL";
@@ -360,7 +339,7 @@ struct ColorPanelWidget : ModuleWidget {
 
 
 void ColorPanelWidget::step() {
-    panel->box.size = box.size;
+    colorFrame->box.size = box.size;
     rightHandle->box.pos.x = box.size.x - rightHandle->box.size.x;
 
     // debug("box.size (%f, %f)", box.size.x, box.size.y);

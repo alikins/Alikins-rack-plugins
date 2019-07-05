@@ -1,78 +1,29 @@
 #include <stdio.h>
 #include "alikins.hpp"
 
-
 struct MomentaryOnButtons : Module {
     enum ParamIds {
-        BUTTON1_PARAM,
-        BUTTON2_PARAM,
-        BUTTON3_PARAM,
-        BUTTON4_PARAM,
-        BUTTON5_PARAM,
-        BUTTON6_PARAM,
-        BUTTON7_PARAM,
-        BUTTON8_PARAM,
-        BUTTON9_PARAM,
-        BUTTON10_PARAM,
-        BUTTON11_PARAM,
-        BUTTON12_PARAM,
-        BUTTON13_PARAM,
+        ENUMS(BUTTON_PARAM, MOMENTARY_BUTTONS),
         NUM_PARAMS
     };
     enum InputIds {
-        BUTTON1_INPUT,
-        BUTTON2_INPUT,
-        BUTTON3_INPUT,
-        BUTTON4_INPUT,
-        BUTTON5_INPUT,
-        BUTTON6_INPUT,
-        BUTTON7_INPUT,
-        BUTTON8_INPUT,
-        BUTTON9_INPUT,
-        BUTTON10_INPUT,
-        BUTTON11_INPUT,
-        BUTTON12_INPUT,
-        BUTTON13_INPUT,
+        ENUMS(BUTTON_INPUT, MOMENTARY_BUTTONS),
         NUM_INPUTS
     };
     enum OutputIds {
-        BUTTON1_OUTPUT,
-        BUTTON2_OUTPUT,
-        BUTTON3_OUTPUT,
-        BUTTON4_OUTPUT,
-        BUTTON5_OUTPUT,
-        BUTTON6_OUTPUT,
-        BUTTON7_OUTPUT,
-        BUTTON8_OUTPUT,
-        BUTTON9_OUTPUT,
-        BUTTON10_OUTPUT,
-        BUTTON11_OUTPUT,
-        BUTTON12_OUTPUT,
-        BUTTON13_OUTPUT,
+        ENUMS(BUTTON_OUTPUT, MOMENTARY_BUTTONS),
         NUM_OUTPUTS
     };
     enum LightIds {
-        BLINK1_LIGHT,
-        BLINK2_LIGHT,
-        BLINK3_LIGHT,
-        BLINK4_LIGHT,
-        BLINK5_LIGHT,
-        BLINK6_LIGHT,
-        BLINK7_LIGHT,
-        BLINK8_LIGHT,
-        BLINK9_LIGHT,
-        BLINK10_LIGHT,
-        BLINK11_LIGHT,
-        BLINK12_LIGHT,
-        BLINK13_LIGHT,
+        ENUMS(BLINK_LIGHT, MOMENTARY_BUTTONS),
         NUM_LIGHTS
     };
 
     MomentaryOnButtons() {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         for (int i = 0; i < MOMENTARY_BUTTONS; i++) {
-            configParam(BUTTON1_PARAM + i,
-                        0.0, 1.0, 0.0);
+            configParam(BUTTON_PARAM + i,
+                        0.0, 1.0, 0.0, string::f("Button %d", i+1));
         }
     }
 
@@ -85,23 +36,31 @@ void MomentaryOnButtons::process(const ProcessArgs &args) {
 
     for (int i = 0; i < MOMENTARY_BUTTONS; i++) {
 
-        lights[BLINK1_LIGHT + i].setBrightness(0.0);
-        outputs[BUTTON1_OUTPUT + i].setVoltage(0.0f);
+        lights[BLINK_LIGHT + i].setBrightness(0.0);
+        outputs[BUTTON_OUTPUT + i].setVoltage(0.0f);
 
-        if (params[BUTTON1_PARAM + i].getValue()) {
-            outputs[BUTTON1_OUTPUT + i].setVoltage(5.0f);
-            lights[BLINK1_LIGHT + i].setBrightness(1.0);
+        if (params[BUTTON_PARAM + i].getValue()) {
+            outputs[BUTTON_OUTPUT + i].setVoltage(5.0f);
+            lights[BLINK_LIGHT + i].setBrightness(1.0);
         }
     }
 }
 
+struct LightupButton : SvgSwitch {
+	LightupButton() {
+		momentary = true;
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/LightupButton.svg")));
+        addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/LightupButtonDown.svg")));
+        shadow->opacity = 0.0f;
+    };
+};
 
 struct MomentaryOnButtonsWidget : ModuleWidget {
     MomentaryOnButtonsWidget(MomentaryOnButtons *module) {
         setModule(module);
         box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
 
-        int x_offset = 0;
+        int x_offset = 8;
         int y_offset = 26;
 
         int x_start = 0;
@@ -110,7 +69,7 @@ struct MomentaryOnButtonsWidget : ModuleWidget {
         int x_pos = 0;
         int y_pos = 0;
 
-        int light_radius = 7;
+        int light_size = 20;
 
         {
             SvgPanel *panel = new SvgPanel();
@@ -131,12 +90,14 @@ struct MomentaryOnButtonsWidget : ModuleWidget {
             x_pos = x_start + x_offset;
             y_pos = y_start + (i * y_offset);
 
-            addParam(createParam<LEDButton>(Vec(x_pos + light_radius, y_pos + 3), module, MomentaryOnButtons::BUTTON1_PARAM + i));
-            addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + 5 + light_radius, y_pos + light_radius), module, MomentaryOnButtons::BLINK1_LIGHT + i));
+            addParam(createParam<LightupButton>(Vec(x_pos, y_pos + 3),
+                module, MomentaryOnButtons::BUTTON_PARAM + i));
 
-            addOutput(createOutput<PJ301MPort>(Vec(x_pos + 20 + light_radius, y_pos),
-                      module,
-                      MomentaryOnButtons::BUTTON1_OUTPUT + i));
+            //addChild(createLight<MediumLight<RedLight>>(Vec(x_pos + 5 + light_radius, y_pos + light_radius),
+            //    module, MomentaryOnButtons::BLINK_LIGHT + i));
+
+            addOutput(createOutput<PJ301MPort>(Vec(x_pos + light_size + 4, y_pos),
+                module, MomentaryOnButtons::BUTTON_OUTPUT + i));
         }
 
     }

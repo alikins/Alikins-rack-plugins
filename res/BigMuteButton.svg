@@ -14,7 +14,7 @@
    viewBox="0 0 90 380"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="BigMuteButton.svg"
    style="enable-background:new">
   <defs
@@ -27,8 +27,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.6789474"
-     inkscape:cx="45.000099"
-     inkscape:cy="190.00002"
+     inkscape:cx="-54.466984"
+     inkscape:cy="190.29783"
      inkscape:document-units="px"
      inkscape:current-layer="layer10"
      showgrid="false"
@@ -92,7 +92,7 @@
      inkscape:label="Layer 1"
      style="display:inline">
     <rect
-       style="display:inline;opacity:1;fill:#b3b3b3;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.67691725;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.00485439"
+       style="display:inline;opacity:1;fill:#e6e6e6;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.67691725;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.00485439"
        id="rect5174"
        width="89.322891"
        height="379.32306"

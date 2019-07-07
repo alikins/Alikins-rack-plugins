@@ -198,10 +198,12 @@ struct HoveredValueWidget : ModuleWidget {
             module,
             HoveredValue::PARAM_VALUE_OUTPUT));
 
+        /*
         addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
         addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 0.0f)));
         addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
         addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
+        */
 
         // fire off an event to refresh all the widgets
         event::Change e;

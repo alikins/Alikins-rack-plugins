@@ -2,11 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="90"
@@ -14,7 +16,7 @@
    viewBox="0 0 90 380"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="HoveredValue.svg"
    style="enable-background:new">
   <sodipodi:namedview
@@ -24,11 +26,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.663286"
-     inkscape:cx="-12.288805"
-     inkscape:cy="142.22354"
+     inkscape:zoom="3.326572"
+     inkscape:cx="-18.150695"
+     inkscape:cy="79.12324"
      inkscape:document-units="px"
-     inkscape:current-layer="layer10"
+     inkscape:current-layer="layer4"
      showgrid="false"
      units="px"
      inkscape:snap-bbox="false"
@@ -37,8 +39,8 @@
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:window-width="1359"
      inkscape:window-height="854"
-     inkscape:window-x="138"
-     inkscape:window-y="34"
+     inkscape:window-x="8"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:measure-start="0,0"
      inkscape:measure-end="0,0"
@@ -46,7 +48,7 @@
      inkscape:snap-nodes="true"
      inkscape:snap-others="false"
      inkscape:snap-grids="false"
-     showguides="false"
+     showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-to-guides="false"
      inkscape:object-nodes="true"
@@ -246,9 +248,65 @@
        orientation="0,1"
        id="guide20022"
        inkscape:locked="false" />
+    <sodipodi:guide
+       position="-16.834146,359.82988"
+       orientation="0,1"
+       id="guide5746"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <defs
-     id="defs2" />
+     id="defs2">
+    <linearGradient
+       id="linearGradient5888"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#87b7ff;stop-opacity:1;"
+         offset="0"
+         id="stop5886" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5882"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#9287ff;stop-opacity:1;"
+         offset="0"
+         id="stop5880" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5864"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#b887ff;stop-opacity:1;"
+         offset="0"
+         id="stop5862" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5858"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#87a0ff;stop-opacity:1;"
+         offset="0"
+         id="stop5856" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5888"
+       id="linearGradient5884"
+       x1="-0.51915443"
+       y1="261.34982"
+       x2="93.088158"
+       y2="261.34982"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5888"
+       id="linearGradient5890"
+       x1="0.13847879"
+       y1="133.51308"
+       x2="93.051244"
+       y2="133.51308"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -274,7 +332,7 @@
        x="0.30000001"
        y="-1.1912225" />
     <rect
-       style="display:inline;opacity:1;fill:#6000f5;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.49862966;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709;enable-background:new"
+       style="display:inline;opacity:1;fill:#9287ff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.49862966;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709;enable-background:new"
        id="rect20476-6"
        width="31.790743"
        height="48.316219"
@@ -417,7 +475,7 @@
      inkscape:label="blorp 1"
      style="display:inline">
     <rect
-       style="display:inline;opacity:1;fill:#a17ada;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.66312212;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.83009709"
+       style="display:inline;opacity:1;fill:url(#linearGradient5890);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.66312212;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.83009709"
        id="rect12410"
        width="92.912766"
        height="202.20609"
@@ -435,11 +493,11 @@
        style="display:none;opacity:1;fill:#00aad4;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.82110524;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709;enable-background:new"
        rx="8.5025282" />
     <rect
-       style="display:inline;opacity:1;fill:#00aad4;fill-opacity:0.28310505;fill-rule:evenodd;stroke:none;stroke-width:0.82110518;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:1;enable-background:new"
+       style="display:inline;opacity:1;fill:url(#linearGradient5884);fill-opacity:1.0;fill-rule:evenodd;stroke:none;stroke-width:0.82110518;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:1;enable-background:new"
        id="rect19755"
        width="93.607315"
        height="54.479584"
-       x="-1.0191544"
+       x="-0.51915443"
        y="234.11003"
        ry="0" />
   </g>
@@ -724,7 +782,7 @@
        aria-label="Hovered Value"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
        id="text2071"
-       transform="translate(0,0.5)">
+       transform="translate(0,-7.360269)">
       <path
          d="m 13.907081,27.256096 v -3.4375 h -3.036459 v 3.4375 H 9.5164555 v -7.630209 h 1.3541665 v 2.989584 h 3.036459 v -2.989584 h 1.338541 v 7.630209 z"
          id="path2073"

@@ -2,11 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="90"
@@ -14,7 +16,7 @@
    viewBox="0 0 90 380"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="InjectValue.svg"
    style="enable-background:new">
   <sodipodi:namedview
@@ -24,11 +26,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.663286"
-     inkscape:cx="-51.964467"
-     inkscape:cy="187.23139"
+     inkscape:zoom="3.326572"
+     inkscape:cx="15.973338"
+     inkscape:cy="78.594468"
      inkscape:document-units="px"
-     inkscape:current-layer="layer7"
+     inkscape:current-layer="layer6"
      showgrid="false"
      units="px"
      inkscape:snap-bbox="true"
@@ -37,7 +39,7 @@
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:window-width="1440"
      inkscape:window-height="851"
-     inkscape:window-x="0"
+     inkscape:window-x="8"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:measure-start="0,0"
@@ -46,7 +48,7 @@
      inkscape:snap-nodes="true"
      inkscape:snap-others="false"
      inkscape:snap-grids="false"
-     showguides="false"
+     showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-to-guides="false"
      inkscape:object-nodes="true"
@@ -252,9 +254,49 @@
        orientation="0,1"
        id="guide2100"
        inkscape:locked="false" />
+    <sodipodi:guide
+       position="39.680488,360.13049"
+       orientation="0,1"
+       id="guide5748"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <defs
-     id="defs2" />
+     id="defs2">
+    <linearGradient
+       id="linearGradient5876"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#b887ff;stop-opacity:1;"
+         offset="0"
+         id="stop5874" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5870"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#ffea87;stop-opacity:1;"
+         offset="0"
+         id="stop5868" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5870"
+       id="linearGradient5872"
+       x1="0"
+       y1="133.513"
+       x2="90"
+       y2="133.513"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5870"
+       id="linearGradient5878"
+       x1="1.1752988e-07"
+       y1="261.86356"
+       x2="90"
+       y2="261.86356"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -263,7 +305,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -287,7 +329,7 @@
      inkscape:label="inputpanel"
      style="display:inline;opacity:0.8">
     <rect
-       style="opacity:0.86499999;fill:#ffe680;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.70137525;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709"
+       style="opacity:0.86499999;fill:url(#linearGradient5872);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.70137525;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709"
        id="rect17453"
        width="90"
        height="202.20601"
@@ -384,7 +426,7 @@
        height="54.48"
        width="90"
        id="rect12250"
-       style="opacity:1;fill:#a17ada;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.82110524;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709" />
+       style="opacity:1;fill:url(#linearGradient5878);fill-opacity:1.0;fill-rule:evenodd;stroke:none;stroke-width:0.82110524;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:54.20000076;stroke-opacity:0.83009709" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -469,7 +511,7 @@
        aria-label="Inject Value"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
        id="text12223"
-       transform="translate(0,12)">
+       transform="translate(0,3.050306)">
       <path
          d="M 15.518227,16.262194 V 8.6319851 h 1.354167 v 7.6302089 z"
          id="path12225"

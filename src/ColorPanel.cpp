@@ -259,8 +259,7 @@ struct ColorPanelWidget : ModuleWidget {
             colorFrame->box.size = box.size;
             colorFrame->module = module;
             // purple-ish
-            // NVGcolor defaultColor = nvgRGB(93, 0, 235);
-            colorFrame->panelColor = nvgRGB(93, 0, 235);
+            colorFrame->panelColor = nvgRGB(161, 122, 218);
             addChild(colorFrame);
         }
 

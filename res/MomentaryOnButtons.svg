@@ -26,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.6921053"
-     inkscape:cx="-258.58086"
-     inkscape:cy="199.94724"
+     inkscape:zoom="1.6815789"
+     inkscape:cx="30"
+     inkscape:cy="190"
      inkscape:document-units="mm"
      inkscape:current-layer="layer4"
      showgrid="false"
@@ -90,7 +90,7 @@
        aria-label="Alikins"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;display:inline;opacity:0.2681564;fill:#000000;fill-opacity:1;stroke:none;enable-background:new"
        id="text17569"
-       transform="matrix(0.26458333,0,0,0.26458333,-5.8208331,2.11667)">
+       transform="matrix(0.26458333,0,0,0.26458333,-3.1749991,2.11667)">
       <path
          d="m 32.985402,369.17804 -0.557292,-1.54688 h -2.614583 l -0.53125,1.54688 h -1.505208 l 3.041666,-7.73438 h 0.59375 l 3.067709,7.73438 z m -1.869792,-5.40104 -0.916666,2.81771 h 1.833333 z"
          id="path17571"
@@ -212,12 +212,13 @@
   <g
      inkscape:groupmode="layer"
      id="layer4"
-     inkscape:label="titletext">
+     inkscape:label="titletext"
+     style="display:inline">
     <g
        aria-label="Buttons"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:2.82222223px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        id="text6359"
-       transform="translate(0,-2.2489584)">
+       transform="translate(0,-0.26458308)">
       <path
          d="M 3.594128,6.37428 H 2.9767669 V 4.3568321 q 0.4078993,-0.019293 0.5718859,-0.019293 0.3141927,0 0.4905816,0.1350478 0.1777669,0.1336697 0.1777669,0.3830946 0,0.2397786 -0.253559,0.3789605 0.3762044,0.1309136 0.3762044,0.540191 0,0.2756076 -0.2080838,0.4382161 Q 3.9234792,6.37428 3.594128,6.37428 Z M 3.3350568,4.643464 v 0.4836914 q 0.082682,0.00551 0.1736329,0.00551 0.3500217,0 0.3500217,-0.2632053 0,-0.2328885 -0.3183269,-0.2328885 -0.08406,0 -0.2053277,0.00689 z m 0,0.7634332 v 0.6669704 q 0.1088651,0.00965 0.1763889,0.00965 0.2397787,0 0.3472657,-0.081304 0.108865,-0.081304 0.108865,-0.2700955 0,-0.1722548 -0.1005968,-0.250803 -0.1005968,-0.078548 -0.3513997,-0.078548 -0.052366,0 -0.1805231,0.00413 z"
          id="path6367"

@@ -285,34 +285,65 @@ struct IdleSwitchMsDisplayWidget : TransparentWidget {
 
 struct IdleSwitchWidget : ModuleWidget {
     IdleSwitchWidget(IdleSwitch *module) {
-        addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, 150.0), module, IdleSwitch::TIME_PARAM));
-
         setModule(module);
+
         setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/IdleSwitch.svg")));
+
+        // float y_baseline = 45.0f;
+        float y_baseline = 40.0f;
+        DEBUG("y_baseline3: %f", y_baseline);
 
         addChild(createWidget<ScrewSilver>(Vec(5, 0)));
         addChild(createWidget<ScrewSilver>(Vec(box.size.x - 20, 365)));
 
-        addInput(createInput<PJ301MPort>(Vec(37, 20.0), module, IdleSwitch::INPUT_SOURCE_INPUT));
-        addInput(createInput<PJ301MPort>(Vec(37, 60.0), module, IdleSwitch::HEARTBEAT_INPUT));
-        addInput(createInput<PJ301MPort>(Vec(70, 60.0), module, IdleSwitch::PULSE_INPUT));
+        addInput(createInput<PJ301MPort>(Vec(37, y_baseline),
+            module, IdleSwitch::INPUT_SOURCE_INPUT));
+
+        y_baseline += 40.0f;
+        DEBUG("y_baseline4: %f", y_baseline);
+
+        addInput(createInput<PJ301MPort>(Vec(37, y_baseline),
+            module, IdleSwitch::HEARTBEAT_INPUT));
+        addInput(createInput<PJ301MPort>(Vec(70, y_baseline),
+            module, IdleSwitch::PULSE_INPUT));
+
+        y_baseline += 55.0f;
+        DEBUG("y_baseline5: %f", y_baseline);
 
         // idle time display
         // FIXME: handle large IdleTimeoutMs (> 99999ms) better
         IdleSwitchMsDisplayWidget *idle_time_display = new IdleSwitchMsDisplayWidget();
-        idle_time_display->box.pos = Vec(20, 115);
+        idle_time_display->box.pos = Vec(20, y_baseline);
         idle_time_display->box.size = Vec(70, 24);
         // &idle_time_display->value = 100;
         if (module) {
             idle_time_display->value = &module->idleTimeoutMS;
-           }
+        }
         addChild(idle_time_display);
 
-        addInput(createInput<PJ301MPort>(Vec(10, 155.0), module, IdleSwitch::TIME_INPUT));
-        addOutput(createOutput<PJ301MPort>(Vec(80, 155.0), module, IdleSwitch::TIME_OUTPUT));
+        y_baseline += 35.0f;
+
+        DEBUG("y_baseline7: %f", y_baseline);
+        addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, y_baseline),
+            module, IdleSwitch::TIME_PARAM));
+
+        y_baseline += 5.0f;
+        DEBUG("y_baseline8: %f", y_baseline);
+
+        addInput(createInput<PJ301MPort>(Vec(10, y_baseline),
+            module, IdleSwitch::TIME_INPUT));
+
+        // y_baseline += 5.0f;
+
+        addOutput(createOutput<PJ301MPort>(Vec(80, y_baseline),
+            module, IdleSwitch::TIME_OUTPUT));
+
+        y_baseline += 60.0f;
+
+        DEBUG("y_baseline9: %f", y_baseline);
 
         IdleSwitchMsDisplayWidget *time_remaining_display = new IdleSwitchMsDisplayWidget();
-        time_remaining_display->box.pos = Vec(20, 225);
+        time_remaining_display->box.pos = Vec(20, y_baseline);
         time_remaining_display->box.size = Vec(70, 24);
         //time_remaining_display->value = 100;
         if (module) {
@@ -320,13 +351,24 @@ struct IdleSwitchWidget : ModuleWidget {
         }
         addChild(time_remaining_display);
 
-        addOutput(createOutput<PJ301MPort>(Vec(10, 263.0), module, IdleSwitch::IDLE_START_OUTPUT));
-        addOutput(createOutput<PJ301MPort>(Vec(47.5, 263.0), module, IdleSwitch::IDLE_GATE_OUTPUT));
-        addOutput(createOutput<PJ301MPort>(Vec(85, 263.0), module, IdleSwitch::IDLE_END_OUTPUT));
+        y_baseline += 31.0;
+        DEBUG("y_baseline10: %f", y_baseline);
 
-        addInput(createInput<PJ301MPort>(Vec(10.0f, 315.0f), module, IdleSwitch::SWITCHED_INPUT));
-        addOutput(createOutput<PJ301MPort>(Vec(47.5f, 315.0f), module, IdleSwitch::ON_WHEN_IDLE_OUTPUT));
-        addOutput(createOutput<PJ301MPort>(Vec(85.0f, 315.0f), module, IdleSwitch::OFF_WHEN_IDLE_OUTPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(10, y_baseline),
+            module, IdleSwitch::IDLE_START_OUTPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(47.5, y_baseline),
+            module, IdleSwitch::IDLE_GATE_OUTPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(85, y_baseline),
+            module, IdleSwitch::IDLE_END_OUTPUT));
+
+        y_baseline += 52.0f;
+
+        addInput(createInput<PJ301MPort>(Vec(10.0f, y_baseline),
+            module, IdleSwitch::SWITCHED_INPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(47.5f, y_baseline),
+            module, IdleSwitch::ON_WHEN_IDLE_OUTPUT));
+        addOutput(createOutput<PJ301MPort>(Vec(85.0f, y_baseline),
+            module, IdleSwitch::OFF_WHEN_IDLE_OUTPUT));
 
     }
 };

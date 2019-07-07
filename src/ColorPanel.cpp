@@ -42,14 +42,16 @@ struct ColorPanel : Module {
 
     ColorMode colorMode = HSL_MODE;
 
+    NVGcolor defaultColor = nvgRGB(0x91, 0x87, 0xff);
+
     ColorPanel() {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         configParam(RED_PARAM,
-                    0.0f, 1.0f, 0.5f, "Red");
+                    0.0f, 1.0f, 0.75, "Red or Hue");
         configParam(GREEN_PARAM,
-                    0.0f, 1.0f, 0.5f, "Green");
+                    0.0f, 1.0f, 1.0f, "Green or Saturation");
         configParam(BLUE_PARAM,
-                    0.0f, 1.0f, 0.5f, "Blue");
+                    0.0f, 1.0f, 0.5f, "Blue or Lightness");
     }
 
     void process(const ProcessArgs &args) override;
@@ -203,7 +205,7 @@ struct ColorFrame : TransparentWidget {
         nvgRect(args.vg, 0.0, 0.0, box.size.x, box.size.y);
         nvgFillColor(args.vg, panelColor);
         nvgFill(args.vg);
-  }
+    }
 };
 
 struct ColorModeItem : MenuItem {
@@ -259,7 +261,8 @@ struct ColorPanelWidget : ModuleWidget {
             colorFrame->box.size = box.size;
             colorFrame->module = module;
             // purple-ish
-            colorFrame->panelColor = nvgRGB(161, 122, 218);
+            // 9187ff
+            colorFrame->panelColor = nvgRGB(0x91, 0x87, 0xff);
             addChild(colorFrame);
         }
 

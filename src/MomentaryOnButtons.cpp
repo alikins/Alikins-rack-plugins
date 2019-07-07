@@ -64,7 +64,7 @@ struct MomentaryOnButtonsWidget : ModuleWidget {
         int y_offset = 26;
 
         int x_start = 0;
-        int y_start = 24;
+        int y_start = 27;
 
         int x_pos = 0;
         int y_pos = 0;
@@ -78,12 +78,16 @@ struct MomentaryOnButtonsWidget : ModuleWidget {
             addChild(panel);
         }
 
+        addChild(createWidget<ScrewSilver>(Vec(0.0, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x-15, 0)));
+        addChild(createWidget<ScrewSilver>(Vec(0.0f, 365.0f)));
+
         /*
            addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
            addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
            addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
            addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-           */
+        */
 
         for (int i = 0; i < MOMENTARY_BUTTONS; i++) {
 

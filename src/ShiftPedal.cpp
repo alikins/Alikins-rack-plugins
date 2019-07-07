@@ -125,7 +125,8 @@ struct ShiftPedalWidget : ModuleWidget {
         // FIXME: change to #defines
         float buttonWidth = 30.0f;
         float buttonHeight = 55.5f;
-        float y_start = 25.0f;
+        // float y_start = 25.0f;
+        float y_start = 35.0f;
         float y_spacing = 1.5f;
         float y_row_spacing = 6.5f;
         float y_baseline = y_start;

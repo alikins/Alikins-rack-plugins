@@ -49,9 +49,9 @@ void MomentaryOnButtons::process(const ProcessArgs &args) {
 struct LightupButton : SvgSwitch {
 	LightupButton() {
 		momentary = true;
-		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/LightupButton.svg")));
         addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/LightupButtonDown.svg")));
-        shadow->opacity = 0.0f;
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/LightupButton.svg")));
+        // shadow->opacity = 0.0f;
     };
 };
 

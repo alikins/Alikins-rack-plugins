@@ -115,7 +115,7 @@ struct IdleSwitch : Module {
 //    IdleSwitch() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
     IdleSwitch() {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-        configParam(TIME_PARAM, 0.f, 10.f, 0.25f);
+        configParam(TIME_PARAM, 0.f, 10.f, 0.25f, "Time before idle", " ms", 0.0f, 1000.0f);
     }
     // void step() override;
 	void process(const ProcessArgs &args) override;
@@ -248,40 +248,25 @@ struct IdleSwitchMsDisplayWidget : TransparentWidget {
     if (!value) {
         return;
     }
-      // Background
-    // these go to...
-    NVGcolor backgroundColor = nvgRGB(0x11, 0x11, 0x11);
-
-    NVGcolor borderColor = nvgRGB(0xff, 0xff, 0xff);
-
-    nvgBeginPath(vg);
-
-    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 5.0);
-    nvgFillColor(vg, backgroundColor);
-    nvgFill(vg);
-
-    nvgStrokeWidth(vg, 3.0);
-    nvgStrokeColor(vg, borderColor);
-
-    nvgStroke(vg);
 
     // text
     nvgFontSize(vg, 18);
     nvgFontFaceId(vg, font->handle);
     nvgTextLetterSpacing(vg, 2.5);
 
-    std::stringstream to_display;
-    // DEBUG("idleswitch about to display *value");
-    to_display << std::right  << std::setw(5) << *value;
+    std::string to_display = "0.00";
+
+    if (value) {
+        to_display = string::f("%-4.f", *value);
+    }
 
     Vec textPos = Vec(0.5f, 19.0f);
 
     NVGcolor textColor = nvgRGB(0x65, 0xf6, 0x78);
     nvgFillColor(vg, textColor);
-    nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
-  }
+    nvgText(vg, textPos.x, textPos.y, to_display.c_str(), NULL);
+    }
 };
-
 
 struct IdleSwitchWidget : ModuleWidget {
     IdleSwitchWidget(IdleSwitch *module) {
@@ -289,70 +274,69 @@ struct IdleSwitchWidget : ModuleWidget {
 
         setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/IdleSwitch.svg")));
 
-        // float y_baseline = 45.0f;
+        float x_baseline = 10.0f;
         float y_baseline = 40.0f;
-        DEBUG("y_baseline3: %f", y_baseline);
+        // DEBUG("y_baseline3: %f", y_baseline);
 
         addChild(createWidget<ScrewSilver>(Vec(5, 0)));
         addChild(createWidget<ScrewSilver>(Vec(box.size.x - 20, 365)));
 
-        addInput(createInput<PJ301MPort>(Vec(37, y_baseline),
+        addInput(createInput<PJ301MPort>(Vec(x_baseline, y_baseline),
             module, IdleSwitch::INPUT_SOURCE_INPUT));
 
-        y_baseline += 40.0f;
-        DEBUG("y_baseline4: %f", y_baseline);
+        x_baseline += 37.5f;
 
-        addInput(createInput<PJ301MPort>(Vec(37, y_baseline),
+        addInput(createInput<PJ301MPort>(Vec(x_baseline, y_baseline),
             module, IdleSwitch::HEARTBEAT_INPUT));
-        addInput(createInput<PJ301MPort>(Vec(70, y_baseline),
+
+        x_baseline += 37.5f;
+
+        addInput(createInput<PJ301MPort>(Vec(x_baseline, y_baseline),
             module, IdleSwitch::PULSE_INPUT));
 
-        y_baseline += 55.0f;
-        DEBUG("y_baseline5: %f", y_baseline);
+        y_baseline  += 80.0f;
+        // DEBUG("y_baseline5: %f", y_baseline);
 
         // idle time display
         // FIXME: handle large IdleTimeoutMs (> 99999ms) better
         IdleSwitchMsDisplayWidget *idle_time_display = new IdleSwitchMsDisplayWidget();
         idle_time_display->box.pos = Vec(20, y_baseline);
         idle_time_display->box.size = Vec(70, 24);
-        // &idle_time_display->value = 100;
+
         if (module) {
             idle_time_display->value = &module->idleTimeoutMS;
         }
         addChild(idle_time_display);
 
-        y_baseline += 35.0f;
+        y_baseline += 30.0f;
+        // DEBUG("y_baseline7: %f", y_baseline);
 
-        DEBUG("y_baseline7: %f", y_baseline);
         addParam(createParam<Davies1900hBlackKnob>(Vec(38.86, y_baseline),
             module, IdleSwitch::TIME_PARAM));
 
         y_baseline += 5.0f;
-        DEBUG("y_baseline8: %f", y_baseline);
+        // DEBUG("y_baseline8: %f", y_baseline);
 
         addInput(createInput<PJ301MPort>(Vec(10, y_baseline),
             module, IdleSwitch::TIME_INPUT));
 
-        // y_baseline += 5.0f;
-
         addOutput(createOutput<PJ301MPort>(Vec(80, y_baseline),
             module, IdleSwitch::TIME_OUTPUT));
 
-        y_baseline += 60.0f;
-
-        DEBUG("y_baseline9: %f", y_baseline);
+        y_baseline += 68.0f;
+        // DEBUG("y_baseline9: %f", y_baseline);
 
         IdleSwitchMsDisplayWidget *time_remaining_display = new IdleSwitchMsDisplayWidget();
         time_remaining_display->box.pos = Vec(20, y_baseline);
         time_remaining_display->box.size = Vec(70, 24);
-        //time_remaining_display->value = 100;
+
         if (module) {
             time_remaining_display->value = &module->idleTimeLeftMS;
         }
         addChild(time_remaining_display);
 
-        y_baseline += 31.0;
-        DEBUG("y_baseline10: %f", y_baseline);
+        y_baseline += 40.0;
+        // DEBUG("y_baseline10: %f", y_baseline);
 
         addOutput(createOutput<PJ301MPort>(Vec(10, y_baseline),
             module, IdleSwitch::IDLE_START_OUTPUT));

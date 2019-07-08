@@ -1,0 +1,29 @@
+{
+  "id": 85,
+  "plugin": "Alikins",
+  "version": "1.0.1",
+  "model": "GateLength",
+  "params": [
+    {
+      "id": 0,
+      "value": 0.0
+    },
+    {
+      "id": 1,
+      "value": 0.0
+    },
+    {
+      "id": 2,
+      "value": 0.0
+    },
+    {
+      "id": 3,
+      "value": 0.0
+    },
+    {
+      "id": 4,
+      "value": 0.0
+    }
+  ],
+  "rightModuleId": 90
+}

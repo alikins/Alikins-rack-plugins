@@ -1141,7 +1141,7 @@
        aria-label="Alikins"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.66666698px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;display:inline;opacity:0.2681564;fill:#000000;fill-opacity:1;stroke:none;enable-background:new"
        id="text17569"
-       transform="translate(-22,8)">
+       transform="translate(-11.5,8)">
       <path
          d="m 32.985402,369.17804 -0.557292,-1.54688 h -2.614583 l -0.53125,1.54688 h -1.505208 l 3.041666,-7.73438 h 0.59375 l 3.067709,7.73438 z m -1.869792,-5.40104 -0.916666,2.81771 h 1.833333 z"
          id="path17571"
@@ -1466,7 +1466,8 @@ in"
     <g
        aria-label="Idle Switch"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;line-height:1.25;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none"
-       id="text18769">
+       id="text18769"
+       transform="translate(0,-3.5)">
       <path
          d="M 20.140625,26.232573 V 14.78726 h 2.03125 v 11.445313 z"
          id="path18771"

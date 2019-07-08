@@ -278,8 +278,9 @@ struct IdleSwitchWidget : ModuleWidget {
         float y_baseline = 40.0f;
         // DEBUG("y_baseline3: %f", y_baseline);
 
-        addChild(createWidget<ScrewSilver>(Vec(5, 0)));
-        addChild(createWidget<ScrewSilver>(Vec(box.size.x - 20, 365)));
+        addChild(createWidget<ScrewSilver>(Vec(0.0f, 0.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(box.size.x - RACK_GRID_WIDTH, 0.0f)));
+        addChild(createWidget<ScrewSilver>(Vec(0.0, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
         addInput(createInput<PJ301MPort>(Vec(x_baseline, y_baseline),
             module, IdleSwitch::INPUT_SOURCE_INPUT));

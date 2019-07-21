@@ -77,7 +77,7 @@ int volts_to_note(float volts) {
 }
 
 int volts_to_octave(float volts) {
-    if (!isfinite(volts)) {
+    if (!std::isfinite(volts)) {
         return VCO_BASELINE_NOTE_OCTAVE_OFFSET;
     }
 

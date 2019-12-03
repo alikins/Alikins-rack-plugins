@@ -43,7 +43,7 @@ Examples of valid formats include:
 
 - `C4`   (C in the 4th octave)
 - `c3`   (note names can be upper or lower case)
-- `F#2`  (sharps are indicated by a'#' in the second field)
+- `F#2`  (sharps are indicated by a '#' in the second field)
 - `Ab0`  (flats are indicated by a 'b' in the second field).
           Note that flats are currently converted to the equivalent sharp for display)
 - `C-2`  (The C six octaves below C4)
@@ -104,7 +104,7 @@ Simulate virtual circuit bending by hovering over any widget on
 screen and using it's CV output. Hook up the output to your clock
 bpm and wiggle the cursor across the screen.
 
-Think of it as the Rack equilivent of using a Radio Shack Telephone
+Think of it as the Rack equivalent of using a Radio Shack Telephone
 Pickup to listen to a Sony Discman.
 
 Tap into the machine and read it's mind. Investigate which
@@ -143,7 +143,7 @@ hovered widget.
 
 #### Cautions To Be Ignored
 
-The 'out' output is currently not clamped or limitied and may produce
+The 'out' output is currently not clamped or limited and may produce
 values outside of the -10/+10 V range.
 
 The values of the hovered widget are sampled at the gui display rate,

@@ -1,7 +1,5 @@
 #include "alikins.hpp"
 
-#include "window.hpp"
-
 struct ShiftPedal : Module {
     enum ParamIds {
         LEFT_SHIFT_PARAM,
@@ -264,24 +262,24 @@ void ShiftPedalWidget::step() {
     }
 
     // TODO: switch to new key event api
-    getParam(ShiftPedal::LEFT_SHIFT_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+    getParam(ShiftPedal::LEFT_SHIFT_PARAM)->getParamQuantity()->setValue(glfwGetKey(APP->window->win,
                 GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 10.0f : 0.0f);
-    getParam(ShiftPedal::RIGHT_SHIFT_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+    getParam(ShiftPedal::RIGHT_SHIFT_PARAM)->getParamQuantity()->setValue(glfwGetKey(APP->window->win,
                 GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS ? 10.0f : 0.0f);
 
-    getParam(ShiftPedal::LEFT_CTRL_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+    getParam(ShiftPedal::LEFT_CTRL_PARAM)->getParamQuantity()->setValue(glfwGetKey(APP->window->win,
                 GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ? 10.0f : 0.0f);
-    getParam(ShiftPedal::RIGHT_CTRL_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+    getParam(ShiftPedal::RIGHT_CTRL_PARAM)->getParamQuantity()->setValue(glfwGetKey(APP->window->win,
                 GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS ? 10.0f : 0.0f);
 
-    getParam(ShiftPedal::LEFT_ALT_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+    getParam(ShiftPedal::LEFT_ALT_PARAM)->getParamQuantity()->setValue(glfwGetKey(APP->window->win,
                 GLFW_KEY_LEFT_ALT) == GLFW_PRESS ? 10.0f : 0.0f);
-    getParam(ShiftPedal::RIGHT_ALT_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+    getParam(ShiftPedal::RIGHT_ALT_PARAM)->getParamQuantity()->setValue(glfwGetKey(APP->window->win,
                 GLFW_KEY_RIGHT_ALT) == GLFW_PRESS ? 10.0f : 0.0f);
 
-    getParam(ShiftPedal::LEFT_SUPER_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+    getParam(ShiftPedal::LEFT_SUPER_PARAM)->getParamQuantity()->setValue(glfwGetKey(APP->window->win,
                 GLFW_KEY_LEFT_SUPER) == GLFW_PRESS ? 10.0f : 0.0f);
-    getParam(ShiftPedal::RIGHT_SUPER_PARAM)->paramQuantity->setValue(glfwGetKey(APP->window->win,
+    getParam(ShiftPedal::RIGHT_SUPER_PARAM)->getParamQuantity()->setValue(glfwGetKey(APP->window->win,
                 GLFW_KEY_RIGHT_SUPER) == GLFW_PRESS ? 10.0f : 0.0f);
 
     ModuleWidget::step();

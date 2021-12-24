@@ -4,7 +4,7 @@
 #include "alikins.hpp"
 // using namespace rack;
 
-struct PurpleTrimpot : Trimpot {
+struct PurpleTrimpot : SvgKnob {
     Module *module;
     bool initialized = false;
     PurpleTrimpot();
@@ -13,7 +13,7 @@ struct PurpleTrimpot : Trimpot {
     // void randomize() override;
 };
 
-PurpleTrimpot::PurpleTrimpot() : Trimpot() {
+PurpleTrimpot::PurpleTrimpot() : SvgKnob() {
     setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/PurpleTrimpot.svg")));
     shadow->blurRadius = 0.0;
     shadow->opacity = 0.10;
@@ -40,7 +40,7 @@ void PurpleTrimpot::step() {
 		onChange(e);
 	}
    */
-	Trimpot::step();
+	SvgKnob::step();
 }
 
 /*

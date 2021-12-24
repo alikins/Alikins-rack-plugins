@@ -1,7 +1,5 @@
 #include "alikins.hpp"
 #include <math.h>
-#include "ui.hpp"
-#include "window.hpp"
 
 #include "ParamFloatField.hpp"
 
@@ -196,8 +194,8 @@ void InjectValueWidget::step() {
     float scaled_value = rescale(clamped_input,
                                  voltage_min[injectValueModule->inputRange],
                                  voltage_max[injectValueModule->inputRange],
-                                 pwidget->paramQuantity->getMinValue(),
-                                 pwidget->paramQuantity->getMaxValue());
+                                 pwidget->getParamQuantity()->getMinValue(),
+                                 pwidget->getParamQuantity()->getMaxValue());
 
     /*
         debug("input_value: %f (in_min: %f, in_max:%f) clamped_in: %f out_min: %f, out_max: %f) scaled_value: %f",
@@ -222,9 +220,9 @@ void InjectValueWidget::step() {
 
     param_value_field->setValue(scaled_value);
 
-    min_field->setText(string::f("%#.4g", pwidget->paramQuantity->getMinValue()));
-    max_field->setText(string::f("%#.4g", pwidget->paramQuantity->getMaxValue()));
-    default_field->setText(string::f("%#.4g", pwidget->paramQuantity->getDefaultValue()));
+    min_field->setText(string::f("%#.4g", pwidget->getParamQuantity()->getMinValue()));
+    max_field->setText(string::f("%#.4g", pwidget->getParamQuantity()->getMaxValue()));
+    default_field->setText(string::f("%#.4g", pwidget->getParamQuantity()->getDefaultValue()));
     widget_type_field->setText("Param");
 
     // ParamWidgets are-a QuantityWidget, so change it's value
@@ -233,7 +231,7 @@ void InjectValueWidget::step() {
     {
 
         // TODO: would be useful to have a light to indicate when values are being injected
-        pwidget->paramQuantity->setValue(scaled_value);
+        pwidget->getParamQuantity()->setValue(scaled_value);
 
         // force a step of the param widget to get it to 'animate'
         pwidget->step();

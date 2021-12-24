@@ -3,9 +3,6 @@
 #include "alikins.hpp"
 #include "ParamFloatField.hpp"
 
-#include "ui.hpp"
-#include "window.hpp"
-
 /* Notes:
 
 Most of this is implemented in HoveredValueWidget.step(). Each
@@ -335,14 +332,14 @@ void HoveredValueWidget::step() {
     if (pwidget) {
         // TODO: show value of original and scaled?
 
-        raw_value = pwidget->paramQuantity->getValue();
-        display_min = pwidget->paramQuantity->getMinValue();
-        display_max = pwidget->paramQuantity->getMaxValue();
-        display_default = pwidget->paramQuantity->getDefaultValue();
-        display_label = pwidget->paramQuantity->getLabel();
-        display_value = pwidget->paramQuantity->getDisplayValue();
-        display_description = pwidget->paramQuantity->description;
-        display_unit = pwidget->paramQuantity->getUnit();
+        raw_value = pwidget->getParamQuantity()->getValue();
+        display_min = pwidget->getParamQuantity()->getMinValue();
+        display_max = pwidget->getParamQuantity()->getMaxValue();
+        display_default = pwidget->getParamQuantity()->getDefaultValue();
+        display_label = pwidget->getParamQuantity()->getLabel();
+        display_value = pwidget->getParamQuantity()->getDisplayValue();
+        display_description = pwidget->getParamQuantity()->description;
+        display_unit = pwidget->getParamQuantity()->getUnit();
         display_type = "Param";
 
         // TODO: if we use type name detection stuff (cxxabi/typeinfo/etc) we could possibly
@@ -355,12 +352,12 @@ void HoveredValueWidget::step() {
     PortWidget *port_widget = dynamic_cast<PortWidget *>(APP->event->hoveredWidget);
 
     if (port_widget) {
-        if (port_widget->type == PortWidget::OUTPUT) {
+        if (port_widget->type == engine::Port::OUTPUT) {
             raw_value = port_widget->module->outputs[port_widget->portId].getVoltage();
             display_type = "Output";
         }
 
-        if (port_widget->type == PortWidget::INPUT) {
+        if (port_widget->type == engine::Port::INPUT) {
             raw_value = port_widget->module->inputs[port_widget->portId].getVoltage();
             display_type = "Input";
         }

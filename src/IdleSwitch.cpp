@@ -238,34 +238,36 @@ void IdleSwitch::process(const ProcessArgs &args) {
 struct IdleSwitchMsDisplayWidget : TransparentWidget {
 
   float *value = NULL;
-  std::shared_ptr<Font> font;
 
   IdleSwitchMsDisplayWidget() {
-    font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
   }
 
   void draw(NVGcontext *vg) override {
+    std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
+
     if (!value) {
         return;
     }
 
     // text
-    nvgFontSize(vg, 18);
-    nvgFontFaceId(vg, font->handle);
-    nvgTextLetterSpacing(vg, 2.5);
+    if (font) {
+        nvgFontSize(vg, 18);
+        nvgFontFaceId(vg, font->handle);
+        nvgTextLetterSpacing(vg, 2.5);
 
-    std::string to_display = "0.00";
+        std::string to_display = "0.00";
 
-    if (value) {
-        to_display = string::f("%-4.f", *value);
+        if (value) {
+            to_display = string::f("%-4.f", *value);
+        }
+
+        Vec textPos = Vec(0.5f, 19.0f);
+
+        NVGcolor textColor = nvgRGB(0x65, 0xf6, 0x78);
+        nvgFillColor(vg, textColor);
+        nvgText(vg, textPos.x, textPos.y, to_display.c_str(), NULL);
     }
-
-    Vec textPos = Vec(0.5f, 19.0f);
-
-    NVGcolor textColor = nvgRGB(0x65, 0xf6, 0x78);
-    nvgFillColor(vg, textColor);
-    nvgText(vg, textPos.x, textPos.y, to_display.c_str(), NULL);
-    }
+  }
 };
 
 struct IdleSwitchWidget : ModuleWidget {

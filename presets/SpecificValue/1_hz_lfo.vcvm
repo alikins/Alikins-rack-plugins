@@ -1,17 +1,15 @@
 {
-  "id": 94,
   "plugin": "Alikins",
-  "version": "1.0.1",
   "model": "SpecificValue",
+  "version": "2.0.1",
   "params": [
     {
-      "id": 0,
-      "value": -1.0
+      "value": -1.0,
+      "id": 0
     },
     {
-      "id": 1,
-      "value": 0.0
+      "value": 0.0,
+      "id": 1
     }
-  ],
-  "rightModuleId": 79
+  ]
 }

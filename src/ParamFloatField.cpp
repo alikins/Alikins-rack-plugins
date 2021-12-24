@@ -1,5 +1,4 @@
 #include "rack.hpp"
-#include "ui.hpp"
 #include "ParamFloatField.hpp"
 
 ParamFloatField::ParamFloatField(Module *_module)

@@ -10,12 +10,6 @@
 #include <array>
 #include <map>
 
-#include "window.hpp"
-#include <GLFW/glfw3.h>
-
-#include "event.hpp"
-#include "ui.hpp"
-
 #include "alikins.hpp"
 #include "enharmonic.hpp"
 #include "cv_utils.hpp"
@@ -90,8 +84,8 @@ struct FloatField : TextField
 
     void setParamWidget(ParamWidget *paramWidget) {
 		this->paramWidget = paramWidget;
-		if (paramWidget->paramQuantity) {
-			text = paramWidget->paramQuantity->getDisplayValueString();
+		if (paramWidget->getParamQuantity()) {
+			text = paramWidget->getParamQuantity()->getDisplayValueString();
         }
         TextField::selectAll();
 	}
@@ -491,8 +485,8 @@ struct NoteNameField : TextField {
 
     void setParamWidget(ParamWidget *paramWidget) {
 		this->paramWidget = paramWidget;
-		if (paramWidget->paramQuantity) {
-			text = paramWidget->paramQuantity->getDisplayValueString();
+		if (paramWidget->getParamQuantity()) {
+			text = paramWidget->getParamQuantity()->getDisplayValueString();
         }
         TextField::selectAll();
 	}
@@ -534,7 +528,7 @@ void NoteNameField::increment(float delta) {
 
     field_value = clampSafe(field_value, minValue, maxValue);
     field_value = chop(field_value, 0.001f);
-    paramWidget->paramQuantity->setValue(field_value);
+    paramWidget->getParamQuantity()->setValue(field_value);
 }
 
 void NoteNameField::handleKeyPress(AdjustKey adjustKey, bool shift_pressed, bool mod_pressed) {
@@ -620,7 +614,7 @@ void NoteNameField::onAction(const event::Action &e) {
 
     auto search = note_name_to_volts_map.find(can_note_id);
     if(search != note_name_to_volts_map.end()) {
-        paramWidget->paramQuantity->setValue((float) note_name_to_volts_map[can_note_id]);
+        paramWidget->getParamQuantity()->setValue((float) note_name_to_volts_map[can_note_id]);
         return;
     }
     else {
@@ -732,7 +726,6 @@ struct SpecificValueWidget : ModuleWidget
 
         value_in_port->box.pos = Vec(2.0f, y_baseline);
 
-        inputs.push_back(value_in_port);
         addChild(value_in_port);
 
         float out_port_x = middle + 24.0f;
@@ -742,7 +735,6 @@ struct SpecificValueWidget : ModuleWidget
             module,
             SpecificValue::VALUE1_OUTPUT);
 
-        outputs.push_back(value_out_port);
         value_out_port->box.pos = Vec(box.size.x - value_out_port->box.size.x - 2.0f, y_baseline);
 
         addChild(value_out_port);

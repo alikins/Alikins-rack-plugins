@@ -134,7 +134,7 @@ struct ColorPanelModuleResizeHandle : OpaqueWidget {
 
     void onDragStart(const event::DragStart &e) override {
         // dragX = gRackWidget->lastMousePos.x;
-        dragX = APP->scene->rack->mousePos.x;
+        dragX = APP->scene->rack->getMousePos().x;
         ModuleWidget *m = getAncestorOfType<ModuleWidget>();
         originalBox = m->box;
     }
@@ -142,7 +142,7 @@ struct ColorPanelModuleResizeHandle : OpaqueWidget {
     void onDragMove(const event::DragMove &e) override {
         ModuleWidget *m = getAncestorOfType<ModuleWidget>();
 
-        float newDragX = APP->scene->rack->mousePos.x;
+        float newDragX = APP->scene->rack->getMousePos().x;
         float deltaX = newDragX - dragX;
 
         Rect newBox = originalBox;
@@ -249,8 +249,8 @@ struct ColorPanelWidget : ModuleWidget {
 
     void step() override;
 
-    json_t *toJson() override;
-    void fromJson(json_t *rootJ) override;
+    json_t *toJson();
+    void fromJson(json_t *rootJ);
 
     ColorPanelWidget(ColorPanel *module) {
         setModule(module);

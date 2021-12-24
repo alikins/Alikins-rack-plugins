@@ -3,9 +3,10 @@
 #define VALUE_COUNT 4
 #define CLOSE_ENOUGH 0.01f
 
+struct ValueSaverWidget;
+
 struct ValueSaver : Module {
     enum ParamIds {
-        ENUMS(VALUE_PARAM, VALUE_COUNT),
         NUM_PARAMS
     };
     enum InputIds {
@@ -35,13 +36,12 @@ struct ValueSaver : Module {
     float values[VALUE_COUNT] = {0.0f};
     float prevInputs[VALUE_COUNT] = {0.0f};
 
-    bool initialized = false;
-
     bool changingInputs[VALUE_COUNT] = {};
 
     dsp::SchmittTrigger valueUpTrigger[VALUE_COUNT];
     dsp::SchmittTrigger valueDownTrigger[VALUE_COUNT];
 
+    ValueSaverWidget* widget;
 };
 
 void ValueSaver::process(const ProcessArgs &args)
@@ -94,52 +94,37 @@ void ValueSaver::process(const ProcessArgs &args)
     }
 }
 
-json_t* ValueSaver::dataToJson() {
-    json_t *rootJ = json_object();
+struct LabelDisplay : LedDisplay {
+	LedDisplayTextField* textField = createWidget<LedDisplayTextField>(Vec(0, 0));
 
-    json_t *valuesJ = json_array();
-    for (int i = 0; i < VALUE_COUNT; i++)
-    {
-        // debug("dataToJson current values[%d]: %f", i, values[i]);
-        json_t *valueJ = json_real(values[i]);
-        json_array_append_new(valuesJ, valueJ);
-    }
-    json_object_set_new(rootJ, "values", valuesJ);
-
-    return rootJ;
-}
-
-void ValueSaver::dataFromJson(json_t *rootJ) {
-    json_t *valuesJ = json_object_get(rootJ, "values");
-    float savedInput;
-
-    if (valuesJ) {
-        for (int i = 0; i < VALUE_COUNT; i++) {
-            json_t *valueJ = json_array_get(valuesJ, i);
-            if (valueJ) {
-                savedInput = json_number_value(valueJ);
-                prevInputs[i] = savedInput;
-                values[i] = savedInput;
-                changingInputs[i] = false;
-            }
-        }
+    LabelDisplay() {
+		textField->multiline = true;
+        textField->textOffset = Vec(-2.0f, -3.0f);
+        textField->color = SCHEME_CYAN;
+		addChild(textField);
     }
 
-    initialized = true;
-}
+    void setFieldSize(rack::math::Vec boxsize) {
+        textField->box.size = boxsize;
+    }
 
-struct LabelTextField : LedDisplayTextField {
-    LabelTextField() {
-        color = rack::color::CYAN;
-        textOffset = Vec(-2.0f, -3.0f);
-        multiline = true;
-        text = "";
+    void setTextField(std::string text) {
+        textField->text = text;
+    }
+
+    std::string getTextField() {
+        return textField->text;
     }
 };
 
 struct ValueSaverWidget : ModuleWidget {
+    LabelDisplay *labelDisplays[VALUE_COUNT];
+
     ValueSaverWidget(ValueSaver *module) {
         setModule(module);
+
+        if (module)
+          module->widget = this;
 
         box.size = Vec(4 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
         setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/ValueSaverPanel.svg")));
@@ -161,13 +146,15 @@ struct ValueSaverWidget : ModuleWidget {
                                                ValueSaver::VALUE_OUTPUT + i));
 
             y_pos += 28.0f;
-            labelTextFields[i] = new LabelTextField();
+            labelDisplays[i] = new LabelDisplay();
 
-            labelTextFields[i]->box.pos = (Vec(4.0f, y_pos));
-            labelTextFields[i]->box.size = Vec(box.size.x - 8.0f, 38.0f);
-            addChild(labelTextFields[i]);
+            labelDisplays[i]->box.pos = (Vec(4.0f, y_pos));
+            labelDisplays[i]->box.size = Vec(box.size.x - 8.0f, 40.0f);
+            labelDisplays[i]->setTextField("");
+            labelDisplays[i]->setFieldSize(Vec(85, 40));
+            addChild(labelDisplays[i]);
 
-            y_pos += labelTextFields[i]->box.size.y;
+            y_pos += labelDisplays[i]->box.size.y;
             y_pos += 14.0f;
         }
 
@@ -177,36 +164,49 @@ struct ValueSaverWidget : ModuleWidget {
         addChild(createWidget<ScrewSilver>(Vec(box.size.x - 15.0f, 365.0f)));
 
     }
-
-    LabelTextField *labelTextFields[VALUE_COUNT];
-
-    json_t *toJson() override;
-
-    void fromJson(json_t *rootJ) override;
 };
 
-json_t *ValueSaverWidget::toJson() {
-    json_t *rootJ = ModuleWidget::toJson();
-
+json_t* ValueSaver::dataToJson() {
+    json_t *rootJ = json_object();
+    json_t *valuesJ = json_array();
     json_t *labelsJ = json_array();
+
     for (int i = 0; i < VALUE_COUNT; i++) {
-        json_t *labelJ  = json_string(labelTextFields[i]->text.c_str());
-        json_array_append_new(labelsJ, labelJ);
+        json_t *valueJ = json_real(values[i]);
+        json_array_append_new(valuesJ, valueJ);
+        if (widget) {
+            json_t *labelJ  = json_string(widget->labelDisplays[i]->getTextField().c_str());
+            json_array_append_new(labelsJ, labelJ);
+        }
     }
+    json_object_set_new(rootJ, "values", valuesJ);
     json_object_set_new(rootJ, "labels", labelsJ);
 
-	return rootJ;
+    return rootJ;
 }
 
-void ValueSaverWidget::fromJson(json_t *rootJ) {
-    ModuleWidget::fromJson(rootJ);
+void ValueSaver::dataFromJson(json_t *rootJ) {
+    json_t *valuesJ = json_object_get(rootJ, "values");
+    float savedInput;
+
+    if (valuesJ) {
+        for (int i = 0; i < VALUE_COUNT; i++) {
+            json_t *valueJ = json_array_get(valuesJ, i);
+            if (valueJ) {
+                savedInput = json_number_value(valueJ);
+                prevInputs[i] = savedInput;
+                values[i] = savedInput;
+                changingInputs[i] = false;
+            }
+        }
+    }
 
     json_t *labelsJ = json_object_get(rootJ, "labels");
     if (labelsJ) {
         for (int i = 0; i < VALUE_COUNT; i++) {
             json_t *labelJ = json_array_get(labelsJ, i);
-            if (labelJ) {
-                labelTextFields[i]->text = json_string_value(labelJ);
+            if (labelJ && widget) {
+                widget->labelDisplays[i]->setTextField(json_string_value(labelJ));
             }
         }
     }

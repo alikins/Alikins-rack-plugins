@@ -156,6 +156,9 @@ struct InjectValueWidget : ModuleWidget
 
 
 void InjectValueWidget::step() {
+
+    ModuleWidget::step();
+
     if (!module)
         return;
 
@@ -181,6 +184,10 @@ void InjectValueWidget::step() {
         ModuleWidget::step();
         return;
     }
+
+    // Let's not inject into our own module
+    if (pwidget->module == module)
+        return;
 
     // float input = module->inputs[InjectValue::VALUE_INPUT].getVoltage();
     float input_value = injectValueModule->param_value;
@@ -225,20 +232,12 @@ void InjectValueWidget::step() {
     default_field->setText(string::f("%#.4g", pwidget->getParamQuantity()->getDefaultValue()));
     widget_type_field->setText("Param");
 
-    // ParamWidgets are-a QuantityWidget, so change it's value
-    // but don't inject values into the switch that turns inject on/off
-    if (pwidget != enableInjectSwitch)
-    {
+    // TODO: would be useful to have a light to indicate when values are being injected
+    pwidget->getParamQuantity()->setValue(scaled_value);
 
-        // TODO: would be useful to have a light to indicate when values are being injected
-        pwidget->getParamQuantity()->setValue(scaled_value);
+    // force a step of the param widget to get it to 'animate'
+    pwidget->step();
 
-        // force a step of the param widget to get it to 'animate'
-        pwidget->step();
-
-    }
-
-    ModuleWidget::step();
 }
 
 void InjectValueWidget::onChange(const event::Change &e) {

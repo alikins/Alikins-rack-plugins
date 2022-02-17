@@ -63,8 +63,10 @@ plugin ideas:
     - if there is a way for plugin to distinquish a 'real save' vs
       an 'autosave', then could use that.
    - how to tell when a patch has been 'modified'?
-     - needed to avoid adding info on every save or autosave
+    - needed to avoid adding info on every save or autosave
      - slightly klugey way:
+        - For v2, https://vcvrack.com/manual/Migrate2#3-4-Store-large-data-in-the-module-s-patch-storage-directory
+          sounds like the right approach
         - if plugin knows the patch it is in, could load patch .vcv/json
           data and compare to 'previous'.
           - chksum would be simplest

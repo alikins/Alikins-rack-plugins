@@ -52,7 +52,7 @@ struct GateLength : Module {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
         for (int i = 0; i < GATE_LENGTH_INPUTS; i++) {
             configParam(GATE_LENGTH_PARAM1 + i,
-                    0.0f, 10.0f, 0.1f, "Length of gate", "sec");
+                    0.0f, 10.0f, 0.1f, "Length of gate", " sec");
         }
     }
 	void process(const ProcessArgs &args) override;
